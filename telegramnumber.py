@@ -37,6 +37,13 @@ number_keyboard = InlineKeyboardMarkup(hour_buttons)
 pos=[0,5,11,17]
 
 numbers=['0️⃣','1⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣']
+def emojify(number):
+    num=str(number)
+    emojified=''
+    for digit in num:
+        emojified+=numbers[int(digit)]
+    return(emojified)
+        
 def process_number_selection(update,context):
     ret_data = (False,False,None)
     ud = context.user_data

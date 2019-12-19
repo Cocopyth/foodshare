@@ -25,18 +25,19 @@ ConversationHandler.
 Send /start to initiate the conversation.
 Press Ctrl-C on the command line to stop the bot.
 """
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup,ChatAction
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler, CallbackQueryHandler)
 import logging
 import datetime
 import calendar
-from urllib import request
+
 import telegramcalendar
 from telegramhour import hour_keyboard,process_time_selection
-from telegramnumber import number_keyboard, process_number_selection
+from telegramnumber import number_keyboard, process_number_selection,emojify
 from telegramcost import cost_keyboard, process_cost_selection
 from gif_test import first_gif
+from telegram.ext.dispatcher import run_async
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -49,22 +50,26 @@ def get_weekday(date_datetime):
 
 # Stages
 SELECTING_DATE, TYPING, SELECTING_DATE_CALENDAR, NUMBER_SELECTION,\
-SELECTING_HOUR, SELECTING_NUMBER, SELECTING_COST, SELECTING_REMINDER \
- = map(chr,range(8))
+SELECTING_HOUR, SELECTING_NUMBER, SELECTING_COST, SELECTING_REMINDER, \
+CONFIRMATION = map(chr,range(9))
 # Callback data
 Today, Tomorrow, Dayp2, Calendargo, back = map(chr,range(5))
 pattern_date ='^' + Today +  '$|^' + Tomorrow +  '$|^' + Dayp2 + '$'
 
 #helping bool 
 START_OVER = "start_over"
-
-
+buttonstest = [[InlineKeyboardButton(text='Today', callback_data=Today),
+        InlineKeyboardButton(text='Tomorrow', callback_data=Tomorrow)],[
+        InlineKeyboardButton(text='On', callback_data=Dayp2),
+        InlineKeyboardButton(text='Show calendar', callback_data=Calendargo)
+    ],[InlineKeyboardButton(text='Change name of the meal', callback_data=back)]]
+keyboardtest = InlineKeyboardMarkup(buttonstest)
 def transform_date(when):
     date=datetime.date.today()
     times=[Today,Tomorrow,Dayp2]
     datecook=date+datetime.timedelta(days=times.index(when))
     return(get_weekday(datecook),datecook)
-
+    
 def meal_name(update, context):
     """Prompt user to input data for selected feature."""
     if START_OVER not in context.user_data:
@@ -81,6 +86,7 @@ def save_input(update,context):
     ud = context.user_data
     ud["name"] = update.message.text
     bot=context.bot
+    context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
     url=first_gif(ud['name'])
     if url!=None:
         bot.send_document(chat_id=update.message.chat_id,document=url)
@@ -98,11 +104,11 @@ def date_choosing(update,context):
     ],[InlineKeyboardButton(text='Change name of the meal', callback_data=back)]]
     keyboard = InlineKeyboardMarkup(buttons)
     if not context.user_data.get(START_OVER):
-        text = 'You\'ve chosen to cook '+ud['name']+'\n When do you want to cook?'
+        text = '🍌 You\'re cooking '+ud['name']+'\n When do you want to cook?'
         update.callback_query.edit_message_text(text=text, reply_markup=keyboard)
     # But after we do that, we need to send a new message
     else:
-        text = '🍌 You\'ve chosen to cook '+ud['name']+ '🍌 \n When do you want to cook? '
+        text = '🍌 You\'re cooking '+ud['name']+ '🍌 \n When do you want to cook? '
         update.message.reply_text(text=text, reply_markup=keyboard)
     context.user_data[START_OVER] = False
     return SELECTING_DATE
@@ -131,7 +137,7 @@ def date_handler(update, context):
     text='\n'.join(query.message.text.split('\n')[:1])
     bot.edit_message_text(chat_id=query.message.chat_id,
         message_id=query.message.message_id,text=text\
-        +'\n on ' + get_weekday(date) +' '+ ud['date'].strftime("%d/%m/%Y") 
+        +'\n 🕒 on ' + get_weekday(date) +' '+ ud['date'].strftime("%d/%m/%Y") 
         + '\n at what time?' + "\n❔ ❔:❔ ❔" + '\n ⬆️' ,
                         reply_markup=hour_keyboard)
     return(SELECTING_HOUR)
@@ -142,14 +148,26 @@ def inline_calendar_handler(update,context):
     selected,date = telegramcalendar.process_calendar_selection(bot, update)
     if selected:
         ud = context.user_data
-        ud["date"] = date
-        text='\n'.join(query.message.text.split('\n')[:1])
-        bot.edit_message_text(chat_id=query.message.chat_id,
-        message_id=query.message.message_id,text=text \
-        +'\n on ' + get_weekday(date)+' ' + ud['date'].strftime("%d/%m/%Y")
-        + '\n at what time?' + "\n❔ ❔:❔ ❔" + '\n ⬆️',
-                        reply_markup=hour_keyboard)
-        return SELECTING_HOUR
+        if 'cost_selected' in ud and ud['cost_selected']:
+            ud["date_limit"] = date
+            text='\n'.join(query.message.text.split('\n')[:4])
+            bot.edit_message_text(chat_id=query.message.chat_id,
+            message_id=query.message.message_id,text=text \
+            +'⏰ You will have an answer and know how many people are coming' \
+            + '\n on ' + get_weekday(date)+' ' + ud['date_limit'].strftime("%d/%m/%Y")
+            + '\n at what time?' + "\n❔ ❔:❔ ❔" + '\n ⬆️',
+                            reply_markup=hour_keyboard)
+            return SELECTING_HOUR
+        else:
+            ud = context.user_data
+            ud["date"] = date
+            text='\n'.join(query.message.text.split('\n')[:1])
+            bot.edit_message_text(chat_id=query.message.chat_id,
+            message_id=query.message.message_id,text=text \
+            +'\n 🕒 on ' + get_weekday(date)+' ' + ud['date'].strftime("%d/%m/%Y")
+            + '\n at what time?' + "\n❔ ❔:❔ ❔" + '\n ⬆️',
+                            reply_markup=hour_keyboard)
+            return SELECTING_HOUR
     return SELECTING_DATE_CALENDAR
 
 def inline_time_handler(update,context):
@@ -158,15 +176,31 @@ def inline_time_handler(update,context):
     selected,time = process_time_selection(update,context)
     if selected:
         ud = context.user_data
-        date=ud["date"]
-        ud["date"] = datetime.datetime.combine(date,time)
-        text='\n'.join(query.message.text.split('\n')[:1])
-        bot.edit_message_text(chat_id=query.message.chat_id,
-        message_id=query.message.message_id,text=text \
-        +'\n on ' + get_weekday(date)+' ' + ud['date'].strftime("%d/%m/%Y at %H:%M")
-        + '\n for how many people? (including yourself)'+'\n ',
-                        reply_markup=number_keyboard)
-        return SELECTING_NUMBER
+        if 'cost_selected' in ud and ud['cost_selected']:
+            ud = context.user_data
+            date=ud["date_limit"]
+            ud["date"] = datetime.datetime.combine(date,time)
+            text='\n'.join(query.message.text.split('\n')[:4])
+            bot.edit_message_text(chat_id=query.message.chat_id,
+            message_id=query.message.message_id,text=text \
+            +'⏰ You will have an answer and know how many people are coming' \
+            + '\n on ' + get_weekday(date)+' ' + ud['date_limit'].strftime("%d/%m/%Y at %H:%M")
+            + '\n Now I will send a message to people if you want' \
+            +' to add a text message just send it to me.' \
+            +'Press confirm when you\'re ready!',
+                            reply_markup=hour_keyboard)
+            return CONFIRMATION
+        else:
+            ud = context.user_data
+            date=ud["date"]
+            ud["date"] = datetime.datetime.combine(date,time)
+            text='\n'.join(query.message.text.split('\n')[:1])
+            bot.edit_message_text(chat_id=query.message.chat_id,
+            message_id=query.message.message_id,text=text \
+            +'\n 🕒 on ' + get_weekday(date)+' ' + ud['date'].strftime("%d/%m/%Y at %H:%M")
+            + '\n for how many people? (including yourself)'+'\n ',
+                            reply_markup=number_keyboard)
+            return SELECTING_NUMBER
     return SELECTING_HOUR
 
 def inline_number_handler(update,context):
@@ -180,7 +214,7 @@ def inline_number_handler(update,context):
             text='\n'.join(query.message.text.split('\n')[:2])
             bot.edit_message_text(chat_id=query.message.chat_id,
         message_id=query.message.message_id,text=text \
-        +'\n for '+ str(number)+' people' +\
+        +'\n 👪 for '+ emojify(number)+' persons' +\
         '\n How much is it going to cost in total?',
                         reply_markup=cost_keyboard)
             return SELECTING_COST    
@@ -190,6 +224,8 @@ def inline_cost_handler(update,context):
     bot=context.bot
     query = update.callback_query
     selected,back,number = process_cost_selection(update,context)
+    ud = context.user_data
+    ud['cost_selected']=False
     if selected:
         if back:
             text='\n'.join(query.message.text.split('\n')[:2])
@@ -199,15 +235,27 @@ def inline_cost_handler(update,context):
                             reply_markup=number_keyboard)
             return SELECTING_NUMBER
         else:
+            ud['cost_selected']=True
             text='\n'.join(query.message.text.split('\n')[:3])
             bot.edit_message_text(chat_id=query.message.chat_id,
         message_id=query.message.message_id,text=text \
-        +'\n for '+ str(number)+'€' +\
+        +'\n💶 for '+ emojify(number)+ '€ in total' +\
         '\n How much time in advance do you want to know who\'s coming?'+'\n ',
-                        reply_markup=cost_keyboard)
+                        reply_markup=keyboardtest)
             return SELECTING_REMINDER   
     return SELECTING_COST
 
+def reminder_choosing(update,context):
+
+    if not context.user_data.get(START_OVER):
+        text = 'You\'ve chosen to cook '+'\n When do you want to cook?'
+        update.callback_query.edit_message_text(text=text)
+    # But after we do that, we need to send a new message
+    else:
+        text = '🍌 You\'ve chosen to cook '+ '🍌 \n When do you want to cook? '
+        update.message.reply_text(text=text)
+    context.user_data[START_OVER] = False
+    return CONFIRMATION
 
 def end(update, context):
     """Returns `ConversationHandler.END`, which tells the
@@ -233,7 +281,7 @@ def main():
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
-
+    
     # Setup conversation handler with the states FIRST and SECOND
     # Use the pattern parameter to pass CallbackQueries with specific
     # data pattern to the corresponding handlers.
@@ -252,7 +300,9 @@ def main():
             SELECTING_HOUR : [CallbackQueryHandler(inline_time_handler)],
             SELECTING_NUMBER : [CallbackQueryHandler(inline_number_handler)],
             SELECTING_COST : [CallbackQueryHandler(inline_cost_handler)],
-            SELECTING_REMINDER : [CallbackQueryHandler(inline_cost_handler)]
+            SELECTING_REMINDER : [CallbackQueryHandler(reminder_choosing,pattern=pattern_date),
+                                  CallbackQueryHandler(calendar_handler, pattern='^'+Calendargo+'$'),
+                                  CallbackQueryHandler(inline_cost_handler, pattern='^'+back+'$')]
         },
         fallbacks=[CommandHandler('start', meal_name)]
     )

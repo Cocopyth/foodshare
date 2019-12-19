@@ -13,8 +13,8 @@ Created on Sun Dec 15 11:33:44 2019
 """
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup,ReplyKeyboardRemove
-import datetime
 
+from telegramnumber import emojify
 #Hour keyboard
 def create_callback_data(char):
     """ Create the callback data associated to each button"""
@@ -51,45 +51,45 @@ def process_cost_selection(update,context):
     query = update.callback_query
     messages=query.message.text.split('\n')
     action = query.data
-    if "number" in ud:
-        number=ud["number"]
+    if "cost" in ud:
+        cost=ud["cost"]
         indexn=ud['indexn']
     else:
-        number =0
-        ud["number"]=number
+        cost =0
+        ud["cost"]=cost
         indexn=0
         ud['indexn']=indexn
     if '⬅️' in action:
         indexn=max(0,indexn-1)
         ud['indexn']=indexn
-        number=number//10
-        ud['number']=number
-        if number ==0:
+        cost=cost//10
+        ud['cost']=cost
+        if cost ==0:
             messages[-1]=' '
         else:
-            messages[-1]=str(number)
+            messages[-1]=emojify(cost)+'€'
         reply="\n".join(messages)
         bot.edit_message_text(text=reply,
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
             reply_markup=cost_keyboard)    
     elif '➡️' in action:
-        ret_data=True,True,number
+        ret_data=True,True,cost
     elif '+' in action:
-        numberf=number
-        ud["number"]=0
+        costf=cost
+        ud["cost"]=0
         indexn=0
         ud['indexn']=indexn
-        ret_data=True,False,numberf
+        ret_data=True,False,costf
     else:
-        numberkey=int(action)
+        costkey=int(action)
         indexn=indexn+1
         ud['indexn']=indexn
-        number=10*number+numberkey
-        ud["number"]=number
-        messages[-1]=str(number)+'€'
+        cost=10*cost+costkey
+        ud["cost"]=cost
+        messages[-1]=emojify(cost)+'€'
         reply="\n".join(messages)
-        if number !=0:
+        if cost !=0:
             if len(hour_buttons)<=4:    
                 hour_buttons.append([InlineKeyboardButton('Confirm',callback_data='+')])
             new_keyboard = InlineKeyboardMarkup(hour_buttons)
