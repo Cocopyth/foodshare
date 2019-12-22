@@ -38,7 +38,9 @@ from telegramnumber import number_keyboard, process_number_selection,emojify
 from telegramcost import cost_keyboard, process_cost_selection
 from gif_test import first_gif
 from telegram.ext.dispatcher import run_async
+
 d = 1
+
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
