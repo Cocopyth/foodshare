@@ -1,29 +1,9 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec  8 12:23:33 2019
+Created on Sat Dec 28 12:19:36 2019
 
-@author: Coretib
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Dec  4 22:03:04 2019
-
-@author: Coretib
-"""
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""Simple inline keyboard bot with multiple CallbackQueryHandlers.
-This Bot uses the Updater class to handle the bot.
-First, a few callback functions are defined as callback query handler. Then, those functions are
-passed to the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-Usage:
-Example of a bot that uses inline keyboard that has multiple CallbackQueryHandlers arranged in a
-ConversationHandler.
-Send /start to initiate the conversation.
-Press Ctrl-C on the command line to stop the bot.
+@author: coco
 """
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction
 from telegram.ext import (
@@ -34,26 +14,15 @@ from telegram.ext import (
     ConversationHandler,
     CallbackQueryHandler,
 )
-import logging
+
 import datetime
 import calendar
 
-import telegramcalendar
-from telegramhour import hour_keyboard, process_time_selection
-from telegramnumber import number_keyboard, process_number_selection, emojify
-from telegramcost import cost_keyboard, process_cost_selection
-from gif_test import first_gif
-from telegram.ext.dispatcher import run_async
-
-d = 1
-
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-
-logger = logging.getLogger(__name__)
-
+from keyboards import telegramcalendar
+from keyboards.telegramhour import hour_keyboard, process_time_selection
+from keyboards.telegramnumber import number_keyboard, process_number_selection, emojify
+from keyboards.telegramcost import cost_keyboard, process_cost_selection
+from commands.gif_test import first_gif
 
 def get_weekday(date_datetime):
     weekday = date_datetime.weekday()
@@ -78,18 +47,7 @@ pattern_date = "^" + Today + "$|^" + Tomorrow + "$|^" + Dayp2 + "$"
 
 # helping bool
 START_OVER = "start_over"
-buttonstest = [
-    [
-        InlineKeyboardButton(text="Today", callback_data=Today),
-        InlineKeyboardButton(text="Tomorrow", callback_data=Tomorrow),
-    ],
-    [
-        InlineKeyboardButton(text="On", callback_data=Dayp2),
-        InlineKeyboardButton(text="Show calendar", callback_data=Calendargo),
-    ],
-    [InlineKeyboardButton(text="Change name of the meal", callback_data=back)],
-]
-keyboardtest = InlineKeyboardMarkup(buttonstest)
+
 
 
 def transform_date(when):
@@ -373,24 +331,9 @@ def end(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
-
-
-def main():
-    # Create the Updater and pass it your bot's token.
-    updater = Updater("921706886:AAE8KrSbCPMr1lB1VFZINP_M1s8wibaMkTE", use_context=True)
-
-    # Get the dispatcher to register handlers
-    dp = updater.dispatcher
-
-    # Setup conversation handler with the states FIRST and SECOND
-    # Use the pattern parameter to pass CallbackQueries with specific
-    # data pattern to the corresponding handlers.
-    # ^ means "start of line/string"
-    # $ means "end of line/string"
-    # So ^ABC$ will only allow 'ABC'
-
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", meal_name)],
+    
+conv_handler_cook = ConversationHandler(
+        entry_points=[CommandHandler("cook", meal_name)],
         states={
             TYPING: [MessageHandler(Filters.text, save_input)],
             SELECTING_DATE: [
@@ -410,22 +353,3 @@ def main():
         },
         fallbacks=[CommandHandler("start", meal_name)],
     )
-
-    # Add ConversationHandler to dispatcher that will be used for handling
-    # updates
-    dp.add_handler(conv_handler)
-
-    # log all errors
-    dp.add_error_handler(error)
-
-    # Start the Bot
-    updater.start_polling()
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
-
-
-if __name__ == "__main__":
-    main()

@@ -14,7 +14,7 @@ Created on Sun Dec 15 11:33:44 2019
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 
-from telegramnumber import emojify
+from keyboards.telegramnumber import emojify
 
 # Hour keyboard
 def create_callback_data(char):
