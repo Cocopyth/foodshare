@@ -27,8 +27,14 @@ from commands.gif_test import first_gif
 def get_weekday(date_datetime):
     weekday = date_datetime.weekday()
     return calendar.day_name[weekday]
+import logging
 
+# Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
+logger = logging.getLogger(__name__)
 # Stages
 (
     SELECTING_DATE,
@@ -120,10 +126,11 @@ def date_choosing(update, context):
 def calendar_handler(update, context):
     bot = context.bot
     query = update.callback_query
+    text = "\n".join(query.message.text.split("\n")[:1])
     bot.edit_message_text(
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
-        text="Please select a date:",
+        text=text+"\n Please select a date:",
         reply_markup=telegramcalendar.create_calendar(),
     )
     return SELECTING_DATE_CALENDAR
@@ -178,23 +185,33 @@ def inline_calendar_handler(update, context):
             )
             return SELECTING_HOUR
         else:
-            ud = context.user_data
-            ud["date"] = date
-            text = "\n".join(query.message.text.split("\n")[:1])
-            bot.edit_message_text(
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                text=text
-                + "\n 🕒 on "
-                + get_weekday(date)
-                + " "
-                + ud["date"].strftime("%d/%m/%Y")
-                + "\n at what time?"
-                + "\n❔ ❔:❔ ❔"
-                + "\n ⬆️",
-                reply_markup=hour_keyboard,
-            )
-            return SELECTING_HOUR
+            text="\n".join(query.message.text.split("\n")[:1])
+            if date<datetime.datetime.now():
+                bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=text+"\n The date chosen was in the past, please select a date in the future :",
+        reply_markup=telegramcalendar.create_calendar(),
+    )
+                return SELECTING_DATE_CALENDAR
+            else:
+                ud = context.user_data
+                ud["date"] = date
+                text = "\n".join(query.message.text.split("\n")[:1])
+                bot.edit_message_text(
+                    chat_id=query.message.chat_id,
+                    message_id=query.message.message_id,
+                    text=text
+                    + "\n 🕒 on "
+                    + get_weekday(date)
+                    + " "
+                    + ud["date"].strftime("%d/%m/%Y")
+                    + "\n at what time?"
+                    + "\n❔ ❔:❔ ❔"
+                    + "\n ⬆️",
+                    reply_markup=hour_keyboard,
+                )
+                return SELECTING_HOUR
     return SELECTING_DATE_CALENDAR
 
 
@@ -225,26 +242,53 @@ def inline_time_handler(update, context):
             )
             return CONFIRMATION
         else:
-            ud = context.user_data
             date = ud["date"]
-            ud["date"] = datetime.datetime.combine(date, time)
-            text = "\n".join(query.message.text.split("\n")[:1])
-            bot.edit_message_text(
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                text=text
-                + "\n 🕒 on "
-                + get_weekday(date)
-                + " "
-                + ud["date"].strftime("%d/%m/%Y at %H:%M")
-                + "\n for how many people? (including yourself)"
-                + "\n ",
-                reply_markup=number_keyboard,
-            )
-            return SELECTING_NUMBER
+            if datetime.datetime.combine(date, time)<datetime.datetime.now():
+                date = datetime.date.today()
+                weekdayp2 = get_weekday(date + datetime.timedelta(days=2))
+                buttons = [
+        [
+            InlineKeyboardButton(text="Today", callback_data=Today),
+            InlineKeyboardButton(text="Tomorrow", callback_data=Tomorrow),
+        ],
+        [
+            InlineKeyboardButton(text="On " + weekdayp2, callback_data=Dayp2),
+            InlineKeyboardButton(text="Show calendar", callback_data=Calendargo),
+        ],
+        [InlineKeyboardButton(text="Change name of the meal", callback_data=back)],
+    ]
+                keyboard = InlineKeyboardMarkup(buttons)
+                text = "\n".join(query.message.text.split("\n")[:1])
+                bot.edit_message_text(
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        text=text+"\n The date chosen was in the past, please select a date in the future :",
+        reply_markup=keyboard,
+    )
+                return SELECTING_DATE
+            else:
+                ud = context.user_data
+                ud["date"] = datetime.datetime.combine(date, time)
+                text = "\n".join(query.message.text.split("\n")[:1])
+                bot.edit_message_text(
+                    chat_id=query.message.chat_id,
+                    message_id=query.message.message_id,
+                    text=text
+                    + "\n 🕒 on "
+                    + get_weekday(date)
+                    + " "
+                    + ud["date"].strftime("%d/%m/%Y at %H:%M")
+                    + "\n for how many people? (including yourself)"
+                    + "\n ",
+                    reply_markup=number_keyboard,
+                )
+                return SELECTING_NUMBER
     return SELECTING_HOUR
 
-
+def hours_until_meal(date):
+    time_delta=(datetime.datetime.now()-date).total_seconds()
+    return(time_delta/3600)
+    
 def inline_number_handler(update, context):
     bot = context.bot
     query = update.callback_query
@@ -271,11 +315,11 @@ def inline_number_handler(update, context):
 def inline_cost_handler(update, context):
     bot = context.bot
     query = update.callback_query
-    selected, back, number = process_cost_selection(update, context)
+    selected, goback, number = process_cost_selection(update, context)
     ud = context.user_data
     ud["cost_selected"] = False
     if selected:
-        if back:
+        if goback:
             text = "\n".join(query.message.text.split("\n")[:2])
             bot.edit_message_text(
                 chat_id=query.message.chat_id,
@@ -287,6 +331,9 @@ def inline_cost_handler(update, context):
         else:
             ud["cost_selected"] = True
             text = "\n".join(query.message.text.split("\n")[:3])
+            date = datetime.date.today()
+            weekdayp2 = get_weekday(date + datetime.timedelta(days=2))
+            time_left=hours_until_meal(ud["date"])
             bot.edit_message_text(
                 chat_id=query.message.chat_id,
                 message_id=query.message.message_id,
@@ -296,7 +343,7 @@ def inline_cost_handler(update, context):
                 + "€ in total"
                 + "\n How much time in advance do you want to know who's coming?"
                 + "\n ",
-                reply_markup=keyboardtest,
+                reply_markup=keyboard,
             )
             return SELECTING_REMINDER
     return SELECTING_COST
@@ -331,7 +378,6 @@ def end(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
-    
 conv_handler_cook = ConversationHandler(
         entry_points=[CommandHandler("cook", meal_name)],
         states={
