@@ -12,9 +12,9 @@ Created on Sun Dec 15 11:33:44 2019
 @author: Coretib
 """
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from keyboards.telegramnumber import emojify
+from foodshare.keyboards.telegramnumber import emojify
 
 # Hour keyboard
 def create_callback_data(char):

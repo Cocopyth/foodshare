@@ -30,7 +30,7 @@ from telegram.ext import (
     Updater,
 )
 import logging
-from commands.cook import conv_handler_cook,error
+from foodshare.commands.cook import conv_handler_cook,error
 
 d = 1
 

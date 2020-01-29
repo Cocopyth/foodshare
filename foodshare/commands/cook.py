@@ -7,7 +7,6 @@ Created on Sat Dec 28 12:19:36 2019
 """
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction
 from telegram.ext import (
-    Updater,
     CommandHandler,
     MessageHandler,
     Filters,
@@ -18,11 +17,11 @@ from telegram.ext import (
 import datetime
 import calendar
 
-from keyboards import telegramcalendar
-from keyboards.telegramhour import hour_keyboard, process_time_selection
-from keyboards.telegramnumber import number_keyboard, process_number_selection, emojify
-from keyboards.telegramcost import cost_keyboard, process_cost_selection
-from commands.gif_test import first_gif
+from foodshare.keyboards import telegramcalendar
+from foodshare.keyboards.telegramhour import hour_keyboard, process_time_selection
+from foodshare.keyboards.telegramnumber import number_keyboard, process_number_selection, emojify
+from foodshare.keyboards.telegramcost import cost_keyboard, process_cost_selection
+from foodshare.commands.gif_test import first_gif
 
 def get_weekday(date_datetime):
     weekday = date_datetime.weekday()
