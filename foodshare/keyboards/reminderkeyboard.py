@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 28 19:13:24 2019
-
-@author: coco
-"""
-
 def reminder_keyboard_build(time_left):
     if time left > 6:
         buttons = [

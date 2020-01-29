@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec 15 14:31:22 2019
-
-@author: Coretib
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec 15 11:33:44 2019
-
-@author: Coretib
-"""
-
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.keyboards.telegramnumber import emojify

@@ -1,19 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec  8 12:23:33 2019
-
-@author: Coretib
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Dec  4 22:03:04 2019
-
-@author: Coretib
-"""
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Simple inline keyboard bot with multiple CallbackQueryHandlers.
 This Bot uses the Updater class to handle the bot.
 First, a few callback functions are defined as callback query handler. Then, those functions are

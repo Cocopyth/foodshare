@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 27 18:34:06 2019
-
-@author: coco
-"""
-
 import sqlite3
 
 conn = sqlite3.connect('database.db')

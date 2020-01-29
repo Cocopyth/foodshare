@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec 15 14:47:55 2019
-
-@author: Coretib
-"""
 import requests
 import json
 
