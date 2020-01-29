@@ -10,10 +10,10 @@ from telegram.ext import (
 import datetime
 import calendar
 
-from foodshare.keyboards import telegramcalendar
-from foodshare.keyboards.telegramhour import hour_keyboard, process_time_selection
-from foodshare.keyboards.telegramnumber import number_keyboard, process_number_selection, emojify
-from foodshare.keyboards.telegramcost import cost_keyboard, process_cost_selection
+from foodshare.keyboards import telegram_calendar
+from foodshare.keyboards.telegram_hour import hour_keyboard, process_time_selection
+from foodshare.keyboards.telegram_number import number_keyboard, process_number_selection, emojify
+from foodshare.keyboards.telegram_cost import cost_keyboard, process_cost_selection
 from foodshare.commands.gif_test import first_gif
 
 def get_weekday(date_datetime):
@@ -123,7 +123,7 @@ def calendar_handler(update, context):
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
         text=text+"\n Please select a date:",
-        reply_markup=telegramcalendar.create_calendar(),
+        reply_markup=telegram_calendar.create_calendar(),
     )
     return SELECTING_DATE_CALENDAR
 
@@ -155,7 +155,7 @@ def date_handler(update, context):
 def inline_calendar_handler(update, context):
     bot = context.bot
     query = update.callback_query
-    selected, date = telegramcalendar.process_calendar_selection(bot, update)
+    selected, date = telegram_calendar.process_calendar_selection(bot, update)
     if selected:
         ud = context.user_data
         if "cost_selected" in ud and ud["cost_selected"]:
@@ -183,7 +183,7 @@ def inline_calendar_handler(update, context):
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
         text=text+"\n The date chosen was in the past, please select a date in the future :",
-        reply_markup=telegramcalendar.create_calendar(),
+        reply_markup=telegram_calendar.create_calendar(),
     )
                 return SELECTING_DATE_CALENDAR
             else:

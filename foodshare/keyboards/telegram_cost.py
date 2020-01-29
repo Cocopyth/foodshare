@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from foodshare.keyboards.telegramnumber import emojify
+from foodshare.keyboards.telegram_number import emojify
 
 # Hour keyboard
 def create_callback_data(char):
