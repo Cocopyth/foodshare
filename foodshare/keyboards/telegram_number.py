@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 14 16:00:27 2019
-
-@author: Coretib
-"""
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 import datetime
 
@@ -32,77 +26,77 @@ row3.append(InlineKeyboardButton("2️⃣", callback_data=create_callback_data(2
 row3.append(InlineKeyboardButton("3️⃣", callback_data=create_callback_data(3)))
 hour_buttons = [row1, row2, row3]
 hour_buttons.append([])
-hour_buttons[3].append(InlineKeyboardButton("⬅️", callback_data="⬅️"))
 hour_buttons[3].append(
     InlineKeyboardButton("0️⃣", callback_data=create_callback_data(0))
 )
-hour_buttons[3].append(InlineKeyboardButton("➡️", callback_data="➡️"))
-hour_keyboard = InlineKeyboardMarkup(hour_buttons)
+hour_buttons[3].append(InlineKeyboardButton("⬅️", callback_data="⬅️"))
+hour_buttons[3].append(InlineKeyboardButton("Back to date", callback_data="➡️"))
+number_keyboard = InlineKeyboardMarkup(hour_buttons)
 pos = [0, 5, 11, 17]
 
 numbers = ["0️⃣", "1⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
 
 
-def process_time_selection(update, context):
-    ret_data = (False, None)
+def emojify(number):
+    num = str(number)
+    emojified = ""
+    for digit in num:
+        emojified += numbers[int(digit)]
+    return emojified
+
+
+def process_number_selection(update, context):
+    ret_data = (False, False, None)
     ud = context.user_data
     bot = context.bot
-    if "time" in ud:
-        time = ud["time"]
-        index = ud["index"]
-    else:
-        time = "❔ ❔:❔ ❔"
-        ud["time"] = time
-        index = 0
-        ud["index"] = index
     query = update.callback_query
     messages = query.message.text.split("\n")
     action = query.data
+    if "number" in ud:
+        number = ud["number"]
+        indexn = ud["indexn"]
+    else:
+        number = 0
+        ud["number"] = number
+        indexn = 0
+        ud["indexn"] = indexn
     if "⬅️" in action:
-        index = max(0, index - 1)
-        ud["index"] = index
-        messages[-1] = pos[index] * " " + "⬆️"
+        indexn = max(0, indexn - 1)
+        ud["indexn"] = indexn
+        number = number // 10
+        ud["number"] = number
+        if number == 0:
+            messages[-1] = " "
+        else:
+            messages[-1] = str(number)
         reply = "\n".join(messages)
         bot.edit_message_text(
             text=reply,
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
-            reply_markup=hour_keyboard,
+            reply_markup=number_keyboard,
         )
     elif "➡️" in action:
-        index = min(3, index + 1)
-        ud["index"] = index
-        messages[-1] = pos[index] * " " + "⬆️"
-        reply = "\n".join(messages)
-        bot.edit_message_text(
-            text=reply,
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            reply_markup=hour_keyboard,
-        )
+        ret_data = True, True, number
     elif "+" in action:
-        hourmin = messages[-2].replace(":", " ").split(" ")
-        hour = 10 * numbers.index(hourmin[0]) + numbers.index(hourmin[1])
-        minute = 10 * numbers.index(hourmin[2]) + numbers.index(hourmin[3])
-        timeday = datetime.time(hour=hour, minute=minute)
-        time = "❔ ❔:❔ ❔"
-        ud["time"] = time
-        index = 0
-        ud["index"] = index
-        print(timeday)
-        ret_data = True, timeday
+        numberf = number
+        ud["number"] = 0
+        indexn = 0
+        ud["indexn"] = indexn
+        ret_data = True, False, numberf
     else:
-        hourmin = messages[-2].replace(":", " ").split(" ")
-        number = int(action)
-        hourmin[index] = "" + numbers[number]
-        messages[-2] = " ".join(hourmin[:2]) + ":" + " ".join(hourmin[2:])
-        ud["time"] = messages[-2]
-        index = min(3, index + 1)
-        ud["index"] = index
-        messages[-1] = pos[index] * " " + "⬆️"
+        numberkey = int(action)
+        indexn = indexn + 1
+        ud["indexn"] = indexn
+        number = 10 * number + numberkey
+        ud["number"] = number
+        if number == 0:
+            messages[-1] = " "
+        else:
+            messages[-1] = str(number)
         reply = "\n".join(messages)
-        if "❔" not in hourmin:
-            if len(hour_buttons) <= 5:
+        if number != 0:
+            if len(hour_buttons) <= 4:
                 hour_buttons.append(
                     [InlineKeyboardButton("Confirm", callback_data="+")]
                 )
@@ -118,6 +112,6 @@ def process_time_selection(update, context):
                 text=reply,
                 chat_id=query.message.chat_id,
                 message_id=query.message.message_id,
-                reply_markup=hour_keyboard,
+                reply_markup=number_keyboard,
             )
     return ret_data

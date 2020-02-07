@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-#
 # A library that allows to create an inline calendar keyboard.
 # grcanosa https://github.com/grcanosa
 #

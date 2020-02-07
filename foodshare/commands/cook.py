@@ -1,13 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 28 12:19:36 2019
-
-@author: coco
-"""
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction
 from telegram.ext import (
-    Updater,
     CommandHandler,
     MessageHandler,
     Filters,
@@ -18,11 +10,11 @@ from telegram.ext import (
 import datetime
 import calendar
 
-from keyboards import telegramcalendar
-from keyboards.telegramhour import hour_keyboard, process_time_selection
-from keyboards.telegramnumber import number_keyboard, process_number_selection, emojify
-from keyboards.telegramcost import cost_keyboard, process_cost_selection
-from commands.gif_test import first_gif
+from foodshare.keyboards import telegram_calendar
+from foodshare.keyboards.telegram_hour import hour_keyboard, process_time_selection
+from foodshare.keyboards.telegram_number import number_keyboard, process_number_selection, emojify
+from foodshare.keyboards.telegram_cost import cost_keyboard, process_cost_selection
+from foodshare.commands.gif_test import first_gif
 
 def get_weekday(date_datetime):
     weekday = date_datetime.weekday()
@@ -131,7 +123,7 @@ def calendar_handler(update, context):
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
         text=text+"\n Please select a date:",
-        reply_markup=telegramcalendar.create_calendar(),
+        reply_markup=telegram_calendar.create_calendar(),
     )
     return SELECTING_DATE_CALENDAR
 
@@ -163,7 +155,7 @@ def date_handler(update, context):
 def inline_calendar_handler(update, context):
     bot = context.bot
     query = update.callback_query
-    selected, date = telegramcalendar.process_calendar_selection(bot, update)
+    selected, date = telegram_calendar.process_calendar_selection(bot, update)
     if selected:
         ud = context.user_data
         if "cost_selected" in ud and ud["cost_selected"]:
@@ -191,7 +183,7 @@ def inline_calendar_handler(update, context):
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
         text=text+"\n The date chosen was in the past, please select a date in the future :",
-        reply_markup=telegramcalendar.create_calendar(),
+        reply_markup=telegram_calendar.create_calendar(),
     )
                 return SELECTING_DATE_CALENDAR
             else:

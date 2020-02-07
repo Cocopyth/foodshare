@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 27 22:54:40 2019
-
-@author: coco
-"""
-
-
 def create_user(conn, user):
     """
     Create a new user into the projects table

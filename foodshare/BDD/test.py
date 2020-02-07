@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 27 23:10:20 2019
-
-@author: coco
-"""
 from helping_functions import create_meal, create_user, select_users_by_mealpoints
 import sqlite3
 conn = sqlite3.connect('database.db')
