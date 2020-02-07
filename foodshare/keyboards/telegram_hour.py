@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 import datetime
-
+from copy import copy
 # Hour keyboard
 def create_callback_data(char):
     """ Create the callback data associated to each button"""
@@ -32,6 +32,11 @@ hour_buttons[3].append(
 )
 hour_buttons[3].append(InlineKeyboardButton("➡️", callback_data="➡️"))
 hour_keyboard = InlineKeyboardMarkup(hour_buttons)
+hour_buttons2=copy(hour_buttons)
+hour_buttons2.append(
+    [InlineKeyboardButton("Confirm", callback_data="+")]
+)
+confirm_keyboard = InlineKeyboardMarkup(hour_buttons2)
 pos = [0, 5, 11, 17]
 
 numbers = ["0️⃣", "1⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
@@ -41,6 +46,14 @@ def process_time_selection(update, context):
     ret_data = (False, None)
     ud = context.user_data
     bot = context.bot
+    query = update.callback_query
+    messages = query.message.text.split("\n")
+    action = query.data
+    hourmin = messages[-2].replace(":", " ").split(" ")
+    if "❔" in hourmin:
+        keyboard=hour_keyboard
+    else:
+        keyboard=confirm_keyboard
     if "time" in ud:
         time = ud["time"]
         index = ud["index"]
@@ -49,9 +62,7 @@ def process_time_selection(update, context):
         ud["time"] = time
         index = 0
         ud["index"] = index
-    query = update.callback_query
-    messages = query.message.text.split("\n")
-    action = query.data
+
     if "⬅️" in action:
         index = max(0, index - 1)
         ud["index"] = index
@@ -61,7 +72,7 @@ def process_time_selection(update, context):
             text=reply,
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
-            reply_markup=hour_keyboard,
+            reply_markup=keyboard,
         )
     elif "➡️" in action:
         index = min(3, index + 1)
@@ -72,7 +83,7 @@ def process_time_selection(update, context):
             text=reply,
             chat_id=query.message.chat_id,
             message_id=query.message.message_id,
-            reply_markup=hour_keyboard,
+            reply_markup=keyboard,
         )
     elif "+" in action:
         hourmin = messages[-2].replace(":", " ").split(" ")
@@ -89,29 +100,20 @@ def process_time_selection(update, context):
         hourmin = messages[-2].replace(":", " ").split(" ")
         number = int(action)
         hourmin[index] = "" + numbers[number]
+        if "❔" in hourmin:
+            keyboard=hour_keyboard
+        else:
+            keyboard=confirm_keyboard
         messages[-2] = " ".join(hourmin[:2]) + ":" + " ".join(hourmin[2:])
         ud["time"] = messages[-2]
         index = min(3, index + 1)
         ud["index"] = index
         messages[-1] = pos[index] * " " + "⬆️"
         reply = "\n".join(messages)
-        if "❔" not in hourmin:
-            if len(hour_buttons) <= 5:
-                hour_buttons.append(
-                    [InlineKeyboardButton("Confirm", callback_data="+")]
-                )
-            new_keyboard = InlineKeyboardMarkup(hour_buttons)
-            bot.edit_message_text(
+        bot.edit_message_text(
                 text=reply,
                 chat_id=query.message.chat_id,
                 message_id=query.message.message_id,
-                reply_markup=new_keyboard,
-            )
-        else:
-            bot.edit_message_text(
-                text=reply,
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                reply_markup=hour_keyboard,
+                reply_markup=keyboard,
             )
     return ret_data
