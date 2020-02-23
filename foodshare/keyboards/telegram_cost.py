@@ -36,8 +36,7 @@ cost_keyboard = InlineKeyboardMarkup(hour_buttons)
 pos = [0, 5, 11, 17]
 
 numbers = ["0️⃣", "1⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
-
-
+possibilities = [create_callback_data(i) for i in range(10)] + ["⬅️"+"➡️"+"+"]
 def process_cost_selection(update, context):
     ret_data = (False, False, None)
     ud = context.user_data
@@ -53,13 +52,21 @@ def process_cost_selection(update, context):
         ud["cost"] = cost
         indexn = 0
         ud["indexn"] = indexn
+#    if action not in possibilities:
+#        reply = "\n".join(messages)
+#        bot.edit_message_text(
+#            text=reply,
+#            chat_id=query.message.chat_id,
+#            message_id=query.message.message_id,
+#            reply_markup=cost_keyboard,
+#        )
     if "⬅️" in action:
         indexn = max(0, indexn - 1)
         ud["indexn"] = indexn
         cost = cost // 10
         ud["cost"] = cost
         if cost == 0:
-            messages[-1] = " "
+            messages[-1] = "€"
         else:
             messages[-1] = emojify(cost) + "€"
         reply = "\n".join(messages)
