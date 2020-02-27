@@ -8,26 +8,13 @@ from telegram import (
     InlineKeyboardMarkup,
     ParseMode,
 )
-from telegram.ext import (
-    CallbackQueryHandler,
-    CommandHandler,
-    ConversationHandler,
-    Filters,
-    MessageHandler,
-)
+from telegram.ext import ConversationHandler
 
 from foodshare.commands.gif_test import first_gif
-from foodshare.handlers.cook_conversation_handler import ConversationStage
+from foodshare.handlers.cook_conversation import ConversationStage
 from foodshare.keyboards import telegram_calendar
-from foodshare.keyboards.confirmation_keyboard import (
-    confirm,
-    confirmation_keyboard,
-    what,
-)
+from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 from foodshare.keyboards.reminder_keyboard import (
-    back2,
-    chose,
-    pattern_reminder,
     reminder_keyboard_build,
     transform_limit,
 )
@@ -555,43 +542,3 @@ def end(update, context):
     # save data in the database + send messages
     context.user_data.clear()
     return ConversationHandler.END
-
-
-conv_handler_cook = ConversationHandler(
-    entry_points=[CommandHandler('cook', meal_name)],
-    states={
-        ConversationStage.TYPING: [MessageHandler(Filters.text, save_input)],
-        ConversationStage.SELECTING_DATE: [
-            CallbackQueryHandler(date_handler, pattern=pattern_date),
-            CallbackQueryHandler(
-                calendar_handler, pattern='^' + Calendargo + '$'
-            ),
-            CallbackQueryHandler(meal_name, pattern='^' + back + '$'),
-        ],
-        ConversationStage.SELECTING_DATE_CALENDAR: [
-            CallbackQueryHandler(inline_calendar_handler)
-        ],
-        ConversationStage.SELECTING_HOUR: [
-            CallbackQueryHandler(inline_time_handler)
-        ],
-        ConversationStage.SELECTING_NUMBER: [
-            CallbackQueryHandler(inline_number_handler)
-        ],
-        ConversationStage.SELECTING_COST: [
-            CallbackQueryHandler(inline_cost_handler)
-        ],
-        ConversationStage.SELECTING_REMINDER: [
-            CallbackQueryHandler(reminder_choosing, pattern=pattern_reminder),
-            CallbackQueryHandler(calendar_handler, pattern='^' + chose + '$'),
-            CallbackQueryHandler(
-                inline_cost_handler, pattern='^' + back2 + '$'
-            ),
-        ],
-        ConversationStage.CONFIRMATION: [
-            MessageHandler(Filters.text, save_input2),
-            CallbackQueryHandler(end, pattern=confirm),
-            CallbackQueryHandler(meal_name_confirm, pattern=what),
-        ],
-    },
-    fallbacks=[CommandHandler('start', meal_name)],
-)
