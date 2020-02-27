@@ -6,7 +6,7 @@ import requests
 apikey = 'GLT8A6IWC63J'  # test value
 
 
-def first_gif(name):
+def get_gif_url(name):
     r = requests.get(
         'https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s'
         % (name, apikey, 1)

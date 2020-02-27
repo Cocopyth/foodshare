@@ -19,7 +19,6 @@ from foodshare.commands.cook import (
     meal_name_confirm,
     pattern_date,
     reminder_choosing,
-    save_input,
     save_input2,
 )
 from foodshare.keyboards.confirmation_keyboard import confirm, what
@@ -30,14 +29,13 @@ from foodshare.keyboards.reminder_keyboard import (
 )
 
 from . import ConversationStage
-from .meal_name import ask_for_meal_name
-
+from .meal_name import ask_for_meal_name, save_meal_name
 
 cook_handler = ConversationHandler(
     entry_points=[CommandHandler('cook', ask_for_meal_name)],
     states={
         ConversationStage.TYPING_MEAL_NAME: [
-            MessageHandler(Filters.text, save_input)
+            MessageHandler(Filters.text, save_meal_name)
         ],
         ConversationStage.SELECTING_DATE: [
             CallbackQueryHandler(date_handler, pattern=pattern_date),
