@@ -106,21 +106,6 @@ def transform_date(whenn):
     datecook = date + datetime.timedelta(days=times.index(whenn))
     return (get_weekday(datecook), datecook)
 
-
-def meal_name(update, context):
-    """Prompt user to input data for selected feature."""
-    ud = context.user_data
-    if START_OVER not in context.user_data:
-        ud[START_OVER] = True
-    text = 'Tell me what you want to cook! (just type it as an answer to this message)'
-    if ud[START_OVER]:
-        update.message.reply_text(text=text)
-    else:
-        update.callback_query.edit_message_text(text=text)
-    ud[START_OVER] = True
-    return ConversationStage.TYPING_MEAL_NAME
-
-
 def meal_name_confirm(update, context):
     ud = context.user_data
     bot = context.bot
