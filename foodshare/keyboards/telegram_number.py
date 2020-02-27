@@ -1,5 +1,11 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 import datetime
+
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
+
 
 # Hour keyboard
 def create_callback_data(char):
@@ -30,7 +36,9 @@ hour_buttons[3].append(
     InlineKeyboardButton("0️⃣", callback_data=create_callback_data(0))
 )
 hour_buttons[3].append(InlineKeyboardButton("⬅️", callback_data="⬅️"))
-hour_buttons[3].append(InlineKeyboardButton("Back to date", callback_data="➡️"))
+hour_buttons[3].append(
+    InlineKeyboardButton("Back to date", callback_data="➡️")
+)
 number_keyboard = InlineKeyboardMarkup(hour_buttons)
 pos = [0, 5, 11, 17]
 

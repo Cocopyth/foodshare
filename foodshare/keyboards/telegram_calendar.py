@@ -6,9 +6,14 @@ Base methods for calendar keyboard creation and processing.
 """
 
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
-import datetime
 import calendar
+import datetime
+
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
 
 
 def create_callback_data(action, year, month, day):
@@ -39,7 +44,8 @@ def create_calendar(year=None, month=None):
     row = []
     row.append(
         InlineKeyboardButton(
-            calendar.month_name[month] + " " + str(year), callback_data=data_ignore
+            calendar.month_name[month] + " " + str(year),
+            callback_data=data_ignore,
         )
     )
     keyboard.append(row)
@@ -54,12 +60,16 @@ def create_calendar(year=None, month=None):
         row = []
         for day in week:
             if day == 0:
-                row.append(InlineKeyboardButton(" ", callback_data=data_ignore))
+                row.append(
+                    InlineKeyboardButton(" ", callback_data=data_ignore)
+                )
             else:
                 row.append(
                     InlineKeyboardButton(
                         str(day),
-                        callback_data=create_callback_data("DAY", year, month, day),
+                        callback_data=create_callback_data(
+                            "DAY", year, month, day
+                        ),
                     )
                 )
         keyboard.append(row)
@@ -67,13 +77,15 @@ def create_calendar(year=None, month=None):
     row = []
     row.append(
         InlineKeyboardButton(
-            "<", callback_data=create_callback_data("PREV-MONTH", year, month, day)
+            "<",
+            callback_data=create_callback_data("PREV-MONTH", year, month, day),
         )
     )
     row.append(InlineKeyboardButton(" ", callback_data=data_ignore))
     row.append(
         InlineKeyboardButton(
-            ">", callback_data=create_callback_data("NEXT-MONTH", year, month, day)
+            ">",
+            callback_data=create_callback_data("NEXT-MONTH", year, month, day),
         )
     )
     keyboard.append(row)

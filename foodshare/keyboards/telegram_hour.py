@@ -1,6 +1,13 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 import datetime
 from copy import copy
+
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
+
+
 # Hour keyboard
 def create_callback_data(char):
     """ Create the callback data associated to each button"""
@@ -32,10 +39,8 @@ hour_buttons[3].append(
 )
 hour_buttons[3].append(InlineKeyboardButton("➡️", callback_data="➡️"))
 hour_keyboard = InlineKeyboardMarkup(hour_buttons)
-hour_buttons2=copy(hour_buttons)
-hour_buttons2.append(
-    [InlineKeyboardButton("Confirm", callback_data="+")]
-)
+hour_buttons2 = copy(hour_buttons)
+hour_buttons2.append([InlineKeyboardButton("Confirm", callback_data="+")])
 confirm_keyboard = InlineKeyboardMarkup(hour_buttons2)
 pos = [0, 5, 11, 17]
 
@@ -51,9 +56,9 @@ def process_time_selection(update, context):
     action = query.data
     hourmin = messages[-2].replace(":", " ").split(" ")
     if "❔" in hourmin:
-        keyboard=hour_keyboard
+        keyboard = hour_keyboard
     else:
-        keyboard=confirm_keyboard
+        keyboard = confirm_keyboard
     if "time" in ud:
         time = ud["time"]
         index = ud["index"]
@@ -101,9 +106,9 @@ def process_time_selection(update, context):
         number = int(action)
         hourmin[index] = "" + numbers[number]
         if "❔" in hourmin:
-            keyboard=hour_keyboard
+            keyboard = hour_keyboard
         else:
-            keyboard=confirm_keyboard
+            keyboard = confirm_keyboard
         messages[-2] = " ".join(hourmin[:2]) + ":" + " ".join(hourmin[2:])
         ud["time"] = messages[-2]
         index = min(3, index + 1)
@@ -111,9 +116,9 @@ def process_time_selection(update, context):
         messages[-1] = pos[index] * " " + "⬆️"
         reply = "\n".join(messages)
         bot.edit_message_text(
-                text=reply,
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                reply_markup=keyboard,
-            )
+            text=reply,
+            chat_id=query.message.chat_id,
+            message_id=query.message.message_id,
+            reply_markup=keyboard,
+        )
     return ret_data
