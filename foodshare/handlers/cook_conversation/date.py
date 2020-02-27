@@ -3,14 +3,10 @@ import datetime
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup, ParseMode
 
-from . import ConversationStage
+from . import ConversationStage, get_message, get_weekday
 
 
-def get_weekday(date):
-    return date.strftime('%A')
-
-
-def set_date_keyboard(update, _):
+def ask_for_date(update, context):
     weekday_in_two_days = get_weekday(
         datetime.date.today() + datetime.timedelta(days=2)
     )
@@ -31,9 +27,33 @@ def set_date_keyboard(update, _):
         ]
     )
 
-    text = 'When do you want to cook?'
     update.message.reply_text(
-        text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML
+        text=get_message(context, question='When do you want to cook?'),
+        reply_markup=keyboard,
     )
 
     return ConversationStage.SELECTING_DATE
+
+
+def weekday_handler(update, context):
+    query_data = update.callback_query.data
+    if query_data == 'today':
+        date = datetime.date.today()
+    elif query_data == 'tmo':
+        date = datetime.date.today() + datetime.timedelta(days=1)
+    elif query_data == 'in_2_days':
+        date = datetime.date.today() + datetime.timedelta(days=2)
+
+    context.user_data['date'] = date
+
+    return ask_for_hour(update, context)
+
+
+def ask_for_hour(update, context):
+    update.callback_query.edit_message_text(
+        text=get_message(context, question='At what time?', highlight='date'),
+        # reply_markup=hour_keyboard,
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+    return ConversationStage.SELECTING_HOUR

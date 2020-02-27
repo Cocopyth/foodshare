@@ -93,13 +93,6 @@ def construct_message(ud, highlight=None):
     return '\n'.join(message)
 
 
-def transform_date(whenn):
-    date = datetime.date.today()
-    times = [Today, Tomorrow, Dayp2]
-    datecook = date + datetime.timedelta(days=times.index(whenn))
-    return (get_weekday(datecook), datecook)
-
-
 def meal_name_confirm(update, context):
     ud = context.user_data
     bot = context.bot
@@ -128,26 +121,6 @@ def calendar_handler(update, context):
         reply_markup=telegram_calendar.create_calendar(),
     )
     return ConversationStage.SELECTING_DATE_CALENDAR
-
-
-def date_handler(update, context):
-    bot = context.bot
-    query = update.callback_query
-    whenwhen = query.data
-    weekday, date = transform_date(whenwhen)
-    ud = context.user_data
-    ud['date'] = date
-    bot.edit_message_text(
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
-        text=construct_message(ud, 'date')
-        + '\n at what time?'
-        + '\n❔ ❔:❔ ❔'
-        + '\n ⬆️',
-        reply_markup=hour_keyboard,
-        parse_mode=ParseMode.HTML,
-    )
-    return ConversationStage.SELECTING_HOUR
 
 
 def inline_calendar_handler(update, context):
