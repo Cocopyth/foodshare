@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 short, middle, long, chose, back2 = map(chr, range(5, 10))
-pattern_reminder = "^" + short + "$|^" + middle + "$|^" + long + "$"
+pattern_reminder = '^' + short + '$|^' + middle + '$|^' + long + '$'
 
 
 def reminder_keyboard_build(time_left):
@@ -11,23 +11,23 @@ def reminder_keyboard_build(time_left):
         buttons = [
             [
                 InlineKeyboardButton(
-                    text="30 minutes before", callback_data=short
+                    text='30 minutes before', callback_data=short
                 ),
                 InlineKeyboardButton(
-                    text="3 hours before ", callback_data=middle
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text="24 hours before", callback_data=long
-                ),
-                InlineKeyboardButton(
-                    text="Chose date and hour", callback_data=chose
+                    text='3 hours before ', callback_data=middle
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    text="Change cost of the meal", callback_data=back2
+                    text='24 hours before', callback_data=long
+                ),
+                InlineKeyboardButton(
+                    text='Chose date and hour', callback_data=chose
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text='Change cost of the meal', callback_data=back2
                 )
             ],
         ]
@@ -35,23 +35,23 @@ def reminder_keyboard_build(time_left):
         buttons = [
             [
                 InlineKeyboardButton(
-                    text="30 minutes before", callback_data=short
+                    text='30 minutes before', callback_data=short
                 ),
                 InlineKeyboardButton(
-                    text="3 hours before ", callback_data=middle
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text="24 hours before", callback_data=long
-                ),
-                InlineKeyboardButton(
-                    text="Chose date and hour", callback_data=chose
+                    text='3 hours before ', callback_data=middle
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    text="Change cost of the meal", callback_data=back2
+                    text='24 hours before', callback_data=long
+                ),
+                InlineKeyboardButton(
+                    text='Chose date and hour', callback_data=chose
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text='Change cost of the meal', callback_data=back2
                 )
             ],
         ]
