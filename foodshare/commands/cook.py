@@ -17,6 +17,7 @@ from telegram.ext import (
 )
 
 from foodshare.commands.gif_test import first_gif
+from foodshare.handlers.cook_conversation_handler import ConversationStage
 from foodshare.keyboards import telegram_calendar
 from foodshare.keyboards.confirmation_keyboard import (
     confirm,
@@ -57,18 +58,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-# Stages
-(
-    SELECTING_DATE,
-    TYPING,
-    SELECTING_DATE_CALENDAR,
-    NUMBER_SELECTION,
-    SELECTING_HOUR,
-    SELECTING_NUMBER,
-    SELECTING_COST,
-    SELECTING_REMINDER,
-    CONFIRMATION,
-) = map(chr, range(9))
+
 # Callback data
 Today, Tomorrow, Dayp2, Calendargo, back = map(chr, range(5))
 pattern_date = '^' + Today + '$|^' + Tomorrow + '$|^' + Dayp2 + '$'
@@ -142,7 +132,7 @@ def meal_name(update, context):
     else:
         update.callback_query.edit_message_text(text=text)
     ud[START_OVER] = True
-    return TYPING
+    return ConversationStage.TYPING
 
 
 def meal_name_confirm(update, context):
@@ -158,7 +148,7 @@ def meal_name_confirm(update, context):
         reply_markup=confirmation_keyboard,
         parse_mode=ParseMode.HTML,
     )
-    return TYPING
+    return ConversationStage.TYPING
 
 
 def save_input(update, context):
@@ -182,7 +172,7 @@ def save_input(update, context):
             reply_markup=confirmation_keyboard,
             parse_mode=ParseMode.HTML,
         )
-        return CONFIRMATION
+        return ConversationStage.CONFIRMATION
     else:
         try:
             url = first_gif(ud['name'])
@@ -225,7 +215,7 @@ def date_choosing(update, context):
             text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML
         )
     context.user_data[START_OVER] = False
-    return SELECTING_DATE
+    return ConversationStage.SELECTING_DATE
 
 
 # def number(update,context):
@@ -246,7 +236,7 @@ def calendar_handler(update, context):
         text=text + '\n Please select a date:',
         reply_markup=telegram_calendar.create_calendar(),
     )
-    return SELECTING_DATE_CALENDAR
+    return ConversationStage.SELECTING_DATE_CALENDAR
 
 
 def date_handler(update, context):
@@ -266,7 +256,7 @@ def date_handler(update, context):
         reply_markup=hour_keyboard,
         parse_mode=ParseMode.HTML,
     )
-    return SELECTING_HOUR
+    return ConversationStage.SELECTING_HOUR
 
 
 def inline_calendar_handler(update, context):
@@ -293,7 +283,7 @@ def inline_calendar_handler(update, context):
                 reply_markup=hour_keyboard,
                 parse_mode=ParseMode.HTML,
             )
-            return SELECTING_HOUR
+            return ConversationStage.SELECTING_HOUR
         else:
             text = '\n'.join(query.message.text.split('\n')[:1])
             if date < datetime.datetime.now():
@@ -305,7 +295,7 @@ def inline_calendar_handler(update, context):
                     reply_markup=telegram_calendar.create_calendar(),
                     parse_mode=ParseMode.HTML,
                 )
-                return SELECTING_DATE_CALENDAR
+                return ConversationStage.SELECTING_DATE_CALENDAR
             else:
                 ud = context.user_data
                 ud['date'] = date
@@ -317,8 +307,8 @@ def inline_calendar_handler(update, context):
                     reply_markup=hour_keyboard,
                     parse_mode=ParseMode.HTML,
                 )
-                return SELECTING_HOUR
-    return SELECTING_DATE_CALENDAR
+                return ConversationStage.SELECTING_HOUR
+    return ConversationStage.SELECTING_DATE_CALENDAR
 
 
 def inline_time_handler(update, context):
@@ -347,7 +337,7 @@ def inline_time_handler(update, context):
                 reply_markup=hour_keyboard,
                 parse_mode=ParseMode.HTML,
             )
-            return CONFIRMATION
+            return ConversationStage.CONFIRMATION
         else:
             date = ud['date']
             if datetime.datetime.combine(date, time) < datetime.datetime.now():
@@ -386,7 +376,7 @@ def inline_time_handler(update, context):
                     reply_markup=keyboard,
                     parse_mode=ParseMode.HTML,
                 )
-                return SELECTING_DATE
+                return ConversationStage.SELECTING_DATE
             else:
                 ud = context.user_data
                 ud['date'] = datetime.datetime.combine(date, time)
@@ -401,8 +391,8 @@ def inline_time_handler(update, context):
                     reply_markup=number_keyboard,
                     parse_mode=ParseMode.HTML,
                 )
-                return SELECTING_NUMBER
-    return SELECTING_HOUR
+                return ConversationStage.SELECTING_NUMBER
+    return ConversationStage.SELECTING_HOUR
 
 
 def hours_until_meal(date):
@@ -433,8 +423,8 @@ def inline_number_handler(update, context):
                 + '\n How much is it going to cost in total?',
                 reply_markup=cost_keyboard,
             )
-            return SELECTING_COST
-    return SELECTING_NUMBER
+            return ConversationStage.SELECTING_COST
+    return ConversationStage.SELECTING_NUMBER
 
 
 def inline_cost_handler(update, context):
@@ -469,7 +459,7 @@ def inline_cost_handler(update, context):
                 reply_markup=number_keyboard,
                 parse_mode=ParseMode.HTML,
             )
-            return SELECTING_NUMBER
+            return ConversationStage.SELECTING_NUMBER
         else:
             ud['cost_selected'] = True
             ud['cost'] = number
@@ -488,8 +478,8 @@ def inline_cost_handler(update, context):
                 reply_markup=keyboard,
                 parse_mode=ParseMode.HTML,
             )
-            return SELECTING_REMINDER
-    return SELECTING_COST
+            return ConversationStage.SELECTING_REMINDER
+    return ConversationStage.SELECTING_COST
 
 
 def reminder_choosing(update, context):
@@ -518,7 +508,7 @@ def reminder_choosing(update, context):
         reply_markup=confirmation_keyboard,
         parse_mode=ParseMode.HTML,
     )
-    return CONFIRMATION
+    return ConversationStage.CONFIRMATION
 
 
 def save_input2(update, context):
@@ -549,7 +539,7 @@ def save_input2(update, context):
         reply_markup=confirmation_keyboard,
         parse_mode=ParseMode.HTML,
     )
-    return CONFIRMATION
+    return ConversationStage.CONFIRMATION
 
 
 def end(update, context):
@@ -570,28 +560,34 @@ def end(update, context):
 conv_handler_cook = ConversationHandler(
     entry_points=[CommandHandler('cook', meal_name)],
     states={
-        TYPING: [MessageHandler(Filters.text, save_input)],
-        SELECTING_DATE: [
+        ConversationStage.TYPING: [MessageHandler(Filters.text, save_input)],
+        ConversationStage.SELECTING_DATE: [
             CallbackQueryHandler(date_handler, pattern=pattern_date),
             CallbackQueryHandler(
                 calendar_handler, pattern='^' + Calendargo + '$'
             ),
             CallbackQueryHandler(meal_name, pattern='^' + back + '$'),
         ],
-        SELECTING_DATE_CALENDAR: [
+        ConversationStage.SELECTING_DATE_CALENDAR: [
             CallbackQueryHandler(inline_calendar_handler)
         ],
-        SELECTING_HOUR: [CallbackQueryHandler(inline_time_handler)],
-        SELECTING_NUMBER: [CallbackQueryHandler(inline_number_handler)],
-        SELECTING_COST: [CallbackQueryHandler(inline_cost_handler)],
-        SELECTING_REMINDER: [
+        ConversationStage.SELECTING_HOUR: [
+            CallbackQueryHandler(inline_time_handler)
+        ],
+        ConversationStage.SELECTING_NUMBER: [
+            CallbackQueryHandler(inline_number_handler)
+        ],
+        ConversationStage.SELECTING_COST: [
+            CallbackQueryHandler(inline_cost_handler)
+        ],
+        ConversationStage.SELECTING_REMINDER: [
             CallbackQueryHandler(reminder_choosing, pattern=pattern_reminder),
             CallbackQueryHandler(calendar_handler, pattern='^' + chose + '$'),
             CallbackQueryHandler(
                 inline_cost_handler, pattern='^' + back2 + '$'
             ),
         ],
-        CONFIRMATION: [
+        ConversationStage.CONFIRMATION: [
             MessageHandler(Filters.text, save_input2),
             CallbackQueryHandler(end, pattern=confirm),
             CallbackQueryHandler(meal_name_confirm, pattern=what),
