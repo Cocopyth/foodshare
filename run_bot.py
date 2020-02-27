@@ -1,4 +1,5 @@
 import logging
+import os
 
 from telegram.ext import Updater
 
@@ -12,11 +13,20 @@ logging.basicConfig(
 )
 
 
+class BotTokenUndefined(Exception):
+    pass
+
+
 def main():
+    # get the bot token from the `TELEGRAM_BOT_TOKEN` environment variable
+    bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+    if bot_token is None:
+        raise BotTokenUndefined(
+            'Please set the TELEGRAM_BOT_TOKEN environment variable'
+        )
+
     # create the updater
-    updater = Updater(
-        '921706886:AAE8KrSbCPMr1lB1VFZINP_M1s8wibaMkTE', use_context=True
-    )
+    updater = Updater(bot_token, use_context=True)
 
     # get the dispatcher
     dispatcher = updater.dispatcher
