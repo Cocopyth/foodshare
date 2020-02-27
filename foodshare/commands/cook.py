@@ -10,7 +10,6 @@ from telegram import (
 )
 from telegram.ext import ConversationHandler
 
-from foodshare.commands.gif_test import first_gif
 from foodshare.handlers.cook_conversation import ConversationStage
 from foodshare.keyboards import telegram_calendar
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
