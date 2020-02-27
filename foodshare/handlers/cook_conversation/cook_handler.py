@@ -35,7 +35,9 @@ from . import ConversationStage
 cook_handler = ConversationHandler(
     entry_points=[CommandHandler('cook', meal_name)],
     states={
-        ConversationStage.TYPING: [MessageHandler(Filters.text, save_input)],
+        ConversationStage.TYPING_MEAL_NAME: [
+            MessageHandler(Filters.text, save_input)
+        ],
         ConversationStage.SELECTING_DATE: [
             CallbackQueryHandler(date_handler, pattern=pattern_date),
             CallbackQueryHandler(calendar_handler, pattern=f'^{Calendargo}$'),

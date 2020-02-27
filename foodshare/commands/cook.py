@@ -119,7 +119,7 @@ def meal_name(update, context):
     else:
         update.callback_query.edit_message_text(text=text)
     ud[START_OVER] = True
-    return ConversationStage.TYPING
+    return ConversationStage.TYPING_MEAL_NAME
 
 
 def meal_name_confirm(update, context):
@@ -135,7 +135,7 @@ def meal_name_confirm(update, context):
         reply_markup=confirmation_keyboard,
         parse_mode=ParseMode.HTML,
     )
-    return ConversationStage.TYPING
+    return ConversationStage.TYPING_MEAL_NAME
 
 
 def save_input(update, context):
