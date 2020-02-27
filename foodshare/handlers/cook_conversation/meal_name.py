@@ -1,9 +1,9 @@
 from telegram import ChatAction
-from telegram.ext import ConversationHandler
 
 from foodshare.commands.gif_test import get_gif_url
 
 from . import ConversationStage
+from .date import set_date_keyboard
 
 
 def ask_for_meal_name(update, _):
@@ -31,4 +31,4 @@ def save_meal_name(update, context):
     else:
         update.message.reply_text(f'No gif found for {ud["meal_name"]}')
 
-    return ConversationHandler.END
+    return set_date_keyboard(update, context)

@@ -1,13 +1,7 @@
-import calendar
 import datetime
 import logging
 
-from telegram import (
-    ChatAction,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ParseMode,
-)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 from foodshare.handlers.cook_conversation import ConversationStage
@@ -32,9 +26,8 @@ from foodshare.keyboards.telegram_number import (
 )
 
 
-def get_weekday(date_datetime):
-    weekday = date_datetime.weekday()
-    return calendar.day_name[weekday]
+def get_weekday(date):
+    return date.strftime('%A')
 
 
 # Enable logging
@@ -106,6 +99,7 @@ def transform_date(whenn):
     datecook = date + datetime.timedelta(days=times.index(whenn))
     return (get_weekday(datecook), datecook)
 
+
 def meal_name_confirm(update, context):
     ud = context.user_data
     bot = context.bot
@@ -120,48 +114,6 @@ def meal_name_confirm(update, context):
         parse_mode=ParseMode.HTML,
     )
     return ConversationStage.TYPING_MEAL_NAME
-
-
-def date_choosing(update, context):
-    date = datetime.date.today()
-    weekdayp2 = get_weekday(date + datetime.timedelta(days=2))
-    ud = context.user_data
-    buttons = [
-        [
-            InlineKeyboardButton(text='Today', callback_data=Today),
-            InlineKeyboardButton(text='Tomorrow', callback_data=Tomorrow),
-        ],
-        [
-            InlineKeyboardButton(text='On ' + weekdayp2, callback_data=Dayp2),
-            InlineKeyboardButton(
-                text='Show calendar', callback_data=Calendargo
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text='Change name of the meal', callback_data=back
-            )
-        ],
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
-    text = construct_message(ud, 'date') + '\n When do you want to cook? '
-    if not context.user_data.get(START_OVER):
-        update.callback_query.edit_message_text(
-            text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML
-        )
-    else:
-        update.message.reply_text(
-            text=text, reply_markup=keyboard, parse_mode=ParseMode.HTML
-        )
-    context.user_data[START_OVER] = False
-    return ConversationStage.SELECTING_DATE
-
-
-# def number(update,context):
-#
-# def cost(update,context):
-#
-# def advance(update):
 
 
 def calendar_handler(update, context):
