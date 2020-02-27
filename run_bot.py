@@ -2,7 +2,7 @@ import logging
 
 from telegram.ext import Updater
 
-from foodshare.handlers.cook_conversation import cook_handler
+from foodshare.handlers.cook_conversation.cook_handler import cook_handler
 from foodshare.handlers.error_handler import error_handler
 
 # activate logging
