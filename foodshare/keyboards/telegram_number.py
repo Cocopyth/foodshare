@@ -1,10 +1,4 @@
-import datetime
-
-from telegram import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ReplyKeyboardRemove,
-)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 # Hour keyboard

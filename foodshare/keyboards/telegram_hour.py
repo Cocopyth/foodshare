@@ -1,11 +1,7 @@
 import datetime
 from copy import copy
 
-from telegram import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ReplyKeyboardRemove,
-)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 # Hour keyboard

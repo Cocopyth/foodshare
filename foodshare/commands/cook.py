@@ -21,11 +21,7 @@ from foodshare.keyboards import telegram_calendar
 from foodshare.keyboards.confirmation_keyboard import (
     confirm,
     confirmation_keyboard,
-    howmany,
-    howmuch,
-    reminder,
     what,
-    when,
 )
 from foodshare.keyboards.reminder_keyboard import (
     back2,

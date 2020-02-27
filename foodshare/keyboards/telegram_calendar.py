@@ -9,11 +9,7 @@ Base methods for calendar keyboard creation and processing.
 import calendar
 import datetime
 
-from telegram import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ReplyKeyboardRemove,
-)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def create_callback_data(action, year, month, day):

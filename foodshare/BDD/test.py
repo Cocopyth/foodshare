@@ -1,10 +1,6 @@
 import sqlite3
 
-from helping_functions import (
-    create_meal,
-    create_user,
-    select_users_by_mealpoints,
-)
+from helping_functions import create_user, select_users_by_mealpoints
 
 conn = sqlite3.connect('database.db')
 c = conn.cursor()
