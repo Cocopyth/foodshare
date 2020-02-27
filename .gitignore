@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 
+# Python Eggs
+*.egg-info/
+
 # PyCharm settings folder
 .idea/
 
