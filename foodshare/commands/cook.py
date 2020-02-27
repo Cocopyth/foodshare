@@ -122,38 +122,6 @@ def meal_name_confirm(update, context):
     return ConversationStage.TYPING_MEAL_NAME
 
 
-def save_input(update, context):
-    ud = context.user_data
-    ud['name'] = update.message.text
-    bot = context.bot
-    context.bot.send_chat_action(
-        chat_id=update.effective_message.chat_id, action=ChatAction.TYPING
-    )
-    bot.deleteMessage(update.message.chat_id, update.message.message_id)
-    if 'confirmation_phase' in ud and ud['confirmation_phase']:
-        query = ud['last_query']
-        text = construct_message(ud, 'name')
-        bot.edit_message_text(
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            text=text
-            + '\n Now I will send a message to people if you want'
-            + ' to add a text message just send it to me. '
-            + 'Press confirm when you\'re ready!',
-            reply_markup=confirmation_keyboard,
-            parse_mode=ParseMode.HTML,
-        )
-        return ConversationStage.CONFIRMATION
-    else:
-        try:
-            url = first_gif(ud['name'])
-        except:
-            print('Problem with gif')
-        if url != None:
-            bot.send_document(chat_id=update.message.chat_id, document=url)
-    return date_choosing(update, context)
-
-
 def date_choosing(update, context):
     date = datetime.date.today()
     weekdayp2 = get_weekday(date + datetime.timedelta(days=2))
