@@ -16,7 +16,6 @@ from foodshare.commands.cook import (
     inline_cost_handler,
     inline_number_handler,
     inline_time_handler,
-    meal_name,
     meal_name_confirm,
     pattern_date,
     reminder_choosing,
@@ -31,9 +30,11 @@ from foodshare.keyboards.reminder_keyboard import (
 )
 
 from . import ConversationStage
+from .meal_name import ask_for_meal_name
+
 
 cook_handler = ConversationHandler(
-    entry_points=[CommandHandler('cook', meal_name)],
+    entry_points=[CommandHandler('cook', ask_for_meal_name)],
     states={
         ConversationStage.TYPING_MEAL_NAME: [
             MessageHandler(Filters.text, save_input)
@@ -41,7 +42,7 @@ cook_handler = ConversationHandler(
         ConversationStage.SELECTING_DATE: [
             CallbackQueryHandler(date_handler, pattern=pattern_date),
             CallbackQueryHandler(calendar_handler, pattern=f'^{Calendargo}$'),
-            CallbackQueryHandler(meal_name, pattern=f'^{back}$'),
+            CallbackQueryHandler(ask_for_meal_name, pattern=f'^{back}$'),
         ],
         ConversationStage.SELECTING_DATE_CALENDAR: [
             CallbackQueryHandler(inline_calendar_handler)
@@ -66,5 +67,5 @@ cook_handler = ConversationHandler(
             CallbackQueryHandler(meal_name_confirm, pattern=what),
         ],
     },
-    fallbacks=[CommandHandler('start', meal_name)],
+    fallbacks=[CommandHandler('start', ask_for_meal_name)],
 )
