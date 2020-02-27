@@ -2,7 +2,9 @@ import logging
 
 from telegram.ext import Updater
 
-from foodshare.commands.cook import conv_handler_cook, error
+from foodshare.commands.cook import conv_handler_cook
+from foodshare.handlers.error_handler import error_handler
+
 
 # activate logging
 logging.basicConfig(
@@ -25,7 +27,7 @@ def main():
     dispatcher.add_handler(conv_handler_cook)
 
     # log all errors
-    dispatcher.add_error_handler(error)
+    dispatcher.add_error_handler(error_handler)
 
     # start the bot
     updater.start_polling()

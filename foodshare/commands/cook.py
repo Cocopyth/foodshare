@@ -567,11 +567,6 @@ def end(update, context):
     return ConversationHandler.END
 
 
-def error(update, context):
-    """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-
-
 conv_handler_cook = ConversationHandler(
     entry_points=[CommandHandler('cook', meal_name)],
     states={
