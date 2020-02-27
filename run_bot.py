@@ -21,8 +21,7 @@ def main():
     # get the dispatcher
     dispatcher = updater.dispatcher
 
-    # add the `ConversationHandler` handler to the dispatcher, it will be
-    # used to handle the updates
+    # add a handler to the dispatcher, it will be used to handle the updates
     dispatcher.add_handler(cook_handler)
 
     # log all errors
@@ -31,8 +30,7 @@ def main():
     # start the bot
     updater.start_polling()
 
-    # run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT
+    # run the bot until it is stopped (by hitting Ctrl-C for example)
     updater.idle()
 
 
