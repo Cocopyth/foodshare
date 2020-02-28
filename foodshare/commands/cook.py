@@ -109,20 +109,6 @@ def meal_name_confirm(update, context):
     return ConversationStage.TYPING_MEAL_NAME
 
 
-def calendar_handler(update, context):
-    bot = context.bot
-    query = update.callback_query
-    ud = context.user_data
-    text = construct_message(ud, 'date')
-    bot.edit_message_text(
-        chat_id=query.message.chat_id,
-        message_id=query.message.message_id,
-        text=text + '\n Please select a date:',
-        reply_markup=telegram_calendar.create_calendar(),
-    )
-    return ConversationStage.SELECTING_DATE_CALENDAR
-
-
 def inline_calendar_handler(update, context):
     bot = context.bot
     query = update.callback_query

@@ -3,6 +3,8 @@ import datetime
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup, ParseMode
 
+from foodshare.keyboards import telegram_calendar
+
 from . import ConversationStage, get_message, get_weekday
 
 
@@ -47,6 +49,15 @@ def weekday_handler(update, context):
     context.user_data['date'] = date
 
     return ask_for_hour(update, context)
+
+
+def calendar_handler(update, context):
+    update.callback_query.edit_message_text(
+        text=get_message(context, epilog='Please select a date:'),
+        reply_markup=telegram_calendar.create_calendar(),
+    )
+
+    return ConversationStage.SELECTING_DATE_CALENDAR
 
 
 def ask_for_hour(update, context):
