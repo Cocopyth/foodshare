@@ -28,7 +28,7 @@ def ask_for_date(update, context):
     )
 
     update.message.reply_text(
-        text=get_message(context, question='When do you want to cook?'),
+        text=get_message(context, epilog='When do you want to cook?'),
         reply_markup=keyboard,
     )
 

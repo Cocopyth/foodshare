@@ -17,7 +17,7 @@ class ConversationStage(Enum):
     CONFIRMATION = auto()
 
 
-def get_message(context, question='', highlight=None):
+def get_message(context, epilog='', highlight=None):
     ud = context.user_data
     message = OrderedDict()
 
@@ -35,4 +35,4 @@ def get_message(context, question='', highlight=None):
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'
 
-    return '\n'.join(message.values()) + f'\n\n{question}'
+    return '\n'.join(message.values()) + f'\n\n{epilog}'
