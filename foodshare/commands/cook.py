@@ -226,7 +226,7 @@ def inline_time_handler(update, context):
                     reply_markup=keyboard,
                     parse_mode=ParseMode.HTML,
                 )
-                return ConversationStage.SELECTING_DATE
+                return ConversationStage.SELECTING_WEEKDAY_OR_SHOW_CALENDAR
             else:
                 ud = context.user_data
                 ud['date'] = datetime.datetime.combine(date, time)

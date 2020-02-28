@@ -34,7 +34,7 @@ def ask_for_date(update, context):
         reply_markup=keyboard,
     )
 
-    return ConversationStage.SELECTING_DATE
+    return ConversationStage.SELECTING_WEEKDAY_OR_SHOW_CALENDAR
 
 
 def weekday_handler(update, context):

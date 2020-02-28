@@ -8,7 +8,7 @@ def get_weekday(date):
 
 class ConversationStage(Enum):
     TYPING_MEAL_NAME = auto()
-    SELECTING_DATE = auto()
+    SELECTING_WEEKDAY_OR_SHOW_CALENDAR = auto()
     SELECTING_DATE_CALENDAR = auto()
     SELECTING_HOUR = auto()
     SELECTING_NUMBER = auto()

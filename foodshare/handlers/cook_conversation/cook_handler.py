@@ -31,7 +31,7 @@ cook_handler = ConversationHandler(
     entry_points=[CommandHandler('cook', ask_for_meal_name)],
     states={
         CS.TYPING_MEAL_NAME: [MessageHandler(Filters.text, save_meal_name)],
-        CS.SELECTING_DATE: [
+        CS.SELECTING_WEEKDAY_OR_SHOW_CALENDAR: [
             CQH(weekday_handler, pattern='today|tmo|in_2_days'),
             CQH(calendar_handler, pattern='show_calendar'),
             # CQH(ask_for_meal_name, pattern='back'),
