@@ -1,0 +1,3 @@
+[submodule "foodshare/keyboards/calendar-telegram"]
+	path = foodshare/keyboards/calendar-telegram
+	url = https://github.com/unmonoqueteclea/calendar-telegram

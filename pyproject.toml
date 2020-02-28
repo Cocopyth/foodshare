@@ -24,7 +24,9 @@ colorama = "^0.4.3"
 line-length = 79
 skip-string-normalization = true
 target-version = ['py37']
+exclude = 'calendar-telegram'
 
 [tool.isort]
 multi_line_output = 3  # to be consistent with black formatting
 include_trailing_comma = true  # to be consistent with black formatting
+skip = 'calendar-telegram'
