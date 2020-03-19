@@ -1,32 +1,14 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.keyboards.telegram_number import emojify
+from copy import copy
 
+from .digit_list import digit_buttons, create_callback_data
 
 # Hour keyboard
-def create_callback_data(char):
-    """ Create the callback data associated to each button"""
-    return str(char)
 
 
-def separate_callback_data(data):
-    """ Separate the callback data"""
-    return data.split(";")
-
-
-row1 = []
-row2 = []
-row3 = []
-row1.append(InlineKeyboardButton('7️⃣', callback_data=create_callback_data(7)))
-row1.append(InlineKeyboardButton('8️⃣', callback_data=create_callback_data(8)))
-row1.append(InlineKeyboardButton('9️⃣', callback_data=create_callback_data(9)))
-row2.append(InlineKeyboardButton('4️⃣', callback_data=create_callback_data(4)))
-row2.append(InlineKeyboardButton('5️⃣', callback_data=create_callback_data(5)))
-row2.append(InlineKeyboardButton('6️⃣', callback_data=create_callback_data(6)))
-row3.append(InlineKeyboardButton('1️⃣', callback_data=create_callback_data(1)))
-row3.append(InlineKeyboardButton('2️⃣', callback_data=create_callback_data(2)))
-row3.append(InlineKeyboardButton('3️⃣', callback_data=create_callback_data(3)))
-hour_buttons = [row1, row2, row3]
+hour_buttons = copy(digit_buttons)
 hour_buttons.append([])
 hour_buttons[3].append(
     InlineKeyboardButton('0️⃣', callback_data=create_callback_data(0))

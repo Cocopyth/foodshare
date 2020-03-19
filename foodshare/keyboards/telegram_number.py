@@ -1,50 +1,30 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
+from copy import copy
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from .digit_list import digit_buttons, create_callback_data
+
 # Hour keyboard
-def create_callback_data(char):
-    """ Create the callback data associated to each button"""
-    return str(char)
 
 
-def separate_callback_data(data):
-    """ Separate the callback data"""
-    return data.split(";")
-
-
-row1 = []
-row2 = []
-row3 = []
-row1.append(InlineKeyboardButton('7️⃣', callback_data=create_callback_data(7)))
-row1.append(InlineKeyboardButton('8️⃣', callback_data=create_callback_data(8)))
-row1.append(InlineKeyboardButton('9️⃣', callback_data=create_callback_data(9)))
-row2.append(InlineKeyboardButton('4️⃣', callback_data=create_callback_data(4)))
-row2.append(InlineKeyboardButton('5️⃣', callback_data=create_callback_data(5)))
-row2.append(InlineKeyboardButton('6️⃣', callback_data=create_callback_data(6)))
-row3.append(InlineKeyboardButton('1️⃣', callback_data=create_callback_data(1)))
-row3.append(InlineKeyboardButton('2️⃣', callback_data=create_callback_data(2)))
-row3.append(InlineKeyboardButton('3️⃣', callback_data=create_callback_data(3)))
-hour_buttons = [row1, row2, row3]
-hour_buttons.append([])
-hour_buttons[3].append(
+number_buttons = copy(digit_buttons)
+number_buttons.append([])
+number_buttons[3].append(
     InlineKeyboardButton('0️⃣', callback_data=create_callback_data(0))
 )
-hour_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
-hour_buttons[3].append(
+number_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
+number_buttons[3].append(
     InlineKeyboardButton('Back to date', callback_data='➡️')
 )
-number_keyboard = InlineKeyboardMarkup(hour_buttons)
+number_keyboard = InlineKeyboardMarkup(number_buttons)
 pos = [0, 5, 11, 17]
 
-numbers = ['0️⃣', '1⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
 
 
-def emojify(number):
-    num = str(number)
-    emojified = ''
-    for digit in num:
-        emojified += numbers[int(digit)]
-    return emojified
+
+
 
 
 def process_number_selection(update, context):
@@ -98,11 +78,11 @@ def process_number_selection(update, context):
             messages[-1] = str(number)
         reply = '\n'.join(messages)
         if number != 0:
-            if len(hour_buttons) <= 4:
-                hour_buttons.append(
+            if len(number_buttons) <= 4:
+                number_buttons.append(
                     [InlineKeyboardButton('Confirm', callback_data='+')]
                 )
-            new_keyboard = InlineKeyboardMarkup(hour_buttons)
+            new_keyboard = InlineKeyboardMarkup(number_buttons)
             bot.edit_message_text(
                 text=reply,
                 chat_id=query.message.chat_id,

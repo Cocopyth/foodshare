@@ -1,5 +1,5 @@
-from importlib import import_module
 import sys
+from importlib import import_module
 from pathlib import Path
 
 # let's add the git submodule to our Python path
