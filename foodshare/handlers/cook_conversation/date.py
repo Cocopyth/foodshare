@@ -52,13 +52,41 @@ def weekday_handler(update, context):
     return ask_for_hour(update, context)
 
 
-def calendar_handler(update, context):
+def calendar_handler(update, context, selected_date_in_the_past=False):
+    if selected_date_in_the_past:
+        epilog = (
+            'The chosen date was in the past, please select a date in the '
+            'future:'
+        )
+    else:
+        epilog = 'Please select a date:'
+
     update.callback_query.edit_message_text(
-        text=get_message(context, epilog='Please select a date:'),
+        text=get_message(context, epilog=epilog),
         reply_markup=telegram_calendar.create_calendar(),
     )
 
     return ConversationStage.SELECTING_DATE_CALENDAR
+
+
+def calendar_selection_handler(update, context):
+    date_is_selected, date = telegram_calendar.process_calendar_selection(
+        context.bot, update
+    )
+
+    # if no date was selected
+    if not date_is_selected:
+        return ConversationStage.SELECTING_DATE_CALENDAR
+
+    # if the selected date is in the past
+    if date.date() < datetime.date.today():
+        return calendar_handler(
+            update, context, selected_date_in_the_past=True
+        )
+
+    context.user_data['date'] = date
+
+    return ask_for_hour(update, context)
 
 
 def ask_for_hour(update, context):

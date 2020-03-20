@@ -8,7 +8,6 @@ from telegram.ext import (
 
 from foodshare.commands.cook import (
     end,
-    inline_calendar_handler,
     inline_cost_handler,
     inline_number_handler,
     inline_time_handler,
@@ -24,7 +23,7 @@ from foodshare.keyboards.reminder_keyboard import (
 )
 
 from . import ConversationStage as CS
-from .date import calendar_handler, weekday_handler
+from .date import calendar_handler, calendar_selection_handler, weekday_handler
 from .meal_name import ask_for_meal_name, save_meal_name
 
 cook_handler = ConversationHandler(
@@ -36,7 +35,7 @@ cook_handler = ConversationHandler(
             CQH(calendar_handler, pattern='show_calendar'),
             # CQH(ask_for_meal_name, pattern='back'),
         ],
-        CS.SELECTING_DATE_CALENDAR: [CQH(inline_calendar_handler)],
+        CS.SELECTING_DATE_CALENDAR: [CQH(calendar_selection_handler)],
         CS.SELECTING_HOUR: [CQH(inline_time_handler)],
         CS.SELECTING_NUMBER: [CQH(inline_number_handler)],
         CS.SELECTING_COST: [CQH(inline_cost_handler)],

@@ -5,7 +5,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 from foodshare.handlers.cook_conversation import ConversationStage
-from foodshare.keyboards import telegram_calendar
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 from foodshare.keyboards.digit_list import emojify_numbers
 from foodshare.keyboards.reminder_keyboard import (
@@ -107,58 +106,6 @@ def meal_name_confirm(update, context):
         parse_mode=ParseMode.HTML,
     )
     return ConversationStage.TYPING_MEAL_NAME
-
-
-def inline_calendar_handler(update, context):
-    bot = context.bot
-    query = update.callback_query
-    selected, date = telegram_calendar.process_calendar_selection(bot, update)
-    if selected:
-        ud = context.user_data
-        if 'cost_selected' in ud and ud['cost_selected']:
-            ud['date_limit'] = date
-            text = '\n'.join(query.message.text.split('\n')[:4])
-            bot.edit_message_text(
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                text=text
-                + '⏰ You will have an answer and know how many people are coming'
-                + '\n on '
-                + get_weekday(date)
-                + ' '
-                + ud['date_limit'].strftime('%d/%m/%Y')
-                + '\n at what time?'
-                + '\n❔ ❔:❔ ❔'
-                + '\n ⬆️',
-                reply_markup=hour_keyboard,
-                parse_mode=ParseMode.HTML,
-            )
-            return ConversationStage.SELECTING_HOUR
-        else:
-            text = '\n'.join(query.message.text.split('\n')[:1])
-            if date < datetime.datetime.now():
-                bot.edit_message_text(
-                    chat_id=query.message.chat_id,
-                    message_id=query.message.message_id,
-                    text=text
-                    + '\n The date chosen was in the past, please select a date in the future :',
-                    reply_markup=telegram_calendar.create_calendar(),
-                    parse_mode=ParseMode.HTML,
-                )
-                return ConversationStage.SELECTING_DATE_CALENDAR
-            else:
-                ud = context.user_data
-                ud['date'] = date
-                text = construct_message(ud, 'date')
-                bot.edit_message_text(
-                    chat_id=query.message.chat_id,
-                    message_id=query.message.message_id,
-                    text=text + '\n at what time?' + '\n❔ ❔:❔ ❔' + '\n ⬆️',
-                    reply_markup=hour_keyboard,
-                    parse_mode=ParseMode.HTML,
-                )
-                return ConversationStage.SELECTING_HOUR
-    return ConversationStage.SELECTING_DATE_CALENDAR
 
 
 def inline_time_handler(update, context):
