@@ -1,30 +1,19 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-
-from copy import copy
-
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from .digit_list import digit_buttons, create_callback_data
+from .digit_list import digit_buttons
 
 # Hour keyboard
 
 
-number_buttons = copy(digit_buttons)
+number_buttons = digit_buttons.copy()
 number_buttons.append([])
-number_buttons[3].append(
-    InlineKeyboardButton('0️⃣', callback_data=create_callback_data(0))
-)
+number_buttons[3].append(InlineKeyboardButton('0️⃣', callback_data=str(0)))
 number_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
 number_buttons[3].append(
     InlineKeyboardButton('Back to date', callback_data='➡️')
 )
 number_keyboard = InlineKeyboardMarkup(number_buttons)
 pos = [0, 5, 11, 17]
-
-
-
-
-
 
 
 def process_number_selection(update, context):

@@ -1,26 +1,23 @@
 import datetime
-from copy import copy
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from .digit_list import digit_buttons, create_callback_data
+
+from .digit_list import digit_buttons, numbers_emoji
 
 # Hour keyboard
 
 
-hour_buttons = copy(digit_buttons)
+hour_buttons = digit_buttons.copy()
 hour_buttons.append([])
 
 hour_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
-hour_buttons[3].append(
-    InlineKeyboardButton('0️⃣', callback_data=create_callback_data(0))
-)
+hour_buttons[3].append(InlineKeyboardButton('0️⃣', callback_data=str(0)))
 hour_buttons[3].append(InlineKeyboardButton('➡️', callback_data='➡️'))
 hour_keyboard = InlineKeyboardMarkup(hour_buttons)
-hour_buttons2 = copy(hour_buttons)
+hour_buttons2 = hour_buttons.copy()
 hour_buttons2.append([InlineKeyboardButton('Confirm', callback_data='+')])
 confirm_keyboard = InlineKeyboardMarkup(hour_buttons2)
 pos = [0, 5, 11, 17]
-
 
 
 def process_time_selection(update, context):
@@ -68,8 +65,12 @@ def process_time_selection(update, context):
         )
     elif '+' in action:
         hourmin = messages[-2].replace(':', ' ').split(' ')
-        hour = 10 * numbers.index(hourmin[0]) + numbers.index(hourmin[1])
-        minute = 10 * numbers.index(hourmin[2]) + numbers.index(hourmin[3])
+        hour = 10 * numbers_emoji.index(hourmin[0]) + numbers_emoji.index(
+            hourmin[1]
+        )
+        minute = 10 * numbers_emoji.index(hourmin[2]) + numbers_emoji.index(
+            hourmin[3]
+        )
         timeday = datetime.time(hour=hour, minute=minute)
         time = '❔ ❔:❔ ❔'
         ud['time'] = time
@@ -80,7 +81,7 @@ def process_time_selection(update, context):
     else:
         hourmin = messages[-2].replace(':', ' ').split(' ')
         number = int(action)
-        hourmin[index] = ' ' + numbers[number]
+        hourmin[index] = ' ' + numbers_emoji[number]
         if '❔' in hourmin:
             keyboard = hour_keyboard
         else:

@@ -1,27 +1,20 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from foodshare.keyboards.telegram_number import emojify
-from copy import copy
-
-from .digit_list import digit_buttons, create_callback_data
+from .digit_list import digit_buttons, emojify_numbers
 
 # Hour keyboard
 
 
-hour_buttons = copy(digit_buttons)
+hour_buttons = digit_buttons.copy()
 hour_buttons.append([])
-hour_buttons[3].append(
-    InlineKeyboardButton('0️⃣', callback_data=create_callback_data(0))
-)
+hour_buttons[3].append(InlineKeyboardButton('0️⃣', callback_data=str(0)))
 hour_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
 hour_buttons[3].append(InlineKeyboardButton('Back', callback_data='➡️'))
 cost_keyboard = InlineKeyboardMarkup(hour_buttons)
 pos = [0, 5, 11, 17]
 
 numbers = ['0️⃣', '1⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
-possibilities = [create_callback_data(i) for i in range(10)] + [
-    '⬅️' + '➡️' + '+'
-]
+possibilities = [str(i) for i in range(10)] + ['⬅️' + '➡️' + '+']
 
 
 def process_cost_selection(update, context):
@@ -55,7 +48,7 @@ def process_cost_selection(update, context):
         if cost == 0:
             messages[-1] = '€'
         else:
-            messages[-1] = emojify(cost) + '€'
+            messages[-1] = emojify_numbers(cost) + '€'
         reply = '\n'.join(messages)
         bot.edit_message_text(
             text=reply,
@@ -77,7 +70,7 @@ def process_cost_selection(update, context):
         ud['indexn'] = indexn
         cost = 10 * cost + costkey
         ud['cost'] = cost
-        messages[-1] = emojify(cost) + '€'
+        messages[-1] = emojify_numbers(cost) + '€'
         reply = '\n'.join(messages)
         if cost != 0:
             if len(hour_buttons) <= 4:

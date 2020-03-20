@@ -7,6 +7,7 @@ from telegram.ext import ConversationHandler
 from foodshare.handlers.cook_conversation import ConversationStage
 from foodshare.keyboards import telegram_calendar
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
+from foodshare.keyboards.digit_list import emojify_numbers
 from foodshare.keyboards.reminder_keyboard import (
     reminder_keyboard_build,
     transform_limit,
@@ -20,7 +21,6 @@ from foodshare.keyboards.telegram_hour import (
     process_time_selection,
 )
 from foodshare.keyboards.telegram_number import (
-    emojify,
     number_keyboard,
     process_number_selection,
 )
@@ -65,13 +65,13 @@ def construct_message(ud, highlight=None):
         message.append(date_hour_text)
     if 'number' in ud:
         number = ud['number']
-        number_text = '👪 for ' + emojify(number) + ' persons'
+        number_text = '👪 for ' + emojify_numbers(number) + ' persons'
         if highlight == 'number':
             number_text = '<b>' + number_text + '</b>'
         message.append(number_text)
     if 'cost' in ud:
         cost = ud['cost']
-        cost_text = 'for ' + emojify(cost) + '€ in total'
+        cost_text = 'for ' + emojify_numbers(cost) + '€ in total'
         if highlight == 'cost':
             cost_text = '<b>' + cost_text + '</b>'
         message.append(cost_text)
@@ -268,7 +268,7 @@ def inline_number_handler(update, context):
                 message_id=query.message.message_id,
                 text=text
                 + '\n 👪 for '
-                + emojify(number)
+                + emojify_numbers(number)
                 + ' persons'
                 + '\n How much is it going to cost in total?',
                 reply_markup=cost_keyboard,
@@ -290,7 +290,7 @@ def inline_cost_handler(update, context):
             message_id=query.message.message_id,
             text=text
             + '\n 👪 for '
-            + emojify(number)
+            + emojify_numbers(number)
             + ' persons'
             + '\n How much is it going to cost in total?',
             reply_markup=cost_keyboard,
@@ -321,7 +321,7 @@ def inline_cost_handler(update, context):
                 message_id=query.message.message_id,
                 text=text
                 + '\n💶 for '
-                + emojify(number)
+                + emojify_numbers(number)
                 + '€ in total'
                 + '\n How much time in advance do you want to know who\'s '
                 'coming?' + '\n ',
