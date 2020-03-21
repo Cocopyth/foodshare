@@ -51,11 +51,11 @@ In order to run and test the bot on your local computer you need to:
 - [ ] :envelope: Create a Telegram account.
 - [ ] :robot: Use the [Telegram Bots API documentation](https://core.telegram.org) to get a bot token from `BotFather`.
 - [ ] :wrench: Set the `TELEGRAM_BOT_TOKEN` environment variable:
-      ```shell 
-      export TELEGRAM_BOT_TOKEN=1786460108:AJHFkCrvGb7LRjy3loPn3dWT2VL-c8Ttwjk
-      ```
+  ```shell 
+  export TELEGRAM_BOT_TOKEN=1786460108:AJHFkCrvGb7LRjy3loPn3dWT2VL-c8Ttwjk
+  ```
 - [ ] :rocket: Run the bot using the `run_bot.py` script:
-      ```shell
-      poetry run python run_bot.py
-      ```
+  ```shell
+  poetry run python run_bot.py
+  ```
 - [ ] :tada: Your bot is now up and running and ready to discuss with you!
