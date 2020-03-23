@@ -8,9 +8,9 @@ def ask_for_reminder(update, context):
     epilog = 'How much time in advance do you want to kno who\'s coming?'
 
     update.callback_query.edit_message_text(
-        text=get_message(context, epilog=epilog, highlight='nb_of_person'),
+        text=get_message(context, epilog=epilog, highlight='cost'),
         # reply_markup=,
-        # parse_mode=ParseMode.MARKDOWN,
+        parse_mode=ParseMode.MARKDOWN,
     )
 
     return ConversationStage.SELECTING_REMINDER
