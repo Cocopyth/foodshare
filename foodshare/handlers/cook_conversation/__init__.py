@@ -25,12 +25,12 @@ def get_message(context, epilog='', highlight=None):
         message['meal_name'] = f'🍌 You\'re cooking {ud["meal_name"]}'
     if 'date' in ud:
         date = ud['date']
-        date_format = '%d/%m/%Y'
-        # if 'hour_selected' in ud:
-        #     date_format += ' at %H:%M'
         message[
             'date'
-        ] = f'📆 On {get_weekday(date)} {date.strftime(date_format)}'
+        ] = f'📆 On {get_weekday(date)} {date.strftime("%d/%m/%Y")}'
+    if 'time' in ud:
+        time = ud['time']
+        message['time'] = f'🕔 At {time.strftime("%H:%M")}'
 
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'
