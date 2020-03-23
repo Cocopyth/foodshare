@@ -11,7 +11,7 @@ class ConversationStage(Enum):
     SELECTING_WEEKDAY_OR_SHOW_CALENDAR = auto()
     SELECTING_DATE_CALENDAR = auto()
     SELECTING_HOUR = auto()
-    SELECTING_NUMBER = auto()
+    SELECTING_NUMBER_OF_PERSON = auto()
     SELECTING_COST = auto()
     SELECTING_REMINDER = auto()
     CONFIRMATION = auto()

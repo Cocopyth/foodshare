@@ -221,7 +221,7 @@ def inline_number_handler(update, context):
                 reply_markup=cost_keyboard,
             )
             return ConversationStage.SELECTING_COST
-    return ConversationStage.SELECTING_NUMBER
+    return ConversationStage.SELECTING_NUMBER_OF_PERSON
 
 
 def inline_cost_handler(update, context):
@@ -256,7 +256,7 @@ def inline_cost_handler(update, context):
                 reply_markup=number_keyboard,
                 parse_mode=ParseMode.HTML,
             )
-            return ConversationStage.SELECTING_NUMBER
+            return ConversationStage.SELECTING_NUMBER_OF_PERSON
         else:
             ud['cost_selected'] = True
             ud['cost'] = number

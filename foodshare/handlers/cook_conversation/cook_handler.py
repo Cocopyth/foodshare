@@ -41,7 +41,7 @@ cook_handler = ConversationHandler(
         ],
         CS.SELECTING_DATE_CALENDAR: [CQH(calendar_selection_handler)],
         CS.SELECTING_HOUR: [CQH(inline_time_handler)],
-        CS.SELECTING_NUMBER: [CQH(inline_number_handler)],
+        CS.SELECTING_NUMBER_OF_PERSON: [CQH(inline_number_handler)],
         CS.SELECTING_COST: [CQH(inline_cost_handler)],
         CS.SELECTING_REMINDER: [
             CQH(reminder_choosing, pattern=pattern_reminder),
