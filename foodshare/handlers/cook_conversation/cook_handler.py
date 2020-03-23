@@ -8,20 +8,17 @@ from telegram.ext import (
 
 from foodshare.commands.cook import (
     end,
-    inline_cost_handler,
-    inline_number_handler,
     meal_name_confirm,
     reminder_choosing,
     save_input2,
 )
 from foodshare.keyboards.confirmation_keyboard import confirm, what
 from foodshare.keyboards.reminder_keyboard import (
-    back2,
-    chose,
     pattern_reminder,
 )
 
 from . import ConversationStage as CS
+from .cost_selection import cost_selection_handler
 from .date_selection import (
     calendar_selection_handler,
     get_date_from_calendar,
@@ -42,11 +39,9 @@ cook_handler = ConversationHandler(
         CS.SELECTING_DATE_CALENDAR: [CQH(calendar_selection_handler)],
         CS.SELECTING_HOUR: [CQH(time_selection_handler)],
         CS.SELECTING_NB_OF_PERSON: [CQH(nb_of_person_selection_handler)],
-        CS.SELECTING_COST: [CQH(inline_cost_handler)],
+        CS.SELECTING_COST: [CQH(cost_selection_handler)],
         CS.SELECTING_REMINDER: [
             CQH(reminder_choosing, pattern=pattern_reminder),
-            CQH(get_date_from_calendar, pattern=f'^{chose}$'),
-            CQH(inline_cost_handler, pattern=f'^{back2}$'),
         ],
         CS.CONFIRMATION: [
             MessageHandler(Filters.text, save_input2),

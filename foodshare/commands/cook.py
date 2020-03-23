@@ -15,10 +15,7 @@ from foodshare.keyboards.telegram_cost import (
     cost_keyboard,
     process_cost_selection,
 )
-from foodshare.keyboards.telegram_number import (
-    number_keyboard,
-    process_number_selection,
-)
+from foodshare.keyboards.telegram_number import number_keyboard
 
 
 def get_weekday(date):
@@ -107,61 +104,6 @@ def meal_name_confirm(update, context):
 def hours_until_meal(date):
     time_delta = (date - datetime.datetime.now()).total_seconds()
     return time_delta / 3600
-
-
-def inline_cost_handler(update, context):
-    bot = context.bot
-    query = update.callback_query
-    ud = context.user_data
-    if 'cost_selected' in ud and ud['cost_selected']:
-        ud['cost_selected'] = False
-        text = '\n'.join(query.message.text.split('\n')[:2])
-        number = ud['number']
-        bot.edit_message_text(
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            text=text
-            + '\n 👪 for '
-            + emojify_numbers(number)
-            + ' persons'
-            + '\n How much is it going to cost in total?',
-            reply_markup=cost_keyboard,
-            parse_mode=ParseMode.HTML,
-        )
-    selected, goback, number = process_cost_selection(update, context)
-    if selected:
-        if goback:
-            text = '\n'.join(query.message.text.split('\n')[:2])
-            bot.edit_message_text(
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                text=text
-                + '\n for how many people? (including yourself)'
-                + '\n ',
-                reply_markup=number_keyboard,
-                parse_mode=ParseMode.HTML,
-            )
-            return ConversationStage.SELECTING_NB_OF_PERSON
-        else:
-            ud['cost_selected'] = True
-            ud['cost'] = number
-            text = '\n'.join(query.message.text.split('\n')[:3])
-            time_left = hours_until_meal(ud['date'])
-            keyboard = reminder_keyboard_build(time_left)
-            bot.edit_message_text(
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                text=text
-                + '\n💶 for '
-                + emojify_numbers(number)
-                + '€ in total'
-                + '\n How much time in advance do you want to know who\'s '
-                'coming?' + '\n ',
-                reply_markup=keyboard,
-                parse_mode=ParseMode.HTML,
-            )
-            return ConversationStage.SELECTING_REMINDER
-    return ConversationStage.SELECTING_COST
 
 
 def reminder_choosing(update, context):

@@ -33,6 +33,8 @@ def get_message(context, epilog='', highlight=None):
         message['time'] = f'🕔 At {time.strftime("%H:%M")}'
     if 'nb_of_person' in ud:
         message['nb_of_person'] = f'👪 For {ud["nb_of_person"]} persons'
+    if 'cost' in ud:
+        message['cost'] = f'💶 For {ud["cost"]}€ in total'
 
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'
