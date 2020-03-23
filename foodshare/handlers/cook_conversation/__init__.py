@@ -1,6 +1,8 @@
 from collections import OrderedDict
 from enum import Enum, auto
 
+from emoji import emojize
+
 
 def get_weekday(date):
     return date.strftime('%A')
@@ -22,19 +24,25 @@ def get_message(context, epilog='', highlight=None):
     message = OrderedDict()
 
     if 'meal_name' in ud:
-        message['meal_name'] = f'🍌 You\'re cooking {ud["meal_name"]}'
+        message['meal_name'] = emojize(
+            f':banana: You\'re cooking {ud["meal_name"]}'
+        )
     if 'date' in ud:
         date = ud['date']
-        message[
-            'date'
-        ] = f'📆 On {get_weekday(date)} {date.strftime("%d/%m/%Y")}'
+        message['date'] = emojize(
+            f':calendar: On {get_weekday(date)} {date.strftime("%d/%m/%Y")}'
+        )
     if 'time' in ud:
         time = ud['time']
-        message['time'] = f'🕔 At {time.strftime("%H:%M")}'
+        message['time'] = emojize(f':one-thirty: At {time.strftime("%H:%M")}')
     if 'nb_of_person' in ud:
-        message['nb_of_person'] = f'👪 For {ud["nb_of_person"]} persons'
+        message['nb_of_person'] = emojize(
+            f':family: For {ud["nb_of_person"]} persons'
+        )
     if 'cost' in ud:
-        message['cost'] = f'💶 For {ud["cost"]}€ in total'
+        message['cost'] = emojize(
+            f':euro_banknote: For {ud["cost"]}€ in total'
+        )
 
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'
