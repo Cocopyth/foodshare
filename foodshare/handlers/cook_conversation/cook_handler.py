@@ -28,6 +28,7 @@ from .date_selection import (
     get_date_from_weekday,
 )
 from .meal_name_choice import ask_for_meal_name, save_meal_name
+from .nb_of_person_selection import nb_of_person_selection_handler
 from .time_selection import time_selection_handler
 
 cook_handler = ConversationHandler(
@@ -40,7 +41,7 @@ cook_handler = ConversationHandler(
         ],
         CS.SELECTING_DATE_CALENDAR: [CQH(calendar_selection_handler)],
         CS.SELECTING_HOUR: [CQH(time_selection_handler)],
-        CS.SELECTING_NUMBER_OF_PERSON: [CQH(inline_number_handler)],
+        CS.SELECTING_NB_OF_PERSON: [CQH(nb_of_person_selection_handler)],
         CS.SELECTING_COST: [CQH(inline_cost_handler)],
         CS.SELECTING_REMINDER: [
             CQH(reminder_choosing, pattern=pattern_reminder),

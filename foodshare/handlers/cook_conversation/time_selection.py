@@ -3,7 +3,7 @@ import datetime
 from telegram import ParseMode
 
 from foodshare.handlers.cook_conversation import ConversationStage, get_message
-from foodshare.handlers.cook_conversation.number_of_person_selection import (
+from foodshare.handlers.cook_conversation.nb_of_person_selection import (
     ask_for_number_of_person,
 )
 from foodshare.keyboards import telegram_hour

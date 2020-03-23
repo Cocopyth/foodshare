@@ -11,7 +11,7 @@ class ConversationStage(Enum):
     SELECTING_WEEKDAY_OR_SHOW_CALENDAR = auto()
     SELECTING_DATE_CALENDAR = auto()
     SELECTING_HOUR = auto()
-    SELECTING_NUMBER_OF_PERSON = auto()
+    SELECTING_NB_OF_PERSON = auto()
     SELECTING_COST = auto()
     SELECTING_REMINDER = auto()
     CONFIRMATION = auto()
@@ -31,6 +31,8 @@ def get_message(context, epilog='', highlight=None):
     if 'time' in ud:
         time = ud['time']
         message['time'] = f'🕔 At {time.strftime("%H:%M")}'
+    if 'nb_of_person' in ud:
+        message['nb_of_person'] = f'👪 For {ud["nb_of_person"]} persons'
 
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'

@@ -109,33 +109,6 @@ def hours_until_meal(date):
     return time_delta / 3600
 
 
-def inline_number_handler(update, context):
-    bot = context.bot
-    query = update.callback_query
-    selected, back, number = process_number_selection(update, context)
-    ud = context.user_data
-    if selected:
-        if back:
-            ud['hour_selected'] = False
-            return date_choosing(update, context)
-        else:
-            text = '\n'.join(query.message.text.split('\n')[:2])
-            ud = context.user_data
-            ud['number'] = number
-            bot.edit_message_text(
-                chat_id=query.message.chat_id,
-                message_id=query.message.message_id,
-                text=text
-                + '\n 👪 for '
-                + emojify_numbers(number)
-                + ' persons'
-                + '\n How much is it going to cost in total?',
-                reply_markup=cost_keyboard,
-            )
-            return ConversationStage.SELECTING_COST
-    return ConversationStage.SELECTING_NUMBER_OF_PERSON
-
-
 def inline_cost_handler(update, context):
     bot = context.bot
     query = update.callback_query
@@ -168,7 +141,7 @@ def inline_cost_handler(update, context):
                 reply_markup=number_keyboard,
                 parse_mode=ParseMode.HTML,
             )
-            return ConversationStage.SELECTING_NUMBER_OF_PERSON
+            return ConversationStage.SELECTING_NB_OF_PERSON
         else:
             ud['cost_selected'] = True
             ud['cost'] = number
