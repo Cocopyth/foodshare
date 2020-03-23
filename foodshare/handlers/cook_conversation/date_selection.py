@@ -1,12 +1,12 @@
 import datetime
 
 from telegram import InlineKeyboardButton as IKB
-from telegram import InlineKeyboardMarkup, ParseMode
+from telegram import InlineKeyboardMarkup
 
 from foodshare.keyboards import telegram_calendar
-from foodshare.keyboards.telegram_hour import hour_keyboard
 
 from . import ConversationStage, get_message, get_weekday
+from .time_selection import ask_for_time
 
 
 def ask_for_date(update, context):
@@ -49,7 +49,7 @@ def get_date_from_weekday(update, context):
 
     context.user_data['date'] = date
 
-    return ask_for_hour(update, context)
+    return ask_for_time(update, context)
 
 
 def get_date_from_calendar(update, context, selected_date_in_the_past=False):
@@ -86,14 +86,4 @@ def calendar_selection_handler(update, context):
 
     context.user_data['date'] = date
 
-    return ask_for_hour(update, context)
-
-
-def ask_for_hour(update, context):
-    update.callback_query.edit_message_text(
-        text=get_message(context, epilog='At what time?', highlight='date'),
-        reply_markup=hour_keyboard,
-        parse_mode=ParseMode.MARKDOWN,
-    )
-
-    return ConversationStage.SELECTING_HOUR
+    return ask_for_time(update, context)

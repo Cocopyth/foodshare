@@ -3,7 +3,7 @@ from telegram import ChatAction
 from foodshare.commands.gif_test import get_gif_url
 
 from . import ConversationStage
-from .date import ask_for_date
+from .date_selection import ask_for_date
 
 
 def ask_for_meal_name(update, _):

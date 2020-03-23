@@ -23,12 +23,12 @@ from foodshare.keyboards.reminder_keyboard import (
 )
 
 from . import ConversationStage as CS
-from .date import (
+from .date_selection import (
     calendar_selection_handler,
     get_date_from_calendar,
     get_date_from_weekday,
 )
-from .meal_name import ask_for_meal_name, save_meal_name
+from .meal_name_choice import ask_for_meal_name, save_meal_name
 
 cook_handler = ConversationHandler(
     entry_points=[CommandHandler('cook', ask_for_meal_name)],
