@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 from emoji import emojize
 
+from foodshare.utils import emojize_number
 
 def get_weekday(date):
     return date.strftime('%A')
@@ -37,11 +38,11 @@ def get_message(context, epilog='', highlight=None):
         message['time'] = emojize(f':one-thirty: At {time.strftime("%H:%M")}')
     if 'nb_of_person' in ud:
         message['nb_of_person'] = emojize(
-            f':family: For {ud["nb_of_person"]} persons'
+            f':family: For {emojize_number(ud["nb_of_person"])} persons'
         )
     if 'cost' in ud:
         message['cost'] = emojize(
-            f':euro_banknote: For {ud["cost"]}€ in total'
+            f':euro_banknote: For {emojize_number(ud["cost"])}€ in total'
         )
 
     if highlight in message.keys():
