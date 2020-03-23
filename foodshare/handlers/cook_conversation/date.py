@@ -38,7 +38,7 @@ def ask_for_date(update, context):
     return ConversationStage.SELECTING_WEEKDAY_OR_SHOW_CALENDAR
 
 
-def weekday_handler(update, context):
+def get_date_from_weekday(update, context):
     query_data = update.callback_query.data
     if query_data == 'today':
         date = datetime.date.today()
@@ -52,7 +52,7 @@ def weekday_handler(update, context):
     return ask_for_hour(update, context)
 
 
-def calendar_handler(update, context, selected_date_in_the_past=False):
+def get_date_from_calendar(update, context, selected_date_in_the_past=False):
     if selected_date_in_the_past:
         epilog = (
             'The chosen date was in the past, please select a date in the '
@@ -80,7 +80,7 @@ def calendar_selection_handler(update, context):
 
     # if the selected date is in the past
     if date.date() < datetime.date.today():
-        return calendar_handler(
+        return get_date_from_calendar(
             update, context, selected_date_in_the_past=True
         )
 

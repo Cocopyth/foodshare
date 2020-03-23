@@ -23,7 +23,11 @@ from foodshare.keyboards.reminder_keyboard import (
 )
 
 from . import ConversationStage as CS
-from .date import calendar_handler, calendar_selection_handler, weekday_handler
+from .date import (
+    calendar_selection_handler,
+    get_date_from_calendar,
+    get_date_from_weekday,
+)
 from .meal_name import ask_for_meal_name, save_meal_name
 
 cook_handler = ConversationHandler(
@@ -31,8 +35,8 @@ cook_handler = ConversationHandler(
     states={
         CS.TYPING_MEAL_NAME: [MessageHandler(Filters.text, save_meal_name)],
         CS.SELECTING_WEEKDAY_OR_SHOW_CALENDAR: [
-            CQH(weekday_handler, pattern='today|tmo|in_2_days'),
-            CQH(calendar_handler, pattern='show_calendar'),
+            CQH(get_date_from_weekday, pattern='today|tmo|in_2_days'),
+            CQH(get_date_from_calendar, pattern='show_calendar'),
             # CQH(ask_for_meal_name, pattern='back'),
         ],
         CS.SELECTING_DATE_CALENDAR: [CQH(calendar_selection_handler)],
@@ -41,7 +45,7 @@ cook_handler = ConversationHandler(
         CS.SELECTING_COST: [CQH(inline_cost_handler)],
         CS.SELECTING_REMINDER: [
             CQH(reminder_choosing, pattern=pattern_reminder),
-            CQH(calendar_handler, pattern=f'^{chose}$'),
+            CQH(get_date_from_calendar, pattern=f'^{chose}$'),
             CQH(inline_cost_handler, pattern=f'^{back2}$'),
         ],
         CS.CONFIRMATION: [
