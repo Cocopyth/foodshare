@@ -47,5 +47,5 @@ cook_handler = ConversationHandler(
             CQH(meal_name_confirm, pattern=what),
         ],
     },
-    fallbacks=[CommandHandler('start', ask_for_meal_name)],
+    fallbacks=[CommandHandler('cook', ask_for_meal_name)],
 )
