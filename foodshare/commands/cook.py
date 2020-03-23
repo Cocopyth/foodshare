@@ -7,15 +7,7 @@ from telegram.ext import ConversationHandler
 from foodshare.handlers.cook_conversation import ConversationStage
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 from foodshare.keyboards.digit_list import emojify_numbers
-from foodshare.keyboards.reminder_keyboard import (
-    reminder_keyboard_build,
-    transform_limit,
-)
-from foodshare.keyboards.telegram_cost import (
-    cost_keyboard,
-    process_cost_selection,
-)
-from foodshare.keyboards.telegram_number import number_keyboard
+from foodshare.keyboards.reminder_keyboard import transform_limit
 
 
 def get_weekday(date):

@@ -13,9 +13,7 @@ from foodshare.commands.cook import (
     save_input2,
 )
 from foodshare.keyboards.confirmation_keyboard import confirm, what
-from foodshare.keyboards.reminder_keyboard import (
-    pattern_reminder,
-)
+from foodshare.keyboards.reminder_keyboard import pattern_reminder
 
 from . import ConversationStage as CS
 from .cost_selection import cost_selection_handler
