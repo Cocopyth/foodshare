@@ -2,7 +2,8 @@ import datetime
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from .digit_list import digit_buttons, numbers_emoji
+from .digit_list import digit_buttons, emojify_numbers
+from foodshare.handlers.cook_conversation import get_message
 
 # Hour keyboard
 
@@ -20,82 +21,81 @@ confirm_keyboard = InlineKeyboardMarkup(hour_buttons2)
 pos = [0, 5, 11, 17]
 
 
+def process_hour(context):
+    ud = context.user_data
+    return ud.get('time', False), ud.get('ready_to_complete_time', False),  ud.get(
+        'index', False)
+
+
+def to_emojy(pattern):
+    if type(pattern) == int:
+        return (emojify_numbers(pattern))
+    else:
+        return ('❔')
+
+
+def hour_to_text(time, index):
+    emojies = [to_emojy(pattern) for pattern in time]
+    index_message = pos[index] * ' ' + '⬆️'
+    hour_message = f'{emojies[0]}{emojies[1]}:{emojies[2]}{emojies[3]}'
+    return ('\n'.join((hour_message, index_message)))
+
+def get_keyboard(ready_to_confirm):
+    if ready_to_confirm:
+        keyboard = confirm_keyboard
+    else:
+        keyboard = hour_keyboard
+    return(keyboard)
 def process_time_selection(update, context):
     ret_data = (False, None)
+    hour, ready_to_confirm, index = process_hour(context)
     ud = context.user_data
-    bot = context.bot
-    query = update.callback_query
-    messages = query.message.text.split('\n')
-    action = query.data
-    hourmin = messages[-2].replace(':', ' ').split(' ')
-    if '❔' in hourmin:
-        keyboard = hour_keyboard
-    else:
-        keyboard = confirm_keyboard
-    if 'time' in ud:
-        time = ud['time']
-        index = ud['index']
-    else:
-        time = '❔ ❔:❔ ❔'
-        ud['time'] = time
+    action=update.callback_query.data
+    if hour == False:  # Initialize 'time' in ud
+        hour = 4 * ['?']
+        ud['time'] = hour
         index = 0
         ud['index'] = index
-
+    else:
+        hour=ud['time']
+        index=ud['index']
     if '⬅️' in action:
         index = max(0, index - 1)
         ud['index'] = index
-        messages[-1] = pos[index] * ' ' + '⬆️'
-        reply = '\n'.join(messages)
-        bot.edit_message_text(
-            text=reply,
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            reply_markup=keyboard,
+        message = get_message(context, epilog='Please select a time') +'\n'+ hour_to_text(ud['time'], index)
+        update.callback_query.edit_message_text(
+            text=message,
+            reply_markup=get_keyboard(ready_to_confirm),
         )
     elif '➡️' in action:
         index = min(3, index + 1)
         ud['index'] = index
-        messages[-1] = pos[index] * ' ' + '⬆️'
-        reply = '\n'.join(messages)
-        bot.edit_message_text(
-            text=reply,
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            reply_markup=keyboard,
+        message = get_message(context, epilog='Please select a time') +'\n' + hour_to_text(ud['time'], index)
+        update.callback_query.edit_message_text(
+            text=message,
+            reply_markup=get_keyboard(ready_to_confirm),
         )
     elif '+' in action:
-        hourmin = messages[-2].replace(':', ' ').split(' ')
-        hour = 10 * numbers_emoji.index(hourmin[0]) + numbers_emoji.index(
-            hourmin[1]
-        )
-        minute = 10 * numbers_emoji.index(hourmin[2]) + numbers_emoji.index(
-            hourmin[3]
-        )
+        hour,minute=10*hour[0]+hour[1],10*hour[2]+hour[3]
         timeday = datetime.time(hour=hour, minute=minute)
-        time = '❔ ❔:❔ ❔'
+        time = 4 * ['?']
         ud['time'] = time
         index = 0
         ud['index'] = index
-        print(timeday)
-        ret_data = True, timeday
+        return (True, timeday)
     else:
-        hourmin = messages[-2].replace(':', ' ').split(' ')
         number = int(action)
-        hourmin[index] = ' ' + numbers_emoji[number]
-        if '❔' in hourmin:
-            keyboard = hour_keyboard
-        else:
-            keyboard = confirm_keyboard
-        messages[-2] = ' '.join(hourmin[:2]) + ':' + ' '.join(hourmin[2:])
-        ud['time'] = messages[-2]
+        hour[index] = number
+        ud['time'] = hour
         index = min(3, index + 1)
         ud['index'] = index
-        messages[-1] = pos[index] * ' ' + '⬆️'
-        reply = '\n'.join(messages)
-        bot.edit_message_text(
-            text=reply,
-            chat_id=query.message.chat_id,
-            message_id=query.message.message_id,
-            reply_markup=keyboard,
+        message=get_message(context, epilog='Please select a time') +'\n' + hour_to_text(ud['time'], index)
+        if '?' in hour:
+            ud['ready_to_confirm']=False
+        else:
+            ud['ready_to_confirm']=True
+        update.callback_query.edit_message_text(
+            text=message,
+            reply_markup=get_keyboard(ud['ready_to_confirm']),
         )
     return ret_data
