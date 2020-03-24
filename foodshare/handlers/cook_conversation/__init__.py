@@ -2,6 +2,7 @@ from collections import OrderedDict
 from enum import Enum, auto
 
 from emoji import emojize
+
 from foodshare.utils import emojize_number
 
 
