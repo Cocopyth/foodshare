@@ -1,78 +1,76 @@
+import copy
+
 from emoji import emojize
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from foodshare.handlers.cook_conversation import get_message
+from foodshare.utils import emojize_number
 
-from .digit_list import digit_buttons, emojify_numbers
+from .digit_list import digit_buttons
 
-
-# Hour keyboard
-def get_epilog(suffix):
-    if suffix == '€':
-        return 'Please select a price in €'
-    else:
-        return 'Please select a number'
-
-
-number_buttons = digit_buttons.copy()
-number_buttons.append(
+# number selection keyboard
+number_keyboard_buttons = digit_buttons.copy()
+number_keyboard_buttons.append(
     [
-        InlineKeyboardButton(emojize(':keycap_0:'), callback_data='0'),
         InlineKeyboardButton(
             emojize(':left_arrow:️'), callback_data='left_arrow'
         ),
         InlineKeyboardButton('Back to date', callback_data='back'),
     ]
 )
+number_keyboard = InlineKeyboardMarkup(number_keyboard_buttons)
 
-number_keyboard = InlineKeyboardMarkup(number_buttons)
-
-confirm_buttons = number_buttons.copy()
-confirm_buttons.append(
+# number selection keyboard with a confirm button and a 0 digit key
+confirm_keyboard_buttons = copy.deepcopy(number_keyboard_buttons)
+confirm_keyboard_buttons[-1].insert(
+    0, InlineKeyboardButton(emojize(':keycap_0:'), callback_data='0')
+)
+confirm_keyboard_buttons.append(
     [InlineKeyboardButton('Confirm', callback_data='confirm')]
 )
-confirm_keyboard = InlineKeyboardMarkup(confirm_buttons)
-
-
-def number_to_text(number, context, suffix):
-    if number == 0:
-        emojies = ' '
-    else:
-        emojies = emojify_numbers(number) + suffix
-    epilog = get_epilog(suffix)
-    general_message = get_message(context, epilog=epilog)
-    return '\n'.join((general_message, emojies))
+confirm_keyboard = InlineKeyboardMarkup(confirm_keyboard_buttons)
 
 
 def process_number_selection(update, context, suffix=''):
     ud = context.user_data
-    action = update.callback_query.data
+    callback_data = update.callback_query.data
 
-    # initialize some variables in user_data
+    # initialize some variables in `context.user_data` when the keyboard is
+    # first called
     if '_number' not in ud:
-        number = 0
+        number = ''
+        ud['_number'] = ''
     else:
         number = ud.get('_number')
 
-    if action == 'left_arrow':
-        number = number // 10
-    elif action == 'back':
+    # process the keyboard callback data
+    if callback_data == 'left_arrow':
+        number = number[:-1]
+    elif callback_data == 'back':
         ud.pop('_number')
         return False, True, -1
-    elif action == 'confirm':
+    elif callback_data == 'confirm':
         ud.pop('_number')
-        return True, False, number
+        return True, False, int(number)
     else:
-        number_key = int(action)
-        number = 10 * number + number_key
+        number += callback_data
 
+    # store number for next callback
     ud['_number'] = number
 
-    message = number_to_text(ud['number_process'], context, suffix)
+    if number == '':
+        number_str = emojize(':question_mark:')
+    else:
+        number_str = emojize_number(number)
+
+    message = update.callback_query.message.text.split('\n')
+    message[-1] = f'For {number_str} {suffix}'
+    message = '\n'.join(message)
+
+    # choose keyboard with a confirm button if a valid number was selected
+    keyboard = confirm_keyboard if number != '' else number_keyboard
 
     update.callback_query.edit_message_text(
-        text=message,
-        reply_markup=confirm_keyboard if number > 0 else number_keyboard,
+        text=message, reply_markup=keyboard,
     )
 
     return False, False, -1
