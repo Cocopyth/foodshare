@@ -3,39 +3,35 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.handlers.cook_conversation import get_message
 
-from . import get_epilog
 from .digit_list import digit_buttons, emojify_numbers
 
+
 # Hour keyboard
+def get_epilog(suffix):
+    if suffix == '€':
+        return 'Please select a price in €'
+    else:
+        return 'Please select a number'
 
 
 number_buttons = digit_buttons.copy()
-number_buttons.append([])
-number_buttons[3].append(
-    InlineKeyboardButton(emojize(":keycap_0:"), callback_data=str(0))
+number_buttons.append(
+    [
+        InlineKeyboardButton(emojize(':keycap_0:'), callback_data='0'),
+        InlineKeyboardButton(
+            emojize(':left_arrow:️'), callback_data='left_arrow'
+        ),
+        InlineKeyboardButton('Back to date', callback_data='back'),
+    ]
 )
-number_buttons[3].append(
-    InlineKeyboardButton(
-        emojize(':left_arrow:️'), callback_data=emojize(':left_arrow:️')
-    )
-)
-number_buttons[3].append(
-    InlineKeyboardButton('Back to date', callback_data='back')
-)
+
 number_keyboard = InlineKeyboardMarkup(number_buttons)
-number_buttons2 = number_buttons.copy()
-number_buttons2.append([InlineKeyboardButton('Confirm', callback_data='+')])
-confirm_keyboard = InlineKeyboardMarkup(number_buttons2)
-pos = [0, 5, 11, 17]
 
-
-def process_context(context):
-    ud = context.user_data
-    return (
-        ud.get('number_process', False),
-        ud.get('ready_to_complete_number', False),
-        ud.get('indexn', False),
-    )
+confirm_buttons = number_buttons.copy()
+confirm_buttons.append(
+    [InlineKeyboardButton('Confirm', callback_data='confirm')]
+)
+confirm_keyboard = InlineKeyboardMarkup(confirm_buttons)
 
 
 def number_to_text(number, context, suffix):
@@ -49,41 +45,34 @@ def number_to_text(number, context, suffix):
 
 
 def process_number_selection(update, context, suffix=''):
-    ret_data = (False, False, None)
     ud = context.user_data
     action = update.callback_query.data
-    number, ready_to_complete, indexn = process_context(context)
-    if number is False:  # Initialize 'number_process' in ud, : not super clean
+
+    # initialize some variables in user_data
+    if '_number' not in ud:
         number = 0
-        ud['number_process'] = number
-        indexn = 0
-        ud['indexn'] = indexn
-    if emojize(':left_arrow:️') in action:
-        indexn = max(0, indexn - 1)
-        ud['indexn'] = indexn
+    else:
+        number = ud.get('_number')
+
+    if action == 'left_arrow':
         number = number // 10
-        ud['number_process'] = number
-    elif 'back' in action:
-        ret_data = True, True, number
-    elif '+' in action:
-        numberf = number
-        ud['number_process'] = 0
-        indexn = 0
-        ud['indexn'] = indexn
-        ud['ready_to_complete_number'] = False
-        ret_data = True, False, numberf
+    elif action == 'back':
+        ud.pop('_number')
+        return False, True, -1
+    elif action == 'confirm':
+        ud.pop('_number')
+        return True, False, number
     else:
         number_key = int(action)
-        indexn = indexn + 1
-        ud['indexn'] = indexn
         number = 10 * number + number_key
-        ud['number_process'] = number
-        ud['ready_to_confirm'] = True
+
+    ud['_number'] = number
+
     message = number_to_text(ud['number_process'], context, suffix)
+
     update.callback_query.edit_message_text(
         text=message,
-        reply_markup=confirm_keyboard
-        if ud['ready_to_confirm']
-        else number_keyboard,
+        reply_markup=confirm_keyboard if number > 0 else number_keyboard,
     )
-    return ret_data
+
+    return False, False, -1
