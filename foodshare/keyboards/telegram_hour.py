@@ -5,16 +5,16 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from foodshare.handlers.cook_conversation import get_message
 
 from .digit_list import digit_buttons, emojify_numbers
-
+from emoji import emojize
 # Hour keyboard
 
 
 hour_buttons = digit_buttons.copy()
 hour_buttons.append([])
 
-hour_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
-hour_buttons[3].append(InlineKeyboardButton('0️⃣', callback_data=str(0)))
-hour_buttons[3].append(InlineKeyboardButton('➡️', callback_data='➡️'))
+hour_buttons[3].append(InlineKeyboardButton(emojize(':left_arrow:'), callback_data=emojize(':left_arrow:')))
+hour_buttons[3].append(InlineKeyboardButton(emojize(':keycap_0: '), callback_data=str(0)))
+hour_buttons[3].append(InlineKeyboardButton(emojize(':right_arrow:'), callback_data=emojize(':right_arrow:')))
 hour_keyboard = InlineKeyboardMarkup(hour_buttons)
 hour_buttons2 = hour_buttons.copy()
 hour_buttons2.append([InlineKeyboardButton('Confirm', callback_data='+')])
@@ -67,7 +67,7 @@ def process_time_selection(update, context):
     else:
         hour = ud['time_hour']
         index = ud['index']
-    if '⬅️' in action:
+    if emojize(':left_arrow:') in action:
         index = max(0, index - 1)
         ud['index'] = index
         message = hour_to_text(ud['time_hour'], index, context)
@@ -75,7 +75,7 @@ def process_time_selection(update, context):
         update.callback_query.edit_message_text(
             text=message, reply_markup=get_keyboard(ready_to_confirm),
         )
-    elif '➡️' in action:
+    elif emojize(':right_arrow:') in action:
         index = min(3, index + 1)
         ud['index'] = index
         message = hour_to_text(ud['time_hour'], index, context)

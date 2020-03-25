@@ -1,20 +1,9 @@
 from telegram import InlineKeyboardButton
-
+from emoji import emojize
 # Hour keyboard
 
 
-numbers_emoji = [
-    '0️⃣',
-    '1⃣',
-    '2️⃣',
-    '3️⃣',
-    '4️⃣',
-    '5️⃣',
-    '6️⃣',
-    '7️⃣',
-    '8️⃣',
-    '9️⃣',
-]
+numbers_emoji = [emojize(f':keycap_{str(i)}:') for i in range(10)]
 
 
 def emojify_numbers(number):

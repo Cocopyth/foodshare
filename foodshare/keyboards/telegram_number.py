@@ -1,16 +1,16 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from .digit_list import digit_buttons
-
+from emoji import emojize
 # Hour keyboard
 
 
 number_buttons = digit_buttons.copy()
 number_buttons.append([])
-number_buttons[3].append(InlineKeyboardButton('0️⃣', callback_data=str(0)))
-number_buttons[3].append(InlineKeyboardButton('⬅️', callback_data='⬅️'))
+number_buttons[3].append(InlineKeyboardButton(emojize(":keycap_0:"), callback_data=str(0)))
+number_buttons[3].append(InlineKeyboardButton(emojize(':left_arrow:️'), callback_data=emojize(':left_arrow:️')))
 number_buttons[3].append(
-    InlineKeyboardButton('Back to date', callback_data='➡️')
+    InlineKeyboardButton('Back to date', callback_data=emojize(':right_arrow:'))
 )
 number_keyboard = InlineKeyboardMarkup(number_buttons)
 pos = [0, 5, 11, 17]
@@ -19,9 +19,7 @@ pos = [0, 5, 11, 17]
 def process_number_selection(update, context):
     ret_data = (False, False, None)
     ud = context.user_data
-    bot = context.bot
     query = update.callback_query
-    messages = query.message.text.split('\n')
     action = query.data
     if 'number' in ud:
         number = ud['number']
@@ -31,7 +29,7 @@ def process_number_selection(update, context):
         ud['number'] = number
         indexn = 0
         ud['indexn'] = indexn
-    if '⬅️' in action:
+    if emojize(':left_arrow:️') in action:
         indexn = max(0, indexn - 1)
         ud['indexn'] = indexn
         number = number // 10
@@ -47,7 +45,7 @@ def process_number_selection(update, context):
             message_id=query.message.message_id,
             reply_markup=number_keyboard,
         )
-    elif '➡️' in action:
+    elif emojize(':right_arrow:') in action:
         ret_data = True, True, number
     elif '+' in action:
         numberf = number
