@@ -6,8 +6,8 @@ from telegram.ext import ConversationHandler
 
 from foodshare.handlers.cook_conversation import ConversationStage
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
-from foodshare.keyboards.digit_list import emojify_numbers
 from foodshare.keyboards.reminder_keyboard import transform_limit
+from foodshare.utils import emojize_number
 
 
 def get_weekday(date):
@@ -49,13 +49,13 @@ def construct_message(ud, highlight=None):
         message.append(date_hour_text)
     if 'number' in ud:
         number = ud['number']
-        number_text = '👪 for ' + emojify_numbers(number) + ' persons'
+        number_text = '👪 for ' + emojize_number(number) + ' persons'
         if highlight == 'number':
             number_text = '<b>' + number_text + '</b>'
         message.append(number_text)
     if 'cost' in ud:
         cost = ud['cost']
-        cost_text = 'for ' + emojify_numbers(cost) + '€ in total'
+        cost_text = 'for ' + emojize_number(cost) + '€ in total'
         if highlight == 'cost':
             cost_text = '<b>' + cost_text + '</b>'
         message.append(cost_text)

@@ -4,8 +4,9 @@ from emoji import emojize
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.handlers.cook_conversation import get_message
+from foodshare.utils import emojize_number
 
-from .digit_list import digit_buttons, emojify_numbers
+from .digit_list import digit_buttons
 
 # Hour keyboard
 
@@ -44,7 +45,7 @@ def process_hour(context):
 
 def to_emojy(pattern):
     if type(pattern) == int:
-        return emojify_numbers(pattern)
+        return emojize_number(pattern)
     else:
         return '❔'
 
