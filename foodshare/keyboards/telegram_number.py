@@ -37,18 +37,18 @@ def process_context(context):
     )
 
 
-def number_to_text(number, index, context):
+def number_to_text(number, context, suffix):
     if number == 0:
         emojies = ' '
     else:
-        emojies = emojify_numbers(number)
+        emojies = emojify_numbers(number) + suffix
     general_message = get_message(
         context, epilog='Please select a number of people:'
     )
     return '\n'.join((general_message, emojies))
 
 
-def process_number_selection(update, context):
+def process_number_selection(update, context, suffix=''):
     ret_data = (False, False, None)
     ud = context.user_data
     action = update.callback_query.data
@@ -70,6 +70,7 @@ def process_number_selection(update, context):
         ud['number_process'] = 0
         indexn = 0
         ud['indexn'] = indexn
+        ud['ready_to_complete_number'] = False
         ret_data = True, False, numberf
     else:
         number_key = int(action)
@@ -78,7 +79,7 @@ def process_number_selection(update, context):
         number = 10 * number + number_key
         ud['number_process'] = number
         ud['ready_to_confirm'] = True
-    message = number_to_text(ud['number_process'], ud['indexn'], context)
+    message = number_to_text(ud['number_process'], context, suffix)
     update.callback_query.edit_message_text(
         text=message,
         reply_markup=confirm_keyboard

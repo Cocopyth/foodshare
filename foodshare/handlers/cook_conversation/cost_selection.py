@@ -1,7 +1,7 @@
 from telegram import ParseMode
 
 from foodshare.handlers.cook_conversation import ConversationStage, get_message
-from foodshare.keyboards import telegram_cost
+from foodshare.keyboards import telegram_number
 
 from .reminder_selection import ask_for_reminder
 
@@ -11,7 +11,7 @@ def ask_for_cost(update, context):
 
     update.callback_query.edit_message_text(
         text=get_message(context, epilog=epilog, highlight='nb_of_person'),
-        reply_markup=telegram_cost.cost_keyboard,
+        reply_markup=telegram_number.number_keyboard,
         parse_mode=ParseMode.MARKDOWN,
     )
 
@@ -19,9 +19,11 @@ def ask_for_cost(update, context):
 
 
 def cost_selection_handler(update, context):
-    cost_is_selected, cost = telegram_cost.process_cost_selection(
-        update, context,
-    )
+    (
+        cost_is_selected,
+        want_back,
+        cost,
+    ) = telegram_number.process_number_selection(update, context, '€')
 
     # if no cost was selected
     if not cost_is_selected:
