@@ -1,20 +1,31 @@
+from emoji import emojize
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from .digit_list import digit_buttons, emojify_numbers
-from emoji import emojize
+
 # Hour keyboard
 
 
 hour_buttons = digit_buttons.copy()
 hour_buttons.append([])
-hour_buttons[3].append(InlineKeyboardButton(emojize(':keycap_0: '), callback_data=str(0)))
-hour_buttons[3].append(InlineKeyboardButton(emojize(':left_arrow:'), callback_data=emojize(':left_arrow:')))
-hour_buttons[3].append(InlineKeyboardButton('Back', callback_data=emojize(':right_arrow:')))
+hour_buttons[3].append(
+    InlineKeyboardButton(emojize(':keycap_0: '), callback_data=str(0))
+)
+hour_buttons[3].append(
+    InlineKeyboardButton(
+        emojize(':left_arrow:'), callback_data=emojize(':left_arrow:')
+    )
+)
+hour_buttons[3].append(
+    InlineKeyboardButton('Back', callback_data=emojize(':right_arrow:'))
+)
 cost_keyboard = InlineKeyboardMarkup(hour_buttons)
 pos = [0, 5, 11, 17]
 
-numbers = [emojize(':keycap_0: '), '1⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
-possibilities = [str(i) for i in range(10)] + [emojize(':left_arrow:') + emojize(':right_arrow:') + '+']
+
+possibilities = [str(i) for i in range(10)] + [
+    emojize(':left_arrow:') + emojize(':right_arrow:') + '+'
+]
 
 
 def process_cost_selection(update, context):

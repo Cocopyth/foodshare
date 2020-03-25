@@ -19,9 +19,11 @@ def ask_for_number_of_person(update, context):
 
 
 def nb_of_person_selection_handler(update, context):
-    nb_is_selected, nb_of_person = telegram_number.process_number_selection(
-        update, context
-    )
+    (
+        nb_is_selected,
+        want_back,
+        nb_of_person,
+    ) = telegram_number.process_number_selection(update, context)
 
     # if no number was selected
     if not nb_is_selected:

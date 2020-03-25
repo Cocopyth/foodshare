@@ -1,5 +1,6 @@
-from telegram import InlineKeyboardButton
 from emoji import emojize
+from telegram import InlineKeyboardButton
+
 # Hour keyboard
 
 
