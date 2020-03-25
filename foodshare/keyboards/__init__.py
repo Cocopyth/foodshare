@@ -10,3 +10,10 @@ sys.path.append(str(Path(__file__).resolve().parent))
 # the following is necessary to import a file name with a dash
 # Note: `import_module('foo.bar')` is equivalent to `import foo.bar`
 telegram_calendar = import_module('calendar-telegram.telegramcalendar')
+
+
+def get_epilog(suffix):
+    if suffix == '€':
+        return 'Please select a price in €'
+    else:
+        return 'Please select a number'

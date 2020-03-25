@@ -3,6 +3,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.handlers.cook_conversation import get_message
 
+from . import get_epilog
 from .digit_list import digit_buttons, emojify_numbers
 
 # Hour keyboard
@@ -42,9 +43,8 @@ def number_to_text(number, context, suffix):
         emojies = ' '
     else:
         emojies = emojify_numbers(number) + suffix
-    general_message = get_message(
-        context, epilog='Please select a number of people:'
-    )
+    epilog = get_epilog(suffix)
+    general_message = get_message(context, epilog=epilog)
     return '\n'.join((general_message, emojies))
 
 
