@@ -15,32 +15,21 @@ hour_buttons = digit_buttons.copy()
 hour_buttons.append([])
 
 hour_buttons[3].append(
-    InlineKeyboardButton(
-        emojize(':left_arrow:'), callback_data=emojize(':left_arrow:')
-    )
+    InlineKeyboardButton(emojize(':left_arrow:'), callback_data='left_arrow')
 )
 hour_buttons[3].append(
     InlineKeyboardButton(emojize(':keycap_0: '), callback_data=str(0))
 )
 hour_buttons[3].append(
-    InlineKeyboardButton(
-        emojize(':right_arrow:'), callback_data=emojize(':right_arrow:')
-    )
+    InlineKeyboardButton(emojize(':right_arrow:'), callback_data='right_arrow')
 )
 hour_keyboard = InlineKeyboardMarkup(hour_buttons)
-hour_buttons2 = hour_buttons.copy()
-hour_buttons2.append([InlineKeyboardButton('Confirm', callback_data='+')])
-confirm_keyboard = InlineKeyboardMarkup(hour_buttons2)
+confirm_buttons = hour_buttons.copy()
+confirm_buttons.append(
+    [InlineKeyboardButton('Confirm', callback_data='confirm')]
+)
+confirm_keyboard = InlineKeyboardMarkup(confirm_buttons)
 pos = [0, 5, 11, 17]
-
-
-def process_hour(context):
-    ud = context.user_data
-    return (
-        ud.get('time_hour', False),
-        ud.get('ready_to_complete_time', False),
-        ud.get('index', False),
-    )
 
 
 def to_emojy(pattern):
@@ -60,46 +49,34 @@ def hour_to_text(time, index, context):
 
 def process_time_selection(update, context):
     ret_data = (False, None)
-    hour, ready_to_confirm, index = process_hour(context)
     ud = context.user_data
     action = update.callback_query.data
-    if hour is False:  # Initialize 'time_hour' in ud, : not super clean
+    if '_hour' not in ud:  # Initialize '_hour' in ud, : not super clean
         hour = 4 * ['?']
-        ud['time_hour'] = hour
+        ud['_hour'] = hour
         index = 0
-        ud['index'] = index
     else:
-        hour = ud['time_hour']
-        index = ud['index']
-    if emojize(':left_arrow:') in action:
+        hour = ud['_hour']
+        index = ud['_index']
+    if action == 'left_arrow':
         index = max(0, index - 1)
-        ud['index'] = index
-    elif emojize(':right_arrow:') in action:
+    elif action == 'right_arrow':
         index = min(3, index + 1)
-        ud['index'] = index
-    elif '+' in action:
+    elif action == 'confirm':
         hour, minute = 10 * hour[0] + hour[1], 10 * hour[2] + hour[3]
         timeday = datetime.time(hour=hour, minute=minute)
-        time = 4 * ['?']
-        ud['time_hour'] = time
-        index = 0
-        ud['index'] = index
+        ud.pop('_hour')
+        ud.pop('_index')
         return True, timeday
     else:
         number = int(action)
         hour[index] = number
-        ud['time_hour'] = hour
         index = min(3, index + 1)
-        ud['index'] = index
-        if '?' in hour:
-            ud['ready_to_confirm'] = False
-        else:
-            ud['ready_to_confirm'] = True
-    message = hour_to_text(ud['time_hour'], ud['index'], context)
+    ud['_index'] = index
+    ud['_hour'] = hour
+    message = hour_to_text(ud['_hour'], ud['_index'], context)
     update.callback_query.edit_message_text(
         text=message,
-        reply_markup=confirm_keyboard
-        if ud['ready_to_confirm']
-        else hour_keyboard,
+        reply_markup=confirm_keyboard if '?' not in hour else hour_keyboard,
     )
     return ret_data
