@@ -23,14 +23,17 @@ def ask_for_number_of_person(update, context):
 
 
 def nb_of_person_selection_handler(update, context):
+    from .time_selection import ask_for_time  # to avoid circular import
+
     (
         nb_is_selected,
         want_back,
         nb_of_person,
     ) = telegram_number.process_number_selection(update, context, 'persons')
-
+    if want_back:
+        return ask_for_time(update, context)
     # if no number was selected
-    if not nb_is_selected:
+    elif not nb_is_selected:
         return ConversationStage.SELECTING_NB_OF_PERSON
 
     context.user_data['nb_of_person'] = nb_of_person

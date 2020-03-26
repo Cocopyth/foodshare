@@ -12,16 +12,19 @@ from .digit_list import digit_buttons
 
 
 hour_buttons = digit_buttons.copy()
-hour_buttons.append([])
-
-hour_buttons[3].append(
-    InlineKeyboardButton(emojize(':left_arrow:'), callback_data='left_arrow')
+hour_buttons.append(
+    [
+        InlineKeyboardButton(
+            emojize(':left_arrow:'), callback_data='left_arrow'
+        ),
+        InlineKeyboardButton(emojize(':keycap_0: '), callback_data=str(0)),
+        InlineKeyboardButton(
+            emojize(':right_arrow:'), callback_data='right_arrow'
+        ),
+    ]
 )
-hour_buttons[3].append(
-    InlineKeyboardButton(emojize(':keycap_0: '), callback_data=str(0))
-)
-hour_buttons[3].append(
-    InlineKeyboardButton(emojize(':right_arrow:'), callback_data='right_arrow')
+hour_buttons.append(
+    [InlineKeyboardButton(emojize('Back'), callback_data='back')]
 )
 hour_keyboard = InlineKeyboardMarkup(hour_buttons)
 confirm_buttons = hour_buttons.copy()
@@ -48,26 +51,25 @@ def hour_to_text(time, index, context):
 
 
 def process_time_selection(update, context):
-    ret_data = (False, None)
     ud = context.user_data
     action = update.callback_query.data
     if '_hour' not in ud:  # Initialize '_hour' in ud, : not super clean
-        hour = 4 * ['?']
-        ud['_hour'] = hour
-        index = 0
-    else:
-        hour = ud['_hour']
-        index = ud['_index']
+        ud['_hour'] = 4 * ['?']
+        ud['_index'] = 0
+    hour = ud['_hour']
+    index = ud['_index']
     if action == 'left_arrow':
         index = max(0, index - 1)
     elif action == 'right_arrow':
         index = min(3, index + 1)
+    elif action == 'back':
+        return False, True, None
     elif action == 'confirm':
         hour, minute = 10 * hour[0] + hour[1], 10 * hour[2] + hour[3]
         timeday = datetime.time(hour=hour, minute=minute)
         ud.pop('_hour')
         ud.pop('_index')
-        return True, timeday
+        return True, False, timeday
     else:
         number = int(action)
         hour[index] = number
@@ -79,4 +81,4 @@ def process_time_selection(update, context):
         text=message,
         reply_markup=confirm_keyboard if '?' not in hour else hour_keyboard,
     )
-    return ret_data
+    return False, False, None

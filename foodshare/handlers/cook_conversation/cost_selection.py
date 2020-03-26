@@ -22,14 +22,17 @@ def ask_for_cost(update, context):
 
 
 def cost_selection_handler(update, context):
+    from .nb_of_person_selection import ask_for_number_of_person
+
     (
         cost_is_selected,
         want_back,
         cost,
     ) = telegram_number.process_number_selection(update, context, '€')
 
-    # if no cost was selected
-    if not cost_is_selected:
+    if want_back:
+        return ask_for_number_of_person(update, context)
+    elif not cost_is_selected:
         return ConversationStage.SELECTING_COST
 
     context.user_data['cost'] = cost

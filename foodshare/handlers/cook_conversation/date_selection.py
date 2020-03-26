@@ -29,11 +29,15 @@ def ask_for_date(update, context):
             # ],
         ]
     )
-
-    update.message.reply_text(
-        text=get_message(context, epilog='When do you want to cook?'),
-        reply_markup=keyboard,
-    )
+    message = get_message(context, epilog='When do you want to cook?')
+    if update.message is None:
+        update.callback_query.edit_message_text(
+            text=message, reply_markup=keyboard,
+        )
+    else:
+        update.message.reply_text(
+            text=message, reply_markup=keyboard,
+        )
 
     return ConversationStage.SELECTING_WEEKDAY_OR_SHOW_CALENDAR
 

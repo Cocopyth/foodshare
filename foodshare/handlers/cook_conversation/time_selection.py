@@ -28,12 +28,14 @@ def ask_for_time(update, context, selected_time_in_the_past=False):
 
 
 def time_selection_handler(update, context):
-    time_is_selected, time = telegram_hour.process_time_selection(
+    from .date_selection import ask_for_date
+
+    time_is_selected, want_back, time = telegram_hour.process_time_selection(
         update, context
     )
-
-    # if no time was selected
-    if not time_is_selected:
+    if want_back:
+        return ask_for_date(update, context)
+    elif not time_is_selected:
         return ConversationStage.SELECTING_HOUR
 
     # if the selected time is in the past

@@ -14,7 +14,7 @@ number_keyboard_buttons.append(
         InlineKeyboardButton(
             emojize(':left_arrow:️'), callback_data='left_arrow'
         ),
-        InlineKeyboardButton('Back to date', callback_data='back'),
+        InlineKeyboardButton('Back', callback_data='back'),
     ]
 )
 number_keyboard = InlineKeyboardMarkup(number_keyboard_buttons)
