@@ -24,7 +24,7 @@ def ask_for_date(update, context):
                 IKB(f'On {weekday_in_two_days}', callback_data='in_2_days'),
                 IKB('Show calendar', callback_data='show_calendar'),
             ],
-            [IKB('Change name of the meal', callback_data='back')],
+            [IKB('Back', callback_data='back')],
         ]
     )
     message = get_message(context, epilog='When do you want to cook?')

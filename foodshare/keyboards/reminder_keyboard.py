@@ -1,81 +1,52 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton as IKB
+from telegram import InlineKeyboardMarkup
 
-short, middle, long, chose, back2 = map(chr, range(5, 10))
-pattern_reminder = '^' + short + '$|^' + middle + '$|^' + long + '$'
+dic_time_deadline = {
+    48: [0.5, 3, 6, 24],
+    24: [0.5, 1, 3, 6],
+    6: [0.5, 1, 2, 3],
+    3: [-1, 0.5, 1, 1.5],
+    2: [0.5, 1],
+    1: [0.5],
+}
+dict_key_ordered = list(dic_time_deadline.keys())
+dict_key_ordered.sort(reverse=True)
 
 
 def make_labels(time_left):
-    return ()
+    for threshold in dict_key_ordered:
+        if time_left > threshold:
+            return dic_time_deadline[threshold]
+    return [-1, -1, -1, -1]
+
+
+def make_button(label):
+    time = str(timedelta(hours=label)).split(':')
+    hour, minute = int(time[0]), int(time[1])
+    hour_text = f'{hour} h before' if hour > 0 else ''
+    minute_text = f'{minute} minutes before' if minute > 0 else ''
+    button = IKB(
+        text=hour_text + minute_text, callback_data=str(timedelta(hours=label))
+    )
+    return button
+
+
+def transform_limit():
+    pass
+
+
+pattern_reminder = ''
 
 
 def reminder_keyboard_build(time_left):
-    if time_left > 48:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    text='30 minutes before', callback_data=short
-                ),
-                InlineKeyboardButton(
-                    text='3 hours before ', callback_data=middle
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='24 hours before', callback_data=long
-                ),
-                InlineKeyboardButton(
-                    text='Chose date and hour', callback_data=chose
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Change cost of the meal', callback_data=back2
-                )
-            ],
-        ]
-    else:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    text='30 minutes before', callback_data=short
-                ),
-                InlineKeyboardButton(
-                    text='3 hours before ', callback_data=middle
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='24 hours before', callback_data=long
-                ),
-                InlineKeyboardButton(
-                    text='Chose date and hour', callback_data=chose
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Change cost of the meal', callback_data=back2
-                )
-            ],
-        ]
+    labels = make_labels(time_left)
+    button_list = []
+    for label in labels:
+        button_list.append(make_button(label))
+    buttons = [button_list[i : i + 2] for i in range(0, len(button_list), 2)]
+    buttons.append([IKB(text="Until last minute", callback_data='00:00:00')])
+    buttons.append([IKB(text="Back", callback_data='back')])
     keyboard = InlineKeyboardMarkup(buttons)
     return keyboard
-
-
-times48 = {short: 0.5, middle: 3, long: 24}
-
-
-def transform_limit(pushed, time_left):
-    if time_left > 48:
-        return (
-            datetime.now()
-            + timedelta(hours=time_left)
-            - timedelta(hours=times48[pushed])
-        )
-    else:
-        return (
-            datetime.now()
-            + timedelta(hours=time_left)
-            - timedelta(hours=times48[pushed])
-        )

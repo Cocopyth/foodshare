@@ -43,7 +43,6 @@ def time_selection_handler(update, context):
     selected_datetime = datetime.datetime.combine(selected_date, time)
     if selected_datetime < datetime.datetime.now():
         return ask_for_time(update, context, selected_time_in_the_past=True)
-
     context.user_data['time'] = time
 
     return ask_for_number_of_person(update, context)
