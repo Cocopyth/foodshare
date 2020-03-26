@@ -28,7 +28,7 @@ def ask_for_time(update, context, selected_time_in_the_past=False):
 
 
 def time_selection_handler(update, context):
-    from .date_selection import ask_for_date
+    from .date_selection import ask_for_date  # to avoid circular import
 
     time_is_selected, want_back, time = telegram_hour.process_time_selection(
         update, context

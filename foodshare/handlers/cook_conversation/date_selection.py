@@ -24,13 +24,13 @@ def ask_for_date(update, context):
                 IKB(f'On {weekday_in_two_days}', callback_data='in_2_days'),
                 IKB('Show calendar', callback_data='show_calendar'),
             ],
-            # [
-            #     IKB('Change name of the meal', callback_data='back')
-            # ],
+            [IKB('Change name of the meal', callback_data='back')],
         ]
     )
     message = get_message(context, epilog='When do you want to cook?')
-    if update.message is None:
+    if (
+        update.message is None
+    ):  # reply doesn't work if there is no message to reply to
         update.callback_query.edit_message_text(
             text=message, reply_markup=keyboard,
         )

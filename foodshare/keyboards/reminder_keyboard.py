@@ -6,6 +6,10 @@ short, middle, long, chose, back2 = map(chr, range(5, 10))
 pattern_reminder = '^' + short + '$|^' + middle + '$|^' + long + '$'
 
 
+def make_labels(time_left):
+    return ()
+
+
 def reminder_keyboard_build(time_left):
     if time_left > 48:
         buttons = [

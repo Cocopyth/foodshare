@@ -33,6 +33,7 @@ cook_handler = ConversationHandler(
         CS.SELECTING_WEEKDAY_OR_SHOW_CALENDAR: [
             CQH(get_date_from_weekday, pattern='today|tmo|in_2_days'),
             CQH(get_date_from_calendar, pattern='show_calendar'),
+            CQH(ask_for_meal_name, pattern='back'),
         ],
         CS.SELECTING_DATE_CALENDAR: [CQH(calendar_selection_handler)],
         CS.SELECTING_HOUR: [CQH(time_selection_handler)],
