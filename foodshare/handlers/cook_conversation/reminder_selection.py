@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from telegram import ParseMode
 
 from foodshare.handlers.cook_conversation import ConversationStage, get_message
 from foodshare.keyboards.reminder_keyboard import reminder_keyboard_build
+
+from .conclusion_selection import ask_for_conclusion
 
 
 def hours_until_meal(date):
@@ -12,7 +14,7 @@ def hours_until_meal(date):
 
 
 def ask_for_reminder(update, context):
-    epilog = 'How much time in advance do you want to kno who\'s coming?'
+    epilog = 'How much time in advance do you want to know who\'s coming?'
     ud = context.user_data
     selected_datetime = datetime.combine(ud['date'], ud['time'])
     time_left = hours_until_meal(selected_datetime)
@@ -23,3 +25,16 @@ def ask_for_reminder(update, context):
     )
 
     return ConversationStage.SELECTING_REMINDER
+
+
+def get_deadline(update, context):
+    query_data = update.callback_query.data
+    time_list = query_data.split(':')
+    ud = context.user_data
+    selected_datetime = datetime.combine(ud['date'], ud['time'])
+    deadline = selected_datetime - timedelta(
+        hours=int(time_list[0]), minutes=int(time_list[1])
+    )
+    ud['deadline'] = deadline
+    print(deadline)
+    return ask_for_conclusion(update, context)

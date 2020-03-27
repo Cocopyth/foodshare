@@ -22,13 +22,14 @@ def make_labels(time_left):
     return [-1, -1, -1, -1]
 
 
-def make_button(label):
-    time = str(timedelta(hours=label)).split(':')
-    hour, minute = int(time[0]), int(time[1])
+def make_button(float_hour):
+    hour = int(float_hour)
+    minute = int(60 * (float_hour - hour))
     hour_text = f'{hour} h before' if hour > 0 else ''
     minute_text = f'{minute} minutes before' if minute > 0 else ''
     button = IKB(
-        text=hour_text + minute_text, callback_data=str(timedelta(hours=label))
+        text=hour_text + minute_text,
+        callback_data=str(timedelta(hours=float_hour)),
     )
     return button
 
@@ -41,11 +42,14 @@ pattern_reminder = ''
 
 
 def reminder_keyboard_build(time_left):
-    labels = make_labels(time_left)
+    float_hours = make_labels(time_left)
     button_list = []
-    for label in labels:
-        button_list.append(make_button(label))
-    buttons = [button_list[i : i + 2] for i in range(0, len(button_list), 2)]
+    for float_hour in float_hours:
+        button_list.append(make_button(float_hour))
+    buttons = [
+        button_list[i : i + 2]  # noqa : E203 whitespace before ':'
+        for i in range(0, len(button_list), 2)
+    ]
     buttons.append([IKB(text="Until last minute", callback_data='00:00:00')])
     buttons.append([IKB(text="Back", callback_data='back')])
     keyboard = InlineKeyboardMarkup(buttons)
