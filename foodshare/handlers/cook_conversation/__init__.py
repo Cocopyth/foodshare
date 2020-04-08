@@ -45,7 +45,12 @@ def get_message(context, epilog='', highlight=None):
         message['cost'] = emojize(
             f':euro_banknote: For {emojize_number(ud["cost"])}€ in total'
         )
-
+    if 'deadline' in ud:
+        deadline = ud['deadline']
+        message['deadline'] = emojize(
+            f'	:alarm_clock: People have until {get_weekday(deadline)} '
+            f'{deadline.strftime("%d/%m/%Y at %H:%M")} to answer'
+        )
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'
 
