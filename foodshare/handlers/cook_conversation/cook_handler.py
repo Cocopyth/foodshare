@@ -6,17 +6,18 @@ from telegram.ext import (
     MessageHandler,
 )
 
-from foodshare.commands.cook import end, meal_name_confirm, save_input2
+from foodshare.commands.cook import save_input2
 from foodshare.keyboards.confirmation_keyboard import confirm, what
 
 from . import ConversationStage as CS
+from .conclusion_selection import end
 from .cost_selection import cost_selection_handler
 from .date_selection import (
     calendar_selection_handler,
     get_date_from_calendar,
     get_date_from_weekday,
 )
-from .meal_name_choice import ask_for_meal_name, save_meal_name
+from .meal_name_choice import ask_for_meal_name, return_sticker, save_meal_name
 from .nb_of_person_selection import nb_of_person_selection_handler
 from .reminder_selection import get_deadline
 from .time_selection import time_selection_handler
@@ -38,8 +39,12 @@ cook_handler = ConversationHandler(
         CS.CONFIRMATION: [
             MessageHandler(Filters.text, save_input2),
             CQH(end, pattern=confirm),
-            CQH(meal_name_confirm, pattern=what),
+            CQH(ask_for_meal_name, pattern=what),
         ],
     },
-    fallbacks=[CommandHandler('cook', ask_for_meal_name)],
+    fallbacks=[
+        CommandHandler('cook', ask_for_meal_name),
+        MessageHandler(Filters.sticker, return_sticker),
+    ],  # Only for
+    # developpment to know sticker id
 )

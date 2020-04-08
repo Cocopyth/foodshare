@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 
@@ -28,8 +26,8 @@ def make_button(float_hour):
     hour_text = f'{hour} h ' if hour > 0 else ''
     minute_text = f'{minute} minutes ' if minute > 0 else ''
     button = IKB(
-        text=hour_text + minute_text +'before',
-        callback_data=str(timedelta(hours=float_hour)),
+        text=hour_text + minute_text + 'before',
+        callback_data=f'{hour}:{minute}',
     )
     return button
 
