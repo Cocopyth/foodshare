@@ -25,10 +25,10 @@ def make_labels(time_left):
 def make_button(float_hour):
     hour = int(float_hour)
     minute = int(60 * (float_hour - hour))
-    hour_text = f'{hour} h before' if hour > 0 else ''
-    minute_text = f'{minute} minutes before' if minute > 0 else ''
+    hour_text = f'{hour} h ' if hour > 0 else ''
+    minute_text = f'{minute} minutes ' if minute > 0 else ''
     button = IKB(
-        text=hour_text + minute_text,
+        text=hour_text + minute_text +'before',
         callback_data=str(timedelta(hours=float_hour)),
     )
     return button
