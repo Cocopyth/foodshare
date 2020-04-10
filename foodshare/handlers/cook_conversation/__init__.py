@@ -51,6 +51,12 @@ def get_message(context, epilog='', highlight=None):
             f'	:alarm_clock: People have until {get_weekday(deadline)} '
             f'{deadline.strftime("%d/%m/%Y at %H:%M")} to answer'
         )
+    if 'message2others' in ud:
+        message2others = ud['message2others']
+        message['message2others'] = emojize(
+            f':calling: I will send the following message to people \n'
+            f'*{message2others}*'
+        )
     if highlight in message.keys():
         message[highlight] = f'*{message[highlight]}*'
 

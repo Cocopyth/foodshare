@@ -14,7 +14,6 @@ def ask_for_date(update, context):
     weekday_in_two_days = get_weekday(
         datetime.date.today() + datetime.timedelta(days=2)
     )
-
     keyboard = InlineKeyboardMarkup(
         [
             [

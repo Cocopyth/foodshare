@@ -7,6 +7,9 @@ from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 
 
 def ask_for_conclusion(update, context, highlight=None):
+    ud = context.user_data
+    query = update.callback_query
+    ud['last_query'] = query
     epilog = (
         'Now I will send a message to people if you want'
         + ' to add a text message just send it to me. '
@@ -29,6 +32,29 @@ def ask_for_conclusion(update, context, highlight=None):
             parse_mode=ParseMode.MARKDOWN,
         )
 
+    return ConversationStage.CONFIRMATION
+
+
+def additional_message(update, context):
+    bot = context.bot
+    ud = context.user_data
+    ud['message2others'] = update.message.text
+    bot.deleteMessage(update.message.chat_id, update.message.message_id)
+    query = ud['last_query']
+    epilog = (
+        'Now I will send a message to people if you want'
+        + ' to add a text message just send it to me. '
+        + 'Press confirm when you\'re ready!'
+    )
+    text = get_message(context, epilog=epilog)
+
+    bot.edit_message_text(
+        text=text,
+        chat_id=query.message.chat_id,
+        message_id=query.message.message_id,
+        reply_markup=confirmation_keyboard,
+        parse_mode=ParseMode.MARKDOWN,
+    )
     return ConversationStage.CONFIRMATION
 
 
