@@ -8,6 +8,8 @@ from foodshare.handlers.cook_conversation.nb_of_person_selection import (
 )
 from foodshare.keyboards import telegram_hour
 
+from .reminder_selection import ask_for_reminder
+
 
 def ask_for_time(update, context, selected_time_in_the_past=False):
     if selected_time_in_the_past:
@@ -33,7 +35,12 @@ def time_selection_handler(update, context):
     time_is_selected, want_back, time = telegram_hour.process_time_selection(
         update, context
     )
-    if want_back:
+    ud = context.user_data
+    if 'confirmation_stage' in ud and (want_back or time_is_selected):
+        if time_is_selected:
+            context.user_data['time'] = time
+        return ask_for_reminder(update, context)
+    elif want_back:
         return ask_for_date(update, context)
     elif not time_is_selected:
         return ConversationStage.SELECTING_HOUR

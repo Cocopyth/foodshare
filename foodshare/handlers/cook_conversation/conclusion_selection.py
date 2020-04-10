@@ -13,7 +13,7 @@ def ask_for_conclusion(update, context, highlight=None):
         + 'Press confirm when you\'re ready!'
     )
     context.user_data['confirmation_stage'] = True
-    text = get_message(context, epilog=epilog)
+    text = get_message(context, epilog=epilog, highlight=highlight)
     if (
         update.message is None
     ):  # reply doesn't work if there is no message to reply to

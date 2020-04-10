@@ -6,6 +6,7 @@ from telegram import InlineKeyboardMarkup
 from foodshare.keyboards import telegram_calendar
 
 from . import ConversationStage, get_message, get_weekday
+from .reminder_selection import ask_for_reminder
 from .time_selection import ask_for_time
 
 
@@ -52,7 +53,16 @@ def get_date_from_weekday(update, context):
         date = datetime.date.today() + datetime.timedelta(days=2)
 
     context.user_data['date'] = date
-
+    if 'confirmation_stage' in context.user_data:
+        ud = context.user_data
+        selected_date, time = ud['date'], ud['time']
+        selected_datetime = datetime.datetime.combine(selected_date, time)
+        if selected_datetime < datetime.datetime.now():
+            return ask_for_time(
+                update, context, selected_time_in_the_past=True
+            )
+        else:
+            return ask_for_reminder(update, context)
     return ask_for_time(update, context)
 
 
@@ -89,5 +99,6 @@ def calendar_selection_handler(update, context):
         )
 
     context.user_data['date'] = date
-
+    if 'confirmation_stage' in context.user_data:
+        return ask_for_reminder(update, context)
     return ask_for_time(update, context)

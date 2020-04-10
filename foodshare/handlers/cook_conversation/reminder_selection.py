@@ -19,7 +19,7 @@ def ask_for_reminder(update, context):
     selected_datetime = datetime.combine(ud['date'], ud['time'])
     time_left = hours_until_meal(selected_datetime)
     update.callback_query.edit_message_text(
-        text=get_message(context, epilog=epilog, highlight='cost'),
+        text=get_message(context, epilog=epilog, highlight='reminder'),
         reply_markup=reminder_keyboard_build(time_left),
         parse_mode=ParseMode.MARKDOWN,
     )
@@ -36,5 +36,4 @@ def get_deadline(update, context):
         hours=int(time_list[0]), minutes=int(time_list[1])
     )
     ud['deadline'] = deadline
-    print(deadline)
     return ask_for_conclusion(update, context)

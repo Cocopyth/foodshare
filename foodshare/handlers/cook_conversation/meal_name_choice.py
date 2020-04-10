@@ -18,7 +18,9 @@ def ask_for_meal_name(update, context):
     if (
         update.message is None
     ):  # reply doesn't work if there is no message to reply to
-        update.callback_query.edit_message_text(text=message,)
+        update.callback_query.edit_message_text(
+            text=message, highlight='meal_name'
+        )
     else:
         update.message.reply_text(message)
     return ConversationStage.TYPING_MEAL_NAME

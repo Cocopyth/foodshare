@@ -4,6 +4,7 @@ from telegram import ParseMode
 from foodshare.handlers.cook_conversation import ConversationStage, get_message
 from foodshare.keyboards import telegram_number
 
+from .conclusion_selection import ask_for_conclusion
 from .cost_selection import ask_for_cost
 
 
@@ -30,7 +31,12 @@ def nb_of_person_selection_handler(update, context):
         want_back,
         nb_of_person,
     ) = telegram_number.process_number_selection(update, context, 'persons')
-    if want_back:
+    ud = context.user_data
+    if 'confirmation_stage' in ud and (want_back or nb_is_selected):
+        if nb_is_selected:
+            context.user_data['nb_of_person'] = nb_of_person
+        return ask_for_conclusion(update, context, highlight='cost')
+    elif want_back:
         return ask_for_time(update, context)
     # if no number was selected
     elif not nb_is_selected:
