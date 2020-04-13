@@ -1,6 +1,6 @@
 from telegram import ChatAction
 
-from foodshare.commands.gif_test import get_gif_url
+from foodshare.utils.gif_test import get_gif_url
 
 from . import ConversationStage
 from .conclusion_selection import ask_for_conclusion
