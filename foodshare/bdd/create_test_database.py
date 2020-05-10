@@ -12,11 +12,11 @@ community1 = Community(name = "community1", description = "An awesome "
 community2 = Community(name = "community2", description = "Another awesome "
                                                           "community")
 
-pierre_guilmin = User(name='pierre guilmin', telegram_id = 'to complete')
-corentin = User(name='corentin bisot', telegram_id = 'to complete')
-tigrou = User(name='pierre tiengou', telegram_id = 'to complete')
-aurelien = User(name='aurélien gauffre', telegram_id = 'to complete')
-benoit = User(name= 'benoit sauty', telegram_id = 'to complete')
+pierre_guilmin = User(name='pierre guilmin', telegram_id = '1009446257')
+corentin = User(name='corentin bisot', telegram_id = '979248731')
+tigrou = User(name='pierre tiengou', telegram_id = '1195132372')
+aurelien = User(name='aurélien gauffre', telegram_id = '1162992084')
+benoit = User(name= 'benoit sauty', telegram_id = '1225726014')
 pierre_guilmin.community = community1
 corentin.community = community1
 tigrou.community = community1
