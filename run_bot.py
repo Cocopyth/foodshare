@@ -28,7 +28,7 @@ def main():
 
     # create the updater
     updater = Updater(bot_token, use_context=True)
-
+    job_queue= updater.job_queue
     # get the dispatcher
     dispatcher = updater.dispatcher
 

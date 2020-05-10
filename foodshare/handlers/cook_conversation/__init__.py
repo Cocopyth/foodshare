@@ -61,3 +61,35 @@ def get_message(context, epilog='', highlight=None):
         message[highlight] = f'*{message[highlight]}*'
 
     return '\n'.join(message.values()) + f'\n\n{epilog}'
+
+def create_meal_message(meal_info):
+    message = OrderedDict()
+    who_cooks = meal_info['who_cooks'].name
+    message['meal_name'] = emojize(
+            f':banana: {who_cooks} is cooking {meal_info["meal_name"]}'
+        )
+    date = meal_info['date']
+    message['date'] = emojize(
+        f':calendar: On {get_weekday(date)} {date.strftime("%d/%m/%Y")}'
+    )
+    time = meal_info['time']
+    message['time'] = emojize(f':one-thirty: At {time.strftime("%H:%M")}')
+    message['nb_of_person'] = emojize(
+        f':family: For {emojize_number(meal_info["nb_of_person"])} persons'
+    )
+    message['cost'] = emojize(
+        f':euro_banknote: For {emojize_number(meal_info["cost"])}€ in total'
+    )
+    deadline = meal_info['deadline']
+    message['deadline'] = emojize(
+        f'	:alarm_clock: People have until {get_weekday(deadline)} '
+        f'{deadline.strftime("%d/%m/%Y at %H:%M")} to answer'
+    )
+    if 'message2others' in meal_info:
+        message2others = meal_info['message2others']
+        message['message2others'] = emojize(
+            f'he added the following message : \n'
+            f'*{message2others}*'
+        )
+
+    return '\n'.join(message.values())+'\n Do you want to come?'
