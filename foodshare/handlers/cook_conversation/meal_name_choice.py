@@ -46,11 +46,4 @@ def save_meal_name(update, context):
     return ask_for_date(update, context)
 
 
-def return_sticker(
-    update, context
-):  # Only for developpment to know sticker id
-    file_id = update.message.sticker['file_id']
-    bot = context.bot
-    chat_id = update.message.chat_id
-    print(file_id)
-    bot.send_sticker(chat_id, file_id)
+

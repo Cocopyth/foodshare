@@ -5,6 +5,7 @@ from telegram.ext import Updater
 
 from foodshare.handlers.cook_conversation.cook_handler import cook_handler
 from foodshare.handlers.error_handler import error_handler
+from foodshare.handlers.debug_conversation.debug_handler import debug_handler
 
 # activate logging
 logging.basicConfig(
@@ -33,6 +34,7 @@ def main():
 
     # add a handler to the dispatcher, it will be used to handle the updates
     dispatcher.add_handler(cook_handler)
+    dispatcher.add_handler(debug_handler)
 
     # log all errors
     dispatcher.add_error_handler(error_handler)

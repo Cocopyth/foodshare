@@ -25,7 +25,7 @@ from .date_selection import (
     get_date_from_calendar,
     get_date_from_weekday,
 )
-from .meal_name_choice import ask_for_meal_name, return_sticker, save_meal_name
+from .meal_name_choice import ask_for_meal_name, save_meal_name
 from .nb_of_person_selection import (
     ask_for_number_of_person,
     nb_of_person_selection_handler,
@@ -60,7 +60,6 @@ cook_handler = ConversationHandler(
     },
     fallbacks=[
         CommandHandler('cook', ask_for_meal_name),
-        MessageHandler(Filters.sticker, return_sticker),
     ],  # Only for
     # developpment to know sticker id
 )

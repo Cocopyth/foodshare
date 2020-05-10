@@ -76,6 +76,8 @@ def end(update, context):
     bot = context.bot
     chat_id = context.user_data['chat_id']
     bot.send_sticker(chat_id, sticker_id)
+    infos = bot.get_chat(chat_id)
+    ud = context.user_data
     # save data in the database + send messages
-    context.user_data.clear()
+    ud.clear()
     return ConversationHandler.END
