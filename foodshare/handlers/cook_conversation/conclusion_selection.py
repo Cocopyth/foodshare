@@ -6,7 +6,7 @@ from foodshare.handlers.cook_conversation import ConversationStage, \
     get_message
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 from foodshare.bdd.database_communication import get_user_from_chat_id, \
-    add_meal, get_users_to_contact
+    add_meal
 import threading
 
 import copy

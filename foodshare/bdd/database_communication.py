@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from foodshare.bdd.tables_declaration import User, Meal, Community, \
-    Transaction, Base
+    Transaction, Base, Pending_meal_job
 import datetime
 absolute_path ='home/coco/db/foodshare_test.db'
 engine = create_engine('sqlite:////'+absolute_path, echo=True)
@@ -14,12 +14,6 @@ def get_user_from_chat_id(chat_id):
     our_user = session.query(User).filter_by(telegram_id=chat_id).first()
     return(our_user)
 
-def get_users_to_contact(who_cooks):
-    # members = sorted(who_cooks.community.members,
-    #                  key = lambda user: user.meal_balance)
-    members = who_cooks.community.members
-    return(members)
-    # return([who_cooks])
 
 def add_meal(who_cooks, ud):
     meal = Meal(what = ud['meal_name'])
@@ -38,3 +32,12 @@ def add_meal(who_cooks, ud):
     meal.pending_meal_jobs = []
     session.add(meal)
     session.commit()
+
+def update_meal(message_id, query_data):
+    pending_meal_job = session.query(Pending_meal_job).filter_by(message_id
+                                              =message_id).first()
+    pending_meal_job.has_answered = True
+    pending_meal_job.answer = True if query_data == 'secret_key_yes' else False
+    session.add(pending_meal_job)
+    session.commit()
+    return()

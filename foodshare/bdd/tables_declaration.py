@@ -36,7 +36,7 @@ class User(Base):
                        self.name, self.telegram_id)
 
 class Pending_meal_job(Base):
-    __tablename__ = 'messages'
+    __tablename__ = 'pending_job'
 
     id = Column(Integer, primary_key=True)
     meal_id = Column(Integer, ForeignKey('meals.id'))
@@ -49,6 +49,7 @@ class Pending_meal_job(Base):
     has_answered = Column(Integer)
     answer = Column(Integer)
     job_done = Column(Integer)
+    message_id = Column(Integer)
     def __repr__(self):
         return "<Pending_meal_job(type='%s', answer='%s'," \
                "from_whom='%s', " \
