@@ -5,6 +5,7 @@ from emoji import emojize
 
 from foodshare.utils import emojize_number
 
+from datetime import datetime
 
 def get_weekday(date):
     return date.strftime('%A')
@@ -62,31 +63,34 @@ def get_message(context, epilog='', highlight=None):
 
     return '\n'.join(message.values()) + f'\n\n{epilog}'
 
-def create_meal_message(meal_info):
+datetime_format = '%Y-%m-%d %H:%M:%S'
+
+def create_meal_message(meal):
     message = OrderedDict()
-    who_cooks = meal_info['who_cooks'].name
+    who_cooks = meal.who_cooks.name
     message['meal_name'] = emojize(
-            f':banana: {who_cooks} is cooking {meal_info["meal_name"]}'
+            f':banana: {who_cooks} is cooking {meal.what}'
         )
-    date = meal_info['date']
+    date = meal.when
+    date = datetime.strptime(date, datetime_format)
     message['date'] = emojize(
         f':calendar: On {get_weekday(date)} {date.strftime("%d/%m/%Y")}'
     )
-    time = meal_info['time']
-    message['time'] = emojize(f':one-thirty: At {time.strftime("%H:%M")}')
+    message['time'] = emojize(f':one-thirty: At {date.strftime("%H:%M")}')
     message['nb_of_person'] = emojize(
-        f':family: For {emojize_number(meal_info["nb_of_person"])} persons'
+        f':family: For {emojize_number(meal.how_many)} persons'
     )
     message['cost'] = emojize(
-        f':euro_banknote: For {emojize_number(meal_info["cost"])}€ in total'
+        f':euro_banknote: For {emojize_number(meal.how_much)}€ in total'
     )
-    deadline = meal_info['deadline']
+    deadline = meal.deadline
+    deadline = datetime.strptime(deadline, datetime_format)
     message['deadline'] = emojize(
         f'	:alarm_clock: People have until {get_weekday(deadline)} '
         f'{deadline.strftime("%d/%m/%Y at %H:%M")} to answer'
     )
-    if 'message2others' in meal_info:
-        message2others = meal_info['message2others']
+    if len(meal.additional_info)>0:
+        message2others = meal.additional_info
         message['message2others'] = emojize(
             f'he added the following message : \n'
             f'*{message2others}*'

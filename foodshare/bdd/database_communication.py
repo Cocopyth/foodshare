@@ -19,6 +19,7 @@ def get_users_to_contact(who_cooks):
     #                  key = lambda user: user.meal_balance)
     members = who_cooks.community.members
     return(members)
+    # return([who_cooks])
 
 def add_meal(who_cooks, ud):
     meal = Meal(what = ud['meal_name'])
@@ -31,7 +32,9 @@ def add_meal(who_cooks, ud):
     meal.how_much = ud['cost']
     meal.how_many = ud['nb_of_person']
     meal.deadline = ud['deadline']
+    meal.additional_info = ud['message2others']
     meal.is_done = False
     meal.cancelled = False
+    meal.pending_meal_jobs = []
     session.add(meal)
     session.commit()
