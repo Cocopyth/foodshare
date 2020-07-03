@@ -9,7 +9,7 @@ from telegram import InlineKeyboardMarkup
 from telegram import Bot
 import os
 absolute_path ='home/coco/db/foodshare_test.db'
-engine = create_engine('sqlite:////'+absolute_path, echo=True)
+engine = create_engine('sqlite:////'+absolute_path, echo=False)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -20,6 +20,7 @@ bot = Bot(token=bot_token)
 
 def handle_meals():
     meals = session.query(Meal)
+    finished=True
     for meal in meals:
         deadline = datetime.strptime(meal.deadline, datetime_format)
         coming = [pj for pj in meal.pending_meal_jobs if
@@ -27,15 +28,18 @@ def handle_meals():
         pending = [pj for pj in meal.pending_meal_jobs if (pj.message_sent
                                                            and not
                                  pj.has_answered)]
-        print('coming=', coming, 'pending=', pending)
+        print('coming=', coming)
+        print('pending=', pending)
         community_users = meal.who_cooks.community.members
         # community_users.sort(
         #     key = lambda user : user.meal_balance)
         contacted = [pj.to_whom for pj in meal.pending_meal_jobs if pj.message_sent]
         if datetime.now() <= deadline:
             if len(coming) + len(pending) <= meal.how_many:
+                finished = False
                 user = next((user for user in community_users if user not in
-                 contacted), None)
+                             (contacted+[meal.who_cooks])), None)
+                print(user)
                 if user != None:
                     pending_meal_job = Pending_meal_job(type=0) #type 0 for
                     # normal asking
@@ -62,7 +66,5 @@ def handle_meals():
                     pending_meal_job.job_done = False
                     session.add(pending_meal_job)
                     session.commit()
-                return(False)
-            else:
-                return(True)
+    return(finished)
 

@@ -23,14 +23,14 @@ class User(Base):
     admin = relationship("Community",back_populates="members")
     meals = relationship('Meal', secondary = meals_users, back_populates =
     'participants')
-    transaction_giver = relationship('Transaction', back_populates =
-    "from_whom")
-    transaction_receiver = relationship('Transaction', back_populates=
-    "to_whom")
-    message_giver = relationship('Pending_meal_job', back_populates =
-    "from_whom")
-    message_receiver = relationship('Pending_meal_job', back_populates=
-    "to_whom")
+    transaction_giver = relationship('Transaction', backref =
+    "from_whom", foreign_keys='Transaction.from_whom_id')
+    transaction_receiver = relationship('Transaction', backref=
+    "to_whom", foreign_keys='Transaction.to_whom_id')
+    message_giver = relationship('Pending_meal_job', backref =
+    "from_whom", foreign_keys='Pending_meal_job.from_whom_id')
+    message_receiver = relationship('Pending_meal_job', backref=
+    "to_whom", foreign_keys='Pending_meal_job.to_whom_id')
     def __repr__(self):
         return "<User(name='%s', telegram_id='%s')>" % (
                        self.name, self.telegram_id)
@@ -43,8 +43,7 @@ class Pending_meal_job(Base):
     meal = relationship("Meal", back_populates = 'pending_meal_jobs')
     type = Column(Integer)
     from_whom_id = Column(Integer, ForeignKey('users.id'))
-    from_whom = relationship(User, back_populates = 'message_giver')
-    to_whom = relationship(User, back_populates='message_receiver')
+    to_whom_id = Column(Integer, ForeignKey('users.id'))
     message_sent = Column(Integer)
     has_answered = Column(Integer)
     answer = Column(Integer)
@@ -80,8 +79,8 @@ class Meal(Base):
     cancelled = Column(Integer)
     additional_info = Column(String)
     def __repr__(self):
-        return "<Meal(What='%s', participants='%s')>" % (
-                       self.what, self.participants)
+        return "<Meal(What='%s', participants='%s',how many='%s')>" % (
+                       self.what, self.participants, self.how_many)
 
 User.meal_where_cook = relationship("Meal", order_by = Meal.id, back_populates
 = "who_cooks")
@@ -118,8 +117,7 @@ class Transaction(Base):
     how_much = Column(Integer)
     community_id = Column(Integer, ForeignKey('communities.id'))
     from_whom_id =  Column(Integer, ForeignKey('users.id'))
-    from_whom = relationship(User, back_populates = 'transaction_giver')
-    to_whom = relationship(User, back_populates='transaction_receiver')
+    to_whom_id = Column(Integer, ForeignKey('users.id'))
     def __repr__(self):
         return "<Transaction(what='%s', how_much='%s',from_whom='%s', " \
                "to_whom='%s')>" % (
