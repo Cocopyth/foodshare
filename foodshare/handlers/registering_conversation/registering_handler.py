@@ -23,7 +23,6 @@ registering_handler = ConversationHandler(
         CommandHandler('cook', ask_for_name),
     ],  # Only for
     map_to_parent={
-            # Return to second level menu
             ConversationHandler.END: CScom.REGISTERED,
         }
     # developpment to know sticker id

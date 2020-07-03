@@ -40,7 +40,6 @@ def update_meal(message_id, query_data):
     pending_meal_job.answer = True if query_data == 'secret_key_yes' else False
     session.add(pending_meal_job)
     session.commit()
-    return()
 
 def add_user(name,chat_id):
     user = User(name = name, telegram_id = chat_id)
@@ -49,3 +48,12 @@ def add_user(name,chat_id):
     user.community = None
     session.add(user)
     session.commit()
+
+def add_community(name, description, chat_id):
+    print(chat_id)
+    creator = get_user_from_chat_id(chat_id)
+    community = Community(name=name, description=description)
+    creator.community = community
+    session.add_all([community, creator])
+    session.commit()
+

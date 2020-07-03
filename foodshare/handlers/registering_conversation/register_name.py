@@ -5,6 +5,7 @@ from telegram import InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
 
 from foodshare.bdd.database_communication import add_user
+from foodshare.handlers.community_conversation.first_message import first_message
 def ask_for_name(update, context):
     message = (
         'What\'s your name? '
@@ -47,4 +48,17 @@ def end(update,context):
     chat_id = update.effective_chat.id
     add_user(name, chat_id)
     ud.clear()
+    bot = context.bot
+    message = f'Okay now let\'s get in a community'
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                IKB('Let\'s go!',
+                    callback_data='start_community'),
+            ],
+        ]
+    )
+    bot.send_message(
+        chat_id=chat_id, text=message, reply_markup=keyboard
+    )
     return ConversationHandler.END
