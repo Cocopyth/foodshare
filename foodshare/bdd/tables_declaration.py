@@ -78,6 +78,7 @@ class Meal(Base):
     is_done = Column(Integer)
     cancelled = Column(Integer)
     additional_info = Column(String)
+    confirmation_sent = Column(Integer)
     def __repr__(self):
         return "<Meal(What='%s', participants='%s',how many='%s')>" % (
                        self.what, self.participants, self.how_many)

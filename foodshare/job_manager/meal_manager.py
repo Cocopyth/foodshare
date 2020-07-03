@@ -19,7 +19,8 @@ bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 bot = Bot(token=bot_token)
 
 def handle_meals():
-    meals = session.query(Meal)
+    meals = session.query(Meal).filter_by(cancelled = False,
+                                          is_done = False)
     finished=True
     for meal in meals:
         deadline = datetime.strptime(meal.deadline, datetime_format)
@@ -35,11 +36,10 @@ def handle_meals():
         #     key = lambda user : user.meal_balance)
         contacted = [pj.to_whom for pj in meal.pending_meal_jobs if pj.message_sent]
         if datetime.now() <= deadline:
-            if len(coming) + len(pending) <= meal.how_many:
+            if len(coming) + len(pending) < meal.how_many:
                 finished = False
                 user = next((user for user in community_users if user not in
                              (contacted+[meal.who_cooks])), None)
-                print(user)
                 if user != None:
                     pending_meal_job = Pending_meal_job(type=0) #type 0 for
                     # normal asking
@@ -66,5 +66,24 @@ def handle_meals():
                     pending_meal_job.job_done = False
                     session.add(pending_meal_job)
                     session.commit()
+                else:
+                    finished = True
+        else:
+            if not meal.confirmation_sent:
+                send_confirmation(meal)
+                meal.confirmation_sent = True
+                session.add(meal)
+                session.commit()
     return(finished)
+
+def send_confirmation(meal):
+    coming = [pj for pj in meal.pending_meal_jobs if
+              pj.answer]
+    message = f'{len(coming)} people confirmed they will come to your meal' \
+              f'at {meal.when}. \n' \
+              f'Here is the list of the people coming ' \
+              f'{[pj.to_whom for pj in coming]}'
+    bot.send_message(
+        chat_id=meal.who_cooks.telegram_id, text=message
+    )
 
