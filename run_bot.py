@@ -7,6 +7,10 @@ from foodshare.handlers.cook_conversation.cook_handler import cook_handler
 from foodshare.handlers.error_handler import error_handler
 from foodshare.handlers.debug_conversation.debug_handler import debug_handler
 from foodshare.handlers.meal_invitation_conversation.invitation import invitation_handler
+from foodshare.handlers.registering_conversation.registering_handler import \
+    registering_handler
+from foodshare.handlers.community_conversation.community_handler import community_handler
+
 # activate logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -36,6 +40,8 @@ def main():
     dispatcher.add_handler(cook_handler)
     dispatcher.add_handler(debug_handler)
     dispatcher.add_handler(invitation_handler)
+    dispatcher.add_handler(community_handler)
+    dispatcher.add_handler(registering_handler)
 
     # log all errors
     dispatcher.add_error_handler(error_handler)

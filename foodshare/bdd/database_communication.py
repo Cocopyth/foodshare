@@ -41,3 +41,11 @@ def update_meal(message_id, query_data):
     session.add(pending_meal_job)
     session.commit()
     return()
+
+def add_user(name,chat_id):
+    user = User(name = name, telegram_id = chat_id)
+    user.money_balance = 0
+    user.meal_balance = 0
+    user.community = None
+    session.add(user)
+    session.commit()
