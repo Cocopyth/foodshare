@@ -1,11 +1,11 @@
 from collections import OrderedDict
+from datetime import datetime
 from enum import Enum, auto
 
 from emoji import emojize
 
 from foodshare.utils import emojize_number
 
-from datetime import datetime
 
 def get_weekday(date):
     return date.strftime('%A')
@@ -63,14 +63,16 @@ def get_message(context, epilog='', highlight=None):
 
     return '\n'.join(message.values()) + f'\n\n{epilog}'
 
+
 datetime_format = '%Y-%m-%d %H:%M:%S'
+
 
 def create_meal_message(meal):
     message = OrderedDict()
     who_cooks = meal.who_cooks.name
     message['meal_name'] = emojize(
-            f':banana: {who_cooks} is cooking {meal.what}'
-        )
+        f':banana: {who_cooks} is cooking {meal.what}'
+    )
     date = meal.when
     date = datetime.strptime(date, datetime_format)
     message['date'] = emojize(
@@ -89,11 +91,10 @@ def create_meal_message(meal):
         f'	:alarm_clock: People have until {get_weekday(deadline)} '
         f'{deadline.strftime("%d/%m/%Y at %H:%M")} to answer'
     )
-    if len(meal.additional_info)>0:
+    if len(meal.additional_info) > 0:
         message2others = meal.additional_info
         message['message2others'] = emojize(
-            f'he added the following message : \n'
-            f'*{message2others}*'
+            f'he added the following message : \n' f'*{message2others}*'
         )
 
-    return '\n'.join(message.values())+'\n Do you want to come?'
+    return '\n'.join(message.values()) + '\n Do you want to come?'

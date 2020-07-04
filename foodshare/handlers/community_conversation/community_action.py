@@ -1,26 +1,50 @@
-from foodshare.bdd.database_communication import get_user_from_chat_id
-from . import ConversationStage
+import uuid
+
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
+from telegram.ext import ConversationHandler
+
+from foodshare.bdd.database_communication import (
+    add_token,
+    get_user_from_chat_id,
+)
+
+from . import ConversationStage
 
 
 def community_action(update, context):
-    message = "What do you want to do from the community"
-    keyboard = InlineKeyboardMarkup(
-        [
-            [
-                IKB('Quit community',
-                    callback_data='join'),
-            ],
-            [
-                IKB('Invite people',
-                    callback_data='create'),
-            ],
-        ]
+    chat_id = update.effective_chat.id
+    user = get_user_from_chat_id(chat_id)
+    community = user.community
+    message = (
+        f'You\'re in the community {community.name} whose description '
+        f'is : \n {community.description} \n What do you want to do?'
     )
+    buttons = [
+        [IKB('Quit community', callback_data='quit')],
+    ]
+    if user.admin:
+        buttons.append([IKB('Invite people', callback_data='invite')])
+    keyboard = InlineKeyboardMarkup(buttons)
+    bot = context.bot
+    bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+    return ConversationStage.ACTION
+
+
+def send_token(update, context):
+    token = uuid.uuid4().hex[:6].upper()
     bot = context.bot
     chat_id = update.effective_chat.id
-    bot.send_message(
-        chat_id=chat_id, text=message, reply_markup=keyboard
+    user = get_user_from_chat_id(chat_id)
+    community = user.community
+    message = (
+        f'Here is your token to invite one person, it will only work '
+        f'once : {token}'
     )
+    add_token(token, community)
+    bot.send_message(chat_id=chat_id, text=message)
+    return ConversationHandler.END
+
+
+def quit(update, context):
     return None

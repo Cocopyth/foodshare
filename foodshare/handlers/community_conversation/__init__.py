@@ -3,7 +3,6 @@ from enum import Enum, auto
 
 from emoji import emojize
 
-from foodshare.utils import emojize_number
 
 class ConversationStage(Enum):
     REGISTERING = auto()
@@ -12,9 +11,11 @@ class ConversationStage(Enum):
     CREATING = auto()
     DESCRIBING = auto()
     CONFIRMING = auto()
+    ACTION = auto()
+
 
 def get_message(context, epilog='', highlight=None):
-    ud=context.user_data
+    ud = context.user_data
     message = OrderedDict()
 
     if 'community_name' in ud:

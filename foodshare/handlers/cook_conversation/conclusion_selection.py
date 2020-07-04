@@ -2,22 +2,19 @@ from emoji import emojize
 from telegram import ParseMode
 from telegram.ext import ConversationHandler
 
-from foodshare.handlers.cook_conversation import ConversationStage, \
-    get_message
+from foodshare.bdd.database_communication import (
+    add_meal,
+    get_user_from_chat_id,
+)
+from foodshare.handlers.cook_conversation import ConversationStage, get_message
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
-from foodshare.bdd.database_communication import get_user_from_chat_id, \
-    add_meal
-import threading
 
-import copy
-
-from time import sleep
 
 def ask_for_conclusion(update, context, highlight=None):
     ud = context.user_data
     query = update.callback_query
     ud['last_query'] = query
-    ud['message2others']=''
+    ud['message2others'] = ''
     epilog = (
         'Now I will send a message to people if you want'
         + ' to add a text message just send it to me. '
@@ -89,7 +86,3 @@ def end(update, context):
     bot.send_sticker(chat_id, sticker_id)
     ud.clear()
     return ConversationHandler.END
-
-
-
-

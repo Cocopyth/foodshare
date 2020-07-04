@@ -1,22 +1,32 @@
+import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from foodshare.bdd.tables_declaration import User, Meal, Community, \
-    Transaction, Base, Pending_meal_job
-import datetime
-absolute_path ='home/coco/db/foodshare_test.db'
-engine = create_engine('sqlite:////'+absolute_path, echo=True)
+
+from foodshare.bdd.tables_declaration import (
+    Base,
+    Community,
+    Meal,
+    Pending_meal_job,
+    Token,
+    User,
+)
+
+absolute_path = 'home/coco/db/foodshare_test.db'
+engine = create_engine('sqlite:////' + absolute_path, echo=True)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 datetime_format = '%Y-%m-%d %H:%M:%S'
 
+
 def get_user_from_chat_id(chat_id):
     our_user = session.query(User).filter_by(telegram_id=chat_id).first()
-    return(our_user)
+    return our_user
 
 
 def add_meal(who_cooks, ud):
-    meal = Meal(what = ud['meal_name'])
+    meal = Meal(what=ud['meal_name'])
     meal.who_cooks = who_cooks
     meal.community = who_cooks.community
     selected_date, time = ud['date'], ud['time']
@@ -33,27 +43,39 @@ def add_meal(who_cooks, ud):
     session.add(meal)
     session.commit()
 
+
 def update_meal(message_id, query_data):
-    pending_meal_job = session.query(Pending_meal_job).filter_by(message_id
-                                              =message_id).first()
+    pending_meal_job = (
+        session.query(Pending_meal_job)
+        .filter_by(message_id=message_id)
+        .first()
+    )
     pending_meal_job.has_answered = True
     pending_meal_job.answer = True if query_data == 'secret_key_yes' else False
     session.add(pending_meal_job)
     session.commit()
 
-def add_user(name,chat_id):
-    user = User(name = name, telegram_id = chat_id)
+
+def add_user(name, chat_id):
+    user = User(name=name, telegram_id=chat_id)
     user.money_balance = 0
     user.meal_balance = 0
     user.community = None
     session.add(user)
     session.commit()
 
+
 def add_community(name, description, chat_id):
-    print(chat_id)
     creator = get_user_from_chat_id(chat_id)
     community = Community(name=name, description=description)
     creator.community = community
+    creator.admin = 1
     session.add_all([community, creator])
     session.commit()
 
+
+def add_token(token_str, community):
+    token = Token(token=token_str)
+    token.community = community
+    session.add(token)
+    session.commit()

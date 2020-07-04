@@ -58,8 +58,6 @@ cook_handler = ConversationHandler(
             CQH(ask_for_time, pattern=when_time),
         ],
     },
-    fallbacks=[
-        CommandHandler('cook', ask_for_meal_name),
-    ],  # Only for
+    fallbacks=[CommandHandler('cook', ask_for_meal_name)],  # Only for
     # developpment to know sticker id
 )

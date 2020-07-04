@@ -1,5 +1,5 @@
-
 from enum import Enum, auto
+
 
 class ConversationStage(Enum):
     TYPING_NAME = auto()

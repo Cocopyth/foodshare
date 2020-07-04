@@ -44,6 +44,3 @@ def save_meal_name(update, context):
         update.message.reply_text(f'No gif found for {ud["meal_name"]}')
 
     return ask_for_date(update, context)
-
-
-

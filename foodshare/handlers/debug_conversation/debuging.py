@@ -1,6 +1,7 @@
 from . import ConversationStage
+
+
 def debug_fun(update, context):
-    ud = context.user_data
     bot = context.bot
     message = 'v'
     chat_id = update.message.chat_id
@@ -8,6 +9,7 @@ def debug_fun(update, context):
     infos = bot.get_chat(chat_id)
     print(infos)
     return ConversationStage.DEBUG_STAGE_1
+
 
 def return_sticker(
     update, context

@@ -5,25 +5,24 @@ from telegram.ext import (
     Filters,
     MessageHandler,
 )
-from foodshare.handlers.community_conversation.first_message import \
-    ConversationStage as CScom
+
+from foodshare.handlers.community_conversation.first_message import (
+    ConversationStage as CScom,
+)
 
 from . import ConversationStage as CS
-from .register_name import ask_for_name, save_name, end
+from .register_name import ask_for_name, end, save_name
 
 registering_handler = ConversationHandler(
-    entry_points=[CQH(ask_for_name,
-                      pattern='register_asked0523')],
+    entry_points=[CQH(ask_for_name, pattern='register_asked0523')],
     states={
         CS.TYPING_NAME: [MessageHandler(Filters.text, save_name)],
-        CS.NAME_SAVED: [CQH(end, pattern='confirm'),
-            CQH(ask_for_name, pattern='back')]
+        CS.NAME_SAVED: [
+            CQH(end, pattern='confirm'),
+            CQH(ask_for_name, pattern='back'),
+        ],
     },
-    fallbacks=[
-        CommandHandler('cook', ask_for_name),
-    ],  # Only for
-    map_to_parent={
-            ConversationHandler.END: CScom.REGISTERED,
-        }
+    fallbacks=[CommandHandler('cook', ask_for_name)],  # Only for
+    map_to_parent={ConversationHandler.END: CScom.REGISTERED}
     # developpment to know sticker id
 )
