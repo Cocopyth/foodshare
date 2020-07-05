@@ -20,6 +20,8 @@ from .join_community import (
     joining,
     save_community_description,
     save_community_name,
+    verify_token,
+    joining_end
 )
 
 community_handler = ConversationHandler(
@@ -48,6 +50,14 @@ community_handler = ConversationHandler(
             CQH(send_token, pattern='invite'),
             CQH(quit, pattern='quit'),
         ],
+        CS.JOINING: [
+            CQH(creating_joining,pattern='back'),
+            MessageHandler(Filters.text, verify_token)
+        ],
+        CS.VERIFYING: [
+            CQH(joining, pattern='back'),
+            CQH(joining_end, pattern='confirm'),
+        ]
     },
     fallbacks=[CommandHandler('community', first_message)],  # Only for
     # developpment to know sticker id

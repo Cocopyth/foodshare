@@ -1,4 +1,4 @@
-import uuid
+
 
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
@@ -32,16 +32,16 @@ def community_action(update, context):
 
 
 def send_token(update, context):
-    token = uuid.uuid4().hex[:6].upper()
     bot = context.bot
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
     community = user.community
+    token = add_token(community)
     message = (
         f'Here is your token to invite one person, it will only work '
         f'once : {token}'
     )
-    add_token(token, community)
+
     bot.send_message(chat_id=chat_id, text=message)
     return ConversationHandler.END
 

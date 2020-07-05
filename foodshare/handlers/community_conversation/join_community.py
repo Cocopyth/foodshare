@@ -1,7 +1,8 @@
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 
-from foodshare.bdd.database_communication import add_community
+from foodshare.bdd.database_communication import add_community, get_token, \
+    add_user_to_community
 
 from . import ConversationStage, get_message
 
@@ -79,4 +80,46 @@ def creating_end(update, context):
 
 
 def joining(update, context):
-    pass
+    message = "Ask someone who administrate a community to share a token " \
+              "with you and type it as an answer to this message!"
+    update.callback_query.edit_message_text(
+        text=message, reply_markup=back_keyboard,
+    )
+    return ConversationStage.JOINING
+
+def verify_token(update,context):
+    token_str = update.message.text
+    token = get_token(token_str)
+    bot = context.bot
+    chat_id = update.effective_chat.id
+    if token is None:
+        message = "The token was not right! Try again!"
+        bot.send_message(
+            chat_id = chat_id, text=message, reply_markup=back_keyboard,
+        )
+        return ConversationStage.JOINING
+    else:
+        community = token.community
+        message = f'You\'re about to join the community {community.name} ' \
+                  f'whose description is: \n {community.description}. ' \
+                  f'Do you confirm?'
+        keyboard = InlineKeyboardMarkup(
+            [
+                [IKB('Confirm', callback_data='confirm')],
+                [IKB('Back', callback_data='back')],
+            ]
+        )
+        bot.send_message(
+            chat_id = chat_id, text=message, reply_markup=keyboard,
+        )
+        context.user_data['token'] = token
+        return ConversationStage.VERIFYING
+
+def joining_end(update, context):
+    from .first_message import first_message  # to avoid circular dependency
+    ud = context.user_data
+    token = ud['token']
+    chat_id = update.effective_chat.id
+    add_user_to_community(chat_id, token)
+    ud.clear()
+    return first_message(update, context)

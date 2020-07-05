@@ -2,7 +2,7 @@ import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
+import uuid
 from foodshare.bdd.tables_declaration import (
     Base,
     Community,
@@ -74,8 +74,27 @@ def add_community(name, description, chat_id):
     session.commit()
 
 
-def add_token(token_str, community):
+def add_token(community):
+    token_str = uuid.uuid4().hex[:6].upper()
+    while session.query(Token).filter_by(token=token_str).first() is not None:
+        #to
+        # make sure that every token is unique
+        token_str = uuid.uuid4().hex[:6].upper()
     token = Token(token=token_str)
     token.community = community
     session.add(token)
+    session.commit()
+    return(token_str)
+
+def get_token(token_str):
+    token = session.query(Token).filter_by(token=token_str).first()
+    return(token)
+
+def add_user_to_community(chat_id, token):
+    user = get_user_from_chat_id(chat_id)
+    community = token.community
+    session.delete(token)
+    user.community = community
+    user.admin = 0
+    session.add(user)
     session.commit()
