@@ -11,17 +11,17 @@ from foodshare.handlers.registering_conversation.registering_handler import (
 )
 
 from . import ConversationStage as CS
-from .community_action import quit, send_token, community_action, quit_end
+from .community_action import community_action, quit, quit_end, send_token
 from .first_message import first_message
 from .join_community import (
     creating,
     creating_end,
     creating_joining,
     joining,
+    joining_end,
     save_community_description,
     save_community_name,
     verify_token,
-    joining_end
 )
 
 community_handler = ConversationHandler(
@@ -51,8 +51,8 @@ community_handler = ConversationHandler(
             CQH(quit, pattern='quit'),
         ],
         CS.JOINING: [
-            CQH(creating_joining,pattern='back'),
-            MessageHandler(Filters.text, verify_token)
+            CQH(creating_joining, pattern='back'),
+            MessageHandler(Filters.text, verify_token),
         ],
         CS.VERIFYING: [
             CQH(joining, pattern='back'),

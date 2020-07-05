@@ -1,5 +1,3 @@
-
-
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
@@ -50,18 +48,12 @@ def quit(update, context):
     chat_id = update.effective_chat.id
     bot = context.bot
     user = get_user_from_chat_id(chat_id)
+    members = user.community.members
     admins = [member for member in user.community.members if member.admin]
-    if len(admins)<2 and user.admin:
-        bot.send_message(chat_id=chat_id, text='u need another admin') #propose
-        # to name another admin
-        return ConversationHandler.END
-    elif user.money_balance <0:
-        bot.send_message(chat_id=chat_id, text='u need balance>0') #U need
-        # balance >0 : show balances to reimburse someone
-        return ConversationHandler.END
-    else:
+    if len(members) < 2:
         message = (
-            f'Are you sure you want to quit the community?'
+            f'Are you sure you want to quit the community? Since you\'re '
+            f'the last member this will delete it'
         )
         keyboard = InlineKeyboardMarkup(
             [
@@ -69,12 +61,33 @@ def quit(update, context):
                 [IKB('Back', callback_data='back')],
             ]
         )
-        bot.send_message(chat_id=chat_id, text=message,
-                         reply_markup=keyboard)
+        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
         return ConversationStage.QUITTING
+    elif len(admins) < 2 and user.admin:
+        bot.send_message(
+            chat_id=chat_id, text='u need another admin'
+        )  # propose
+        # to name another admin
+        return ConversationHandler.END
+    elif user.money_balance < 0:
+        bot.send_message(chat_id=chat_id, text='u need balance>0')  # U need
+        # balance >0 : show balances to reimburse someone
+        return ConversationHandler.END
+    else:
+        message = f'Are you sure you want to quit the community?'
+        keyboard = InlineKeyboardMarkup(
+            [
+                [IKB('Confirm', callback_data='confirm')],
+                [IKB('Back', callback_data='back')],
+            ]
+        )
+        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        return ConversationStage.QUITTING
+
 
 def quit_end(update, context):
     from .first_message import first_message  # to avoid circular dependency
+
     chat_id = update.effective_chat.id
     remove_user_from_community(chat_id)
     return first_message(update, context)
