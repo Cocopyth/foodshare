@@ -105,9 +105,13 @@ def add_user_to_community(chat_id, token):
 
 def remove_user_from_community(chat_id):
     user = get_user_from_chat_id(chat_id)
+    community = user.community
     user.community = None
     user.admin = 0
     user.money_balance = 0
     user.meal_balance = 0
     session.add(user)
+    session.commit()
+    if len(community.members) <1:
+        session.delete(community)
     session.commit()

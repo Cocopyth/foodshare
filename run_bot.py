@@ -3,13 +3,21 @@ import os
 
 from telegram.ext import Updater
 
+from foodshare.handlers.balances_conversation.balances_handler import (
+    balances_handler,
+)
+from foodshare.handlers.community_conversation.community_handler import (
+    community_handler,
+)
 from foodshare.handlers.cook_conversation.cook_handler import cook_handler
-from foodshare.handlers.error_handler import error_handler
 from foodshare.handlers.debug_conversation.debug_handler import debug_handler
-from foodshare.handlers.meal_invitation_conversation.invitation import invitation_handler
-from foodshare.handlers.registering_conversation.registering_handler import \
-    registering_handler
-from foodshare.handlers.community_conversation.community_handler import community_handler
+from foodshare.handlers.error_handler import error_handler
+from foodshare.handlers.meal_invitation_conversation.invitation import (
+    invitation_handler,
+)
+from foodshare.handlers.registering_conversation.registering_handler import (
+    registering_handler,
+)
 
 # activate logging
 logging.basicConfig(
@@ -32,7 +40,6 @@ def main():
 
     # create the updater
     updater = Updater(bot_token, use_context=True)
-    job_queue= updater.job_queue
     # get the dispatcher
     dispatcher = updater.dispatcher
 
@@ -42,6 +49,7 @@ def main():
     dispatcher.add_handler(invitation_handler)
     dispatcher.add_handler(community_handler)
     dispatcher.add_handler(registering_handler)
+    dispatcher.add_handler(balances_handler)
 
     # log all errors
     dispatcher.add_error_handler(error_handler)
