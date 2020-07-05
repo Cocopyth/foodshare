@@ -11,7 +11,7 @@ from foodshare.handlers.registering_conversation.registering_handler import (
 )
 
 from . import ConversationStage as CS
-from .community_action import quit, send_token
+from .community_action import quit, send_token, community_action, quit_end
 from .first_message import first_message
 from .join_community import (
     creating,
@@ -57,7 +57,11 @@ community_handler = ConversationHandler(
         CS.VERIFYING: [
             CQH(joining, pattern='back'),
             CQH(joining_end, pattern='confirm'),
-        ]
+        ],
+        CS.QUITTING: [
+            CQH(community_action, pattern='back'),
+            CQH(quit_end, pattern='confirm'),
+        ],
     },
     fallbacks=[CommandHandler('community', first_message)],  # Only for
     # developpment to know sticker id

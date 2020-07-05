@@ -14,6 +14,7 @@ class ConversationStage(Enum):
     ACTION = auto()
     JOINING = auto()
     VERIFYING = auto()
+    QUITTING = auto()
 
 
 def get_message(context, epilog='', highlight=None):

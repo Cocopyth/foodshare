@@ -57,13 +57,13 @@ def save_community_description(update, context):
         'community description you can '
         'confirm',
     )
-    back_keyboard = InlineKeyboardMarkup(
+    keyboard = InlineKeyboardMarkup(
         [
             [IKB('Confirm', callback_data='confirm')],
             [IKB('Back', callback_data='back')],
         ]
     )
-    bot.send_message(chat_id=chat_id, text=message, reply_markup=back_keyboard)
+    bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
     return ConversationStage.CONFIRMING
 
 

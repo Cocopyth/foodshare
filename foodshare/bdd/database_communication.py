@@ -58,8 +58,6 @@ def update_meal(message_id, query_data):
 
 def add_user(name, chat_id):
     user = User(name=name, telegram_id=chat_id)
-    user.money_balance = 0
-    user.meal_balance = 0
     user.community = None
     session.add(user)
     session.commit()
@@ -96,5 +94,16 @@ def add_user_to_community(chat_id, token):
     session.delete(token)
     user.community = community
     user.admin = 0
+    user.money_balance = 0
+    user.meal_balance = 0
+    session.add(user)
+    session.commit()
+
+def remove_user_from_community(chat_id):
+    user = get_user_from_chat_id(chat_id)
+    user.community = None
+    user.admin = 0
+    user.money_balance = 0
+    user.meal_balance = 0
     session.add(user)
     session.commit()
