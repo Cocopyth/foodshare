@@ -158,7 +158,6 @@ class Transaction(Base):
     date_time = Column(String)
     what = Column(Integer)
     how_much = Column(Integer)
-    community_id = Column(Integer, ForeignKey('communities.id'))
     from_whom_id = Column(Integer, ForeignKey('users.id'))
     to_whom_id = Column(Integer, ForeignKey('users.id'))
 

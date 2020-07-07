@@ -10,6 +10,7 @@ from foodshare.bdd.tables_declaration import (
     Meal,
     Pending_meal_job,
     Token,
+    Transaction,
     User,
 )
 
@@ -112,6 +113,26 @@ def remove_user_from_community(chat_id):
     user.meal_balance = 0
     session.add(user)
     session.commit()
-    if len(community.members) <1:
+    if len(community.members) < 1:
         session.delete(community)
     session.commit()
+
+
+def add_transaction(chat_id, money, to_whom, amount, date_time):
+    user = get_user_from_chat_id(chat_id)
+    whenstr = date_time.strftime(format=datetime_format)
+    transaction = Transaction(date_time=whenstr, what=money, how_much=amount)
+    transaction.from_whom = user
+    transaction.to_whom = to_whom
+    if money:
+        user.money_balance -= amount
+        to_whom.money_balance += amount
+    else:
+        user.meal_balance -= amount
+        to_whom.meal_balance += amount
+    session.add_all([transaction, user, to_whom])
+    session.commit()
+    if money:
+        return user.money_balance
+    else:
+        return user.meal_balance

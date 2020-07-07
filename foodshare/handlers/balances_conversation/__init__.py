@@ -5,3 +5,5 @@ class ConversationStage(Enum):
     MONEY_OR_MEAL = auto()
     REGISTERING = auto()
     SELECTING_USER = auto()
+    SELECTING_AMOUNT = auto()
+    CONFIRMING = auto()
