@@ -21,10 +21,10 @@ user_buttons.append(
 user_buttons.append(
     [
         InlineKeyboardButton(
-            emojize(':arrow_backward:'), callback_data='backward_page'
+            emojize(':reverse_button:'), callback_data='backward_page'
         ),
         InlineKeyboardButton(
-            emojize(':arrow_forward:'), callback_data='forward_page'
+            emojize(':play_button:'), callback_data='forward_page'
         ),
     ]
 )

@@ -1,9 +1,7 @@
 from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
-from foodshare.handlers.registering_conversation.registering_handler import (
-    registering_handler,
-)
+
 
 from . import ConversationStage as CS
 from .first_message import (
@@ -18,7 +16,6 @@ from .first_message import (
 balances_handler = ConversationHandler(
     entry_points=[CommandHandler('balances', first_message)],
     states={
-        CS.REGISTERING: [registering_handler],
         CS.MONEY_OR_MEAL: [CQH(ask_for_user, pattern='money|meal')],
         CS.SELECTING_USER: [CQH(user_selection_handler)],
         CS.SELECTING_AMOUNT: [CQH(amount_selection_handler)],

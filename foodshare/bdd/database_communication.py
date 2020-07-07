@@ -13,13 +13,13 @@ from foodshare.bdd.tables_declaration import (
     Transaction,
     User,
 )
-
+from foodshare.utils import datetime_format
 absolute_path = 'home/coco/db/foodshare_test.db'
 engine = create_engine('sqlite:////' + absolute_path, echo=True)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
-datetime_format = '%Y-%m-%d %H:%M:%S'
+
 
 
 def get_user_from_chat_id(chat_id):

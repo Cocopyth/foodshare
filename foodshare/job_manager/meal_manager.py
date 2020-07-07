@@ -8,14 +8,14 @@ from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 
 from foodshare.bdd.tables_declaration import Base, Meal, Pending_meal_job
-from foodshare.handlers.cook_conversation import create_meal_message
+from foodshare.utils import create_meal_message, datetime_format
 
 absolute_path = 'home/coco/db/foodshare_test.db'
 engine = create_engine('sqlite:////' + absolute_path, echo=False)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
-datetime_format = '%Y-%m-%d %H:%M:%S'
+
 
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 bot = Bot(token=bot_token)

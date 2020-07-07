@@ -18,7 +18,7 @@ from foodshare.handlers.meal_invitation_conversation.invitation import (
 from foodshare.handlers.registering_conversation.registering_handler import (
     registering_handler,
 )
-
+from foodshare.handlers.meals_conversation.meals_handler import meals_handler
 # activate logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -50,6 +50,7 @@ def main():
     dispatcher.add_handler(community_handler)
     dispatcher.add_handler(registering_handler)
     dispatcher.add_handler(balances_handler)
+    dispatcher.add_handler(meals_handler)
 
     # log all errors
     dispatcher.add_error_handler(error_handler)

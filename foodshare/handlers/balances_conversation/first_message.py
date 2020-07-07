@@ -104,13 +104,13 @@ def amount_selection_handler(update, context):
     money = ud['money_or_meal']
     suffix = '€' if money else 'meals'
     (
-        cost_is_selected,
+        amount_is_selected,
         want_back,
         amount,
     ) = telegram_number.process_number_selection(update, context, suffix)
     if want_back:
         return ask_for_user(update, context)
-    elif not cost_is_selected:
+    elif not amount_is_selected:
         return ConversationStage.SELECTING_AMOUNT
     context.user_data['amount'] = amount
     return ask_for_confirmation(update, context)
