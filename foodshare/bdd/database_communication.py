@@ -13,13 +13,17 @@ from foodshare.bdd.tables_declaration import (
     Transaction,
     User,
 )
+from foodshare.job_manager.meal_manager import (
+    send_meal_cancellation_notification,
+    send_participation_cancellation_notification,
+)
 from foodshare.utils import datetime_format
+
 absolute_path = 'home/coco/db/foodshare_test.db'
 engine = create_engine('sqlite:////' + absolute_path, echo=True)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
-
 
 
 def get_user_from_chat_id(chat_id):
@@ -136,3 +140,18 @@ def add_transaction(chat_id, money, to_whom, amount, date_time):
         return user.money_balance
     else:
         return user.meal_balance
+
+
+def process_meal_action(chat_id, cancel_meal, meal, too_late):
+    user = get_user_from_chat_id(chat_id)
+    if cancel_meal:
+        meal.cancelled = True
+        send_meal_cancellation_notification(meal)
+        session.add(meal)
+    else:
+        job = next((job for job in user.message_receiver if job.meal == meal))
+        job.answer = 0
+        session.add(job)
+        if too_late:
+            send_participation_cancellation_notification(chat_id, meal)
+    session.commit()

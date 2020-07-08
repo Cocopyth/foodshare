@@ -3,7 +3,7 @@ from datetime import datetime
 
 from emoji import emojize
 
-from foodshare import get_weekday, datetime_format
+from foodshare import datetime_format, get_weekday
 
 
 def emojize_number(number):

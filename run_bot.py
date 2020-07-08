@@ -15,10 +15,11 @@ from foodshare.handlers.error_handler import error_handler
 from foodshare.handlers.meal_invitation_conversation.invitation import (
     invitation_handler,
 )
+from foodshare.handlers.meals_conversation.meals_handler import meals_handler
 from foodshare.handlers.registering_conversation.registering_handler import (
     registering_handler,
 )
-from foodshare.handlers.meals_conversation.meals_handler import meals_handler
+
 # activate logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

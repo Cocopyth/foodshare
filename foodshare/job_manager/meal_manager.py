@@ -26,6 +26,7 @@ def handle_meals():
     finished = True
     for meal in meals:
         deadline = datetime.strptime(meal.deadline, datetime_format)
+        meal_time = datetime.strptime(meal.when, datetime_format)
         coming = [pj for pj in meal.pending_meal_jobs if pj.answer]
         pending = [
             pj
@@ -76,15 +77,26 @@ def handle_meals():
                     pending_meal_job.has_answered = False
                     pending_meal_job.job_done = False
                     session.add(pending_meal_job)
-                    session.commit()
                 else:
                     finished = True
         else:
             if not meal.confirmation_sent:
                 send_confirmation(meal)
                 meal.confirmation_sent = True
+                for pj in coming:
+                    user = pj.to_whom
+                    user.meal_balance -= 1
+                    session.add(user)
                 session.add(meal)
-                session.commit()
+        if datetime.now() > meal_time:
+            meal.is_done = True
+            for pj in coming:
+                pj.to_whom.money_balance -= meal.how_much / meal.how_many
+            for pj in meal.pending_meal_jobs:
+                pj.job_done = True
+                session.add(pj)
+    session.commit()
+
     return finished
 
 
@@ -96,4 +108,26 @@ def send_confirmation(meal):
         f'Here is the list of the people coming '
         f'{[pj.to_whom for pj in coming]}'
     )
+    bot.send_message(chat_id=meal.who_cooks.telegram_id, text=message)
+
+
+def send_meal_cancellation_notification(meal):
+    coming = [pj for pj in meal.pending_meal_jobs if pj.answer]
+    pending = [
+        pj
+        for pj in meal.pending_meal_jobs
+        if (pj.message_sent and not pj.has_answered)
+    ]
+    message_coming = f'Sorry the meal {meal} was cancelled'  # adapt meal
+    # representation
+    for pj in coming:
+        bot.send_message(chat_id=pj.to_whom.telegram_id, text=message_coming)
+    for pj in pending:
+        bot.delete_message(
+            chat_id=pj.to_whom.telegram_id, message_id=pj.message_id
+        )
+
+
+def send_participation_cancellation_notification(chat_id, meal):
+    message = f'User {chat_id} cancelled'
     bot.send_message(chat_id=meal.who_cooks.telegram_id, text=message)

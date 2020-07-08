@@ -5,8 +5,8 @@ from telegram import InlineKeyboardMarkup
 
 from foodshare.keyboards import telegram_calendar
 
-from . import ConversationStage, get_message
 from ... import get_weekday
+from . import ConversationStage, get_message
 from .reminder_selection import ask_for_reminder
 from .time_selection import ask_for_time
 

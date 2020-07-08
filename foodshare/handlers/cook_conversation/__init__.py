@@ -58,5 +58,3 @@ def get_message(context, epilog='', highlight=None):
         message[highlight] = f'*{message[highlight]}*'
 
     return '\n'.join(message.values()) + f'\n\n{epilog}'
-
-

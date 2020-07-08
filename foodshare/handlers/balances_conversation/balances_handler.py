@@ -1,8 +1,6 @@
 from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
-
-
 from . import ConversationStage as CS
 from .first_message import (
     amount_selection_handler,
