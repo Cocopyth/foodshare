@@ -12,7 +12,10 @@ from .first_message import (
 )
 
 balances_handler = ConversationHandler(
-    entry_points=[CommandHandler('balances', first_message)],
+    entry_points=[
+        CommandHandler('balances', first_message),
+        CQH(first_message, pattern='balances_asked0523'),
+    ],
     states={
         CS.MONEY_OR_MEAL: [CQH(ask_for_user, pattern='money|meal')],
         CS.SELECTING_USER: [CQH(user_selection_handler)],

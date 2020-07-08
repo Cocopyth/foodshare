@@ -5,15 +5,7 @@ from emoji import emojize
 
 
 class ConversationStage(Enum):
-    REGISTERING = auto()
-    REGISTERED = auto()
-    CREATING_JOINING = auto()
-    CREATING = auto()
-    DESCRIBING = auto()
-    CONFIRMING = auto()
     ACTION = auto()
-    JOINING = auto()
-    VERIFYING = auto()
     QUITTING = auto()
 
 

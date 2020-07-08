@@ -34,7 +34,10 @@ from .reminder_selection import ask_for_reminder, get_deadline
 from .time_selection import ask_for_time, time_selection_handler
 
 cook_handler = ConversationHandler(
-    entry_points=[CommandHandler('cook', ask_for_meal_name)],
+    entry_points=[
+        CommandHandler('cook', ask_for_meal_name),
+        CQH(ask_for_meal_name, pattern='cook_asked0523'),
+    ],
     states={
         CS.TYPING_MEAL_NAME: [MessageHandler(Filters.text, save_meal_name)],
         CS.SELECTING_WEEKDAY_OR_SHOW_CALENDAR: [

@@ -1,18 +1,25 @@
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
+from telegram.ext import ConversationHandler
 
 from foodshare.bdd.database_communication import (
     add_community,
+    add_user,
     add_user_to_community,
     get_token,
 )
+from foodshare.handlers.community_conversation import get_message
 
-from . import ConversationStage, get_message
+from . import ConversationStage
 
 back_keyboard = InlineKeyboardMarkup([[IKB('Back', callback_data='back')]])
 
 
 def creating_joining(update, context):
+    ud = context.user_data
+    chat_id = update.effective_chat.id
+    if 'name_user' in ud.keys():
+        add_user(ud['name_user'], chat_id)
     message = "Do you want to join an existing community or create your own?"
     keyboard = InlineKeyboardMarkup(
         [
@@ -22,7 +29,6 @@ def creating_joining(update, context):
         ]
     )
     bot = context.bot
-    chat_id = update.effective_chat.id
     bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
     return ConversationStage.CREATING_JOINING
 
@@ -71,7 +77,12 @@ def save_community_description(update, context):
 
 
 def creating_end(update, context):
-    from .first_message import first_message  # to avoid circular dependency
+    from foodshare.handlers.start_conversation.first_message import (
+        first_message,
+    )  # to
+
+    # avoid circular
+    # dependency
 
     ud = context.user_data
     name = ud['community_name']
@@ -79,7 +90,8 @@ def creating_end(update, context):
     chat_id = update.effective_chat.id
     add_community(name, description, chat_id)
     ud.clear()
-    return first_message(update, context)
+    first_message(update, context)
+    return ConversationHandler.END
 
 
 def joining(update, context):
@@ -125,11 +137,14 @@ def verify_token(update, context):
 
 
 def joining_end(update, context):
-    from .first_message import first_message  # to avoid circular dependency
+    from foodshare.handlers.start_conversation.first_message import (
+        first_message,
+    )  # to
 
     ud = context.user_data
     token = ud['token']
     chat_id = update.effective_chat.id
     add_user_to_community(chat_id, token)
     ud.clear()
-    return first_message(update, context)
+    first_message(update, context)
+    return ConversationHandler.END

@@ -1,8 +1,5 @@
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
-from telegram.ext import ConversationHandler
-
-from foodshare.bdd.database_communication import add_user
 
 from . import ConversationStage
 
@@ -35,18 +32,3 @@ def save_name(update, context):
     )
     bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
     return ConversationStage.NAME_SAVED
-
-
-def end(update, context):
-    ud = context.user_data
-    name = ud['name_user']
-    chat_id = update.effective_chat.id
-    add_user(name, chat_id)
-    ud.clear()
-    bot = context.bot
-    message = f'Okay now let\'s get in a community'
-    keyboard = InlineKeyboardMarkup(
-        [[IKB('Let\'s go!', callback_data='start_community')]]
-    )
-    bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
-    return ConversationHandler.END

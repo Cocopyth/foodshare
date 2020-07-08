@@ -87,6 +87,9 @@ def handle_meals():
                     user = pj.to_whom
                     user.meal_balance -= 1
                     session.add(user)
+                who_cooks = meal.who_cooks
+                who_cooks.meal_balance += len(coming)
+                session.add(who_cooks)
                 session.add(meal)
         if datetime.now() > meal_time:
             meal.is_done = True

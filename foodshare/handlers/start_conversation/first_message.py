@@ -4,8 +4,6 @@ from telegram.ext import ConversationHandler
 
 from foodshare.bdd.database_communication import get_user_from_chat_id
 
-from .community_action import community_action
-
 
 def first_message(update, context):
     chat_id = update.effective_chat.id
@@ -23,10 +21,7 @@ def first_message(update, context):
         bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
         return ConversationHandler.END
     elif user.community is None:
-        message = (
-            "Hello there! You first need to join a community "
-            "I just need a few information about you!"
-        )
+        message = "Before anything you need to join or create a community!"
         keyboard = InlineKeyboardMarkup(
             [
                 [
@@ -42,8 +37,25 @@ def first_message(update, context):
         bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
         return ConversationHandler.END
     else:
-        print(
-            f'user is in community {user.community} that has these other '
-            f'members: {user.community.members}'
+        message = "What do you want to do?"
+        keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    IKB('Cook', callback_data='cook_asked0523'),
+                    IKB('See meals', callback_data='meals_asked0523'),
+                ],
+                [
+                    IKB(
+                        'Make a transaction',
+                        callback_data='balances_asked0523',
+                    ),
+                    IKB(
+                        'Manage community', callback_data='community_asked0523'
+                    ),
+                ],
+            ]
         )
-        return community_action(update, context)
+        bot = context.bot
+        chat_id = update.effective_chat.id
+        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        return ConversationHandler.END

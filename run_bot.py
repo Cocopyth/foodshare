@@ -19,6 +19,7 @@ from foodshare.handlers.meals_conversation.meals_handler import meals_handler
 from foodshare.handlers.registering_conversation.registering_handler import (
     registering_handler,
 )
+from foodshare.handlers.start_conversation.start_handler import start_handler
 
 # activate logging
 logging.basicConfig(
@@ -52,7 +53,7 @@ def main():
     dispatcher.add_handler(registering_handler)
     dispatcher.add_handler(balances_handler)
     dispatcher.add_handler(meals_handler)
-
+    dispatcher.add_handler(start_handler)
     # log all errors
     dispatcher.add_error_handler(error_handler)
 
