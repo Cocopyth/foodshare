@@ -7,6 +7,7 @@ from foodshare.bdd.database_communication import (
     get_user_from_chat_id,
     remove_user_from_community,
 )
+from foodshare.handlers.start_conversation.first_message import first_message
 
 from . import ConversationStage
 
@@ -26,13 +27,27 @@ def community_action(update, context):
         buttons.append([IKB('Invite people', callback_data='invite')])
     keyboard = InlineKeyboardMarkup(buttons)
     bot = context.bot
-    bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+    ud = context.user_data
+    if 'last_message' in ud:
+        last_message = ud['last_message']
+        bot.edit_message_text(
+            message_id=last_message.message_id,
+            chat_id=chat_id,
+            text=message,
+            reply_markup=keyboard,
+        )
+    else:
+        ud['last_message'] = bot.send_message(
+            chat_id=chat_id, text=message, reply_markup=keyboard
+        )
     return ConversationStage.ACTION
 
 
 def send_token(update, context):
     bot = context.bot
     chat_id = update.effective_chat.id
+    ud = context.user_data
+    last_message = ud['last_message']
     user = get_user_from_chat_id(chat_id)
     community = user.community
     token = add_token(community)
@@ -40,7 +55,11 @@ def send_token(update, context):
         f'Here is your token to invite one person, it will only work '
         f'once : {token}'
     )
-    bot.send_message(chat_id=chat_id, text=message)
+    bot.edit_message_text(
+        message_id=last_message.message_id, chat_id=chat_id, text=message
+    )
+    ud.clear()
+    first_message(update, context)
     return ConversationHandler.END
 
 
@@ -49,7 +68,9 @@ def quit(update, context):
     bot = context.bot
     user = get_user_from_chat_id(chat_id)
     members = user.community.members
-    admins = [member for member in user.community.members if member.admin]
+    ud = context.user_data
+    last_message = ud['last_message']
+    # admins = [member for member in user.community.members if member.admin]
     if len(members) < 2:
         message = (
             f'Are you sure you want to quit the community? Since you\'re '
@@ -61,16 +82,31 @@ def quit(update, context):
                 [IKB('Back', callback_data='back')],
             ]
         )
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        bot.edit_message_text(
+            message_id=last_message.message_id,
+            chat_id=chat_id,
+            text=message,
+            reply_markup=keyboard,
+        )
         return ConversationStage.QUITTING
-    elif len(admins) < 2 and user.admin:
-        bot.send_message(
-            chat_id=chat_id, text='u need another admin'
-        )  # propose
-        # to name another admin
-        return ConversationHandler.END
+    # elif len(admins) < 2 and user.admin:
+    #     bot.edit_message_text(message_id=last_message.message_id,
+    #         chat_id=chat_id, text='To quit this community you need to name '
+    #                               'another administrator'
+    #     )  # propose
+    #     # to name another admin
+    #     return ConversationHandler.END
     elif user.money_balance < 0:
-        bot.send_message(chat_id=chat_id, text='u need balance>0')  # U need
+        bot.edit_message_text(
+            message_id=last_message.message_id,
+            chat_id=chat_id,
+            text='To quit the community you need to '
+            'have a balance superior to zero.'
+            '\n Ask another user to make a '
+            'transaction to you using /transaction',
+        )
+        # U
+        # need
         # balance >0 : show balances to reimburse someone
         return ConversationHandler.END
     else:
@@ -81,13 +117,22 @@ def quit(update, context):
                 [IKB('Back', callback_data='back')],
             ]
         )
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        bot.edit_message_text(
+            message_id=last_message.message_id,
+            chat_id=chat_id,
+            text=message,
+            reply_markup=keyboard,
+        )
         return ConversationStage.QUITTING
 
 
 def quit_end(update, context):
-    from .first_message import first_message  # to avoid circular dependency
-
     chat_id = update.effective_chat.id
+    ud = context.user_data
+    last_message = ud['last_message']
     remove_user_from_community(chat_id)
-    return first_message(update, context)
+    context.bot.delete_message(
+        message_id=last_message.message_id, chat_id=chat_id,
+    )
+    first_message(update, context)
+    return ConversationHandler.END

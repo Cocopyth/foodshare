@@ -3,13 +3,12 @@ from telegram.ext import CommandHandler, ConversationHandler
 
 from . import ConversationStage as CS
 from .community_action import community_action, quit, quit_end, send_token
-from .first_message import first_message
 
 community_handler = ConversationHandler(
     entry_points=[
-        CommandHandler('community', first_message),
-        CQH(first_message, pattern='community_asked0523'),
-        CQH(first_message, pattern='invite_asked0523'),
+        CommandHandler('community', community_action),
+        CQH(community_action, pattern='community_asked0523'),
+        CQH(community_action, pattern='invite_asked0523'),
     ],
     states={
         CS.ACTION: [
@@ -21,6 +20,6 @@ community_handler = ConversationHandler(
             CQH(quit_end, pattern='confirm'),
         ],
     },
-    fallbacks=[CommandHandler('community', first_message)],  # Only for
+    fallbacks=[],  # Only for
     # developpment to know sticker id
 )

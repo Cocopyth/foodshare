@@ -57,7 +57,9 @@ def first_message(update, context):
         )
         bot = context.bot
         chat_id = update.effective_chat.id
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        context.user_data['last_message'] = bot.send_message(
+            chat_id=chat_id, text=message, reply_markup=keyboard
+        )
         return ConversationHandler.END
     else:
         message = "What do you want to do?"
