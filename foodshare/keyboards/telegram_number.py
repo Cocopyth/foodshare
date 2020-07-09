@@ -14,16 +14,16 @@ number_keyboard_buttons.append(
         InlineKeyboardButton(
             emojize(':left_arrow:️'), callback_data='left_arrow'
         ),
-        InlineKeyboardButton('Back', callback_data='back'),
+        InlineKeyboardButton(emojize(':keycap_0:'), callback_data='0')
     ]
 )
+number_keyboard_buttons.append([InlineKeyboardButton('Back',
+                                                    callback_data='back')])
 number_keyboard = InlineKeyboardMarkup(number_keyboard_buttons)
 
 # number selection keyboard with a confirm button and a 0 digit key
 confirm_keyboard_buttons = copy.deepcopy(number_keyboard_buttons)
-confirm_keyboard_buttons[-1].insert(
-    0, InlineKeyboardButton(emojize(':keycap_0:'), callback_data='0')
-)
+
 confirm_keyboard_buttons.append(
     [InlineKeyboardButton('Confirm', callback_data='confirm')]
 )
