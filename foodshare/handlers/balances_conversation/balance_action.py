@@ -11,52 +11,46 @@ from foodshare.bdd.database_communication import (
 )
 from foodshare.keyboards import telegram_number, user_selection
 from foodshare.utils import emojize_number
-
+from foodshare.handlers.start_conversation.first_message import first_message
 from . import ConversationStage
 
-
-def first_message(update, context):
+def ask_money_or_meal(update, context):
     chat_id = update.effective_chat.id
-    user = get_user_from_chat_id(chat_id)
+    ud = context.user_data
     bot = context.bot
-    if user is None:
-        message = (
-            "Hello there! First time we meet isn't it? "
-            "I just need a few information about you!"
+    keyboard = InlineKeyboardMarkup(
+        [
+            [IKB('Give money', callback_data='money')],
+            [IKB('Give meal points', callback_data='meal')],
+        ]
+    )
+    message = 'What kind of transaction do you want to make?'
+    if 'last_message' not in ud:
+        last_message = bot.send_message(
+            chat_id=chat_id, text=message, reply_markup=keyboard
         )
-        keyboard = InlineKeyboardMarkup(
-            [[IKB('Register', callback_data='register_asked0523')]]
-        )
-
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
-        return ConversationStage.REGISTERING
+        ud['last_message'] = last_message
     else:
-        keyboard = InlineKeyboardMarkup(
-            [
-                [IKB('Give money', callback_data='money')],
-                [IKB('Give meal points', callback_data='meal')],
-            ]
+        last_message = ud['last_message']
+        bot.edit_message_text(
+            message_id=last_message.message_id,
+            chat_id=chat_id,
+            text=message,
+            reply_markup=keyboard,
         )
-        message = 'What kind of transaction do you want to make?'
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
-        return ConversationStage.MONEY_OR_MEAL
+    return ConversationStage.MONEY_OR_MEAL
 
 
 def ask_for_user(update, context):
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
     callback_data = update.callback_query.data
-    context.user_data['money_or_meal'] = callback_data == 'money'
-    prolog = (
-        'Please type the number corresponding to the user '
-        'you want '
-        'to make a transaction with'
-    )
+    money = callback_data == 'money'
+    context.user_data['money_or_meal'] = money
+    keyboard = user_selection.construct_keyboard(user, money, False)
     update.callback_query.edit_message_text(
-        text=user_selection.construct_message(
-            user, (callback_data == 'money'), prolog=prolog
-        ),
-        reply_markup=user_selection.user_keyboard,
+        text='Please select a user to make the transaction with',
+        reply_markup=keyboard,
         parse_mode=ParseMode.MARKDOWN,
     )
     return ConversationStage.SELECTING_USER
@@ -70,7 +64,7 @@ def user_selection_handler(update, context):
     ) = user_selection.process_user_selection(update, context)
     ud = context.user_data
     if want_back:
-        return first_message(update, context)
+        return ask_money_or_meal(update, context)
     elif not user_is_selected:
         return ConversationStage.SELECTING_USER
     ud['user_transaction'] = user
@@ -156,10 +150,11 @@ def transaction_end(update, context):
     date_time = datetime.now()
     chat_id = update.effective_chat.id
     new_balance = add_transaction(chat_id, money, to_whom, amount, date_time)
+    last_message = ud['last_message']
+    context.bot.delete_message(chat_id=chat_id,
+                               message_id=last_message.message_id)
     ud.clear()
-    message = f'Your balance is now {new_balance}'
-    message += '€' if money else ' meals'
-    update.callback_query.edit_message_text(
-        text=message, parse_mode=ParseMode.MARKDOWN,
-    )
+    prefix = f'*Your balance is now {new_balance}'
+    prefix += '€*' if money else ' meals* \n'
+    first_message(update, context, prefix)
     return ConversationHandler.END

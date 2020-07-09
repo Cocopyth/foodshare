@@ -40,6 +40,7 @@ confirm_keyboard = InlineKeyboardMarkup(confirm_buttons)
 pos = [0, 5, 11, 17]
 
 
+
 def process_user_selection(update, context):
     ud = context.user_data
     money = ud['money_or_meal']
@@ -63,9 +64,7 @@ def process_user_selection(update, context):
         page = ud.get('_page')
 
     # process the keyboard callback data
-    if callback_data == 'left_arrow':
-        number = number[:-1]
-    elif callback_data == 'forward_page':
+    if callback_data == 'forward_page':
         page += 1
     elif callback_data == 'backward_page':
         page -= 1
@@ -79,45 +78,32 @@ def process_user_selection(update, context):
         ud.pop('_page')
         return True, False, user_chosed
     else:
-        number += callback_data
+        number = callback_data
 
     # store number for next callback
     ud['_number'] = number
     ud['_page'] = page
 
     if number == '':
-        prolog = (
-            'Please type the number corresponding to the user '
-            'you want '
-            'to make a transaction with'
+        message = (
+            'Please select a user to make the transaction with'
         )
-        epilog = ' '
-    elif int(number) > len(members):
-        prolog = 'Please chose a number in range.'
-        epilog = emojize_number(number)
     else:
         user_chosed = members[int(number) - 1]
-        prolog = (
-            f'You chosed *user {number}. {user_chosed.name}.* Press '
-            f'confirm to continue.'
+        message = (
+            f'You chosed *'
+            f' {user_chosed.name}.* \n Press '
+            f'confirm to continue. \n'
         )
-        epilog = emojize_number(number)
-    message = construct_message(user, money, page, prolog)
-    message += '\n' + epilog
     # choose keyboard with a confirm button if a valid number was selected
-    keyboard = (
-        confirm_keyboard
-        if (number != '' and int(number) <= len(members))
-        else user_keyboard
-    )
-
+    keyboard = construct_keyboard(user, money,number != '', page)
     update.callback_query.edit_message_text(
         text=message, reply_markup=keyboard, parse_mode=ParseMode.MARKDOWN,
     )
     return False, False, -1
 
 
-def construct_message(user, money, page=0, prolog='', number_per_page=10):
+def construct_keyboard(user, money, confirm, page=0, number_per_page=5):
     members = [
         member for member in user.community.members if member is not user
     ]
@@ -128,14 +114,37 @@ def construct_message(user, money, page=0, prolog='', number_per_page=10):
     members_to_show = members[
         number_per_page * page : number_per_page * page + number_per_page
     ]
-    member_messages = [prolog]
     i = page + 1
+    buttons = []
     for j, member in enumerate(members_to_show):
         balance = (
             str(member.money_balance) + '€'
             if money
-            else str(member.meal_balance) + 'meals'
+            else str(member.meal_balance) + ' meals'
         )
-        member_messages.append(f'{i+j}. {member.name}, balance : {balance}')
-    message = '\n'.join(member_messages)
-    return message
+        member_message=(f''
+                               f'{member.name}'
+                               f', balance :'
+                               f' {balance}')
+        buttons.append(
+            [
+                InlineKeyboardButton(member_message,
+                                     callback_data=str(i+j)),
+            ]
+        )
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                emojize(':reverse_button:'), callback_data='backward_page'
+            ),
+            InlineKeyboardButton(emojize('Back'), callback_data='back'),
+            InlineKeyboardButton(
+                emojize(':play_button:'), callback_data='forward_page'
+            ),
+        ]
+    )
+    if confirm:
+        buttons.append(
+            [InlineKeyboardButton('Confirm', callback_data='confirm')]
+        )
+    return InlineKeyboardMarkup(buttons)

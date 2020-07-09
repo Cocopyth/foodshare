@@ -2,19 +2,19 @@ from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
 from . import ConversationStage as CS
-from .first_message import (
+from .balance_action import (
     amount_selection_handler,
     ask_for_amount,
     ask_for_user,
-    first_message,
+    ask_money_or_meal,
     transaction_end,
     user_selection_handler,
 )
 
 balances_handler = ConversationHandler(
     entry_points=[
-        CommandHandler('balances', first_message),
-        CQH(first_message, pattern='balances_asked0523'),
+        CommandHandler('balances', ask_money_or_meal),
+        CQH(ask_money_or_meal, pattern='balances_asked0523'),
     ],
     states={
         CS.MONEY_OR_MEAL: [CQH(ask_for_user, pattern='money|meal')],
@@ -25,6 +25,6 @@ balances_handler = ConversationHandler(
             CQH(transaction_end, pattern='confirm'),
         ],
     },
-    fallbacks=[CommandHandler('community', first_message)],  # Only for
+    fallbacks=[CommandHandler('community', ask_money_or_meal)],  # Only for
     # developpment to know sticker id
 )
