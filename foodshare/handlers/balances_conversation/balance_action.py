@@ -159,6 +159,6 @@ def transaction_end(update, context):
                                message_id=last_message.message_id)
     ud.clear()
     prefix = f'*Your balance is now {new_balance}'
-    prefix += '€*' if money else ' meals* \n'
+    prefix += '€*\n' if money else ' meals* \n'
     first_message(update, context, prefix)
     return ConversationHandler.END

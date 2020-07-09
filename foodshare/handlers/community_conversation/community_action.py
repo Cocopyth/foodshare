@@ -27,6 +27,9 @@ def community_action(update, context):
     ]
     if user.admin:
         buttons.append([IKB('Invite people', callback_data='invite')])
+    buttons.append(
+        [IKB('Back', callback_data='back')]
+    )
     keyboard = InlineKeyboardMarkup(buttons)
     bot = context.bot
     ud = context.user_data
@@ -44,6 +47,9 @@ def community_action(update, context):
         )
     return ConversationStage.ACTION
 
+def back_end(update,context):
+    first_message(update, context)
+    return ConversationHandler.END
 
 def send_token(update, context):
     bot = context.bot

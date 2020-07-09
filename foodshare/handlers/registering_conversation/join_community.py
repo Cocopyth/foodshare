@@ -1,7 +1,7 @@
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
-
+from emoji import emojize
 from foodshare.bdd.database_communication import (
     add_community,
     add_user,
@@ -152,9 +152,10 @@ def verify_token(update, context):
         return ConversationStage.JOINING
     else:
         community = token.community
-        message = (
-            f'You\'re about to join the community {community.name} '
-            f'whose description is: \n {community.description}. '
+        message = emojize(
+            f'You\'re about to join the community \n :family: {community.name} '
+            f'\n:desert_island: whose description is:'
+            f' {community.description}. \n'
             f'Do you confirm?'
         )
         keyboard = InlineKeyboardMarkup(

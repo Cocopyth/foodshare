@@ -99,7 +99,8 @@ def add_user_to_community(chat_id, token):
     community = token.community
     session.delete(token)
     user.community = community
-    user.admin = 0
+    user.admin = 1 #For now we will have all users admin, to be modified
+    # later
     user.money_balance = 0
     user.meal_balance = 0
     session.add(user)
@@ -113,7 +114,7 @@ def remove_user_from_community(chat_id):
                      user]
     money_to_split = user.money_balance
     for member in other_members:
-        member.money_balance += money_to_split/other_members
+        member.money_balance += money_to_split/len(other_members)
         session.add(member)
     user.community = None
     user.admin = 0
