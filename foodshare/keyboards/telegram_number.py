@@ -64,7 +64,7 @@ def process_number_selection(update, context, suffix=''):
         number_str = emojize_number(number)
 
     message = update.callback_query.message.text.split('\n')
-    message[-1] = f'For {number_str} {suffix}'
+    message[-1] = f'{number_str} {suffix}'
     message = '\n'.join(message)
 
     # choose keyboard with a confirm button if a valid number was selected

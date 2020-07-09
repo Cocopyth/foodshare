@@ -13,7 +13,7 @@ from foodshare.keyboards import telegram_number, user_selection
 from foodshare.utils import emojize_number
 from foodshare.handlers.start_conversation.first_message import first_message
 from . import ConversationStage
-
+money_mouth_face = "\U0001f911"
 def ask_money_or_meal(update, context):
     chat_id = update.effective_chat.id
     ud = context.user_data
@@ -79,16 +79,15 @@ def ask_for_amount(update, context):
     balance = (
         str(to_whom.money_balance) + '€'
         if money
-        else str(to_whom.meal_balance) + 'meals'
+        else str(to_whom.meal_balance) + ' meals'
     )
-    message = (
-        f'You\'re about to give  {to_whom.name} '
-        f'whose balance is: \n {balance}. '
+    message = emojize(
+        f' You\'re about to give \n {money_mouth_face} {to_whom.name} \n'
+        f':balance_scale: whose balance is:  {balance}. \n'
     )
     update.callback_query.edit_message_text(
         text=message + epilog,
         reply_markup=telegram_number.number_keyboard,
-        parse_mode=ParseMode.MARKDOWN,
     )
     return ConversationStage.SELECTING_AMOUNT
 
@@ -96,7 +95,7 @@ def ask_for_amount(update, context):
 def amount_selection_handler(update, context):
     ud = context.user_data
     money = ud['money_or_meal']
-    suffix = '€' if money else 'meals'
+    suffix = '€' if money else 'meal(s)'
     (
         amount_is_selected,
         want_back,
@@ -119,12 +118,12 @@ def ask_for_confirmation(update, context):
     balance = (
         str(to_whom.money_balance) + '€'
         if money
-        else str(to_whom.meal_balance) + 'meals'
+        else str(to_whom.meal_balance) + ' meals'
     )
-    message = (
-        f'You\'re about to give  {amount} \n'
-        f'to  {to_whom.name}\n'
-        f'whose balance is: {balance}. \n'
+    message = emojize(
+        f'You\'re about to give  \n :money_bag: {amount} \n'
+        f'{money_mouth_face} to {to_whom.name}\n'
+        f':balance_scale: whose balance is : {balance}. \n'
         f'This user should give you the equivalent amount in real '
         f'life in '
         f'exchange\n'
