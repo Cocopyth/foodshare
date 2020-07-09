@@ -1,6 +1,5 @@
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
-
 from . import ConversationStage
 
 
@@ -13,10 +12,13 @@ def ask_for_name(update, context):
     bot = context.bot
     chat_id = update.effective_chat.id
     last_message = ud['last_message']
+
     bot.edit_message_text(
-        message_id=last_message.message_id, chat_id=chat_id, text=message
+        message_id=last_message.message_id, chat_id=chat_id,
+        text=message
     )
     return ConversationStage.TYPING_NAME
+
 
 
 def save_name(update, context):
@@ -25,7 +27,8 @@ def save_name(update, context):
     chat_id = update.effective_chat.id
     name = update.message.text
     last_message = ud['last_message']
-    bot.delete_message(message_id=update.message.message_id, chat_id=chat_id)
+    bot.delete_message(message_id=update.message.message_id,
+                       chat_id=chat_id)
     ud['name_user'] = name
     message = f'Are you satisfied with the name \'{name}\'?'
     keyboard = InlineKeyboardMarkup(

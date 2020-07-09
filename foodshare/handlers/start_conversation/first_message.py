@@ -100,3 +100,10 @@ def first_message(update, context, prefix=''):
                 parse_mode=ParseMode.MARKDOWN,
             )
         return ConversationHandler.END
+
+
+def first_message_alternative(update,context):
+    ud = context.user_data
+    if 'last_message' in ud:
+        ud.pop('last_message')
+    return first_message(update,context)

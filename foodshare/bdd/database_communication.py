@@ -169,15 +169,18 @@ def process_meal_action(chat_id, cancel_meal, meal, too_late):
         for pj in pending:
             pj.job_done = True
             session.add(pj)
-        send_meal_cancellation_notification(meal)
         session.add(meal)
+        session.commit()
+        send_meal_cancellation_notification(meal)
+
     else:
         job = next((job for job in user.message_receiver if job.meal == meal))
         job.answer = 0
         session.add(job)
+        session.commit()
         if too_late:
             send_participation_cancellation_notification(chat_id, meal)
-    session.commit()
+
 
 
 def get_meals():

@@ -82,7 +82,7 @@ def end(update, context):
     # bot.send_sticker(chat_id, sticker_id)
 
     ud.clear()
-    prefix = f'Messages sent : I will update you on the answers '
+    prefix = f'Messages sent : I will update you on the answers \n'
     while not handle_meals():
         pass
     first_message(update, context, prefix=prefix)
