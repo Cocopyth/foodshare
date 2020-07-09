@@ -63,6 +63,8 @@ def process_time_selection(update, context):
     elif action == 'right_arrow':
         index = min(3, index + 1)
     elif action == 'back':
+        ud.pop('_hour')
+        ud.pop('_index')
         return False, True, None
     elif action == 'confirm':
         hour, minute = 10 * hour[0] + hour[1], 10 * hour[2] + hour[3]

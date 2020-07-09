@@ -13,10 +13,6 @@ from foodshare.bdd.tables_declaration import (
     Transaction,
     User,
 )
-from foodshare.job_manager.meal_manager import (
-    send_meal_cancellation_notification,
-    send_participation_cancellation_notification,
-)
 from foodshare.utils import datetime_format
 
 absolute_path = 'home/coco/db/foodshare_test.db'
@@ -143,9 +139,26 @@ def add_transaction(chat_id, money, to_whom, amount, date_time):
 
 
 def process_meal_action(chat_id, cancel_meal, meal, too_late):
+    from foodshare.job_manager.meal_manager import (
+        send_meal_cancellation_notification,
+        send_participation_cancellation_notification,
+    )
+
     user = get_user_from_chat_id(chat_id)
     if cancel_meal:
         meal.cancelled = True
+        coming = [pj for pj in meal.pending_meal_jobs if pj.answer]
+        pending = [
+            pj
+            for pj in meal.pending_meal_jobs
+            if (pj.message_sent and not pj.has_answered)
+        ]
+        for pj in coming:
+            pj.job_done = True
+            session.add(pj)
+        for pj in pending:
+            pj.job_done = True
+            session.add(pj)
         send_meal_cancellation_notification(meal)
         session.add(meal)
     else:
@@ -154,4 +167,23 @@ def process_meal_action(chat_id, cancel_meal, meal, too_late):
         session.add(job)
         if too_late:
             send_participation_cancellation_notification(chat_id, meal)
+    session.commit()
+
+
+def get_meals():
+    return session.query(Meal).filter_by(cancelled=False, is_done=False)
+
+
+def create_pending_meal_job(user, who_cooks, meal, message_id):
+    pending_meal_job = Pending_meal_job(type=0)
+    pending_meal_job.message_id = message_id
+    pending_meal_job.message_sent = True
+    pending_meal_job.has_answered = False
+    pending_meal_job.job_done = False
+
+    # normal asking
+    pending_meal_job.to_whom = user
+    pending_meal_job.from_whom = who_cooks
+    pending_meal_job.meal = meal
+    session.add(pending_meal_job)
     session.commit()

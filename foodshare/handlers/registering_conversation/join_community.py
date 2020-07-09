@@ -9,6 +9,7 @@ from foodshare.bdd.database_communication import (
     get_token,
 )
 from foodshare.handlers.community_conversation import get_message
+from foodshare.handlers.start_conversation.first_message import first_message
 
 from . import ConversationStage
 
@@ -32,7 +33,7 @@ def creating_joining(update, context):
         last_message = bot.send_message(
             chat_id=chat_id, text=message, reply_markup=keyboard
         )
-        context.user_data['last_message'] = last_message
+        ud['last_message'] = last_message
     else:
         last_message = ud['last_message']
         bot.edit_message_text(
@@ -140,6 +141,7 @@ def verify_token(update, context):
     last_message = context.user_data['last_message']
     bot = context.bot
     chat_id = update.effective_chat.id
+    bot.delete_message(message_id=update.message.message_id, chat_id=chat_id)
     if token is None:
         message = "The token was not right! Try again!"
         bot.edit_message_text(
@@ -173,14 +175,14 @@ def verify_token(update, context):
 
 
 def joining_end(update, context):
-    from foodshare.handlers.start_conversation.first_message import (
-        first_message,
-    )  # to
-
     ud = context.user_data
     token = ud['token']
+    last_message = ud['last_message']
     chat_id = update.effective_chat.id
     add_user_to_community(chat_id, token)
     ud.clear()
+    context.bot.delete_message(
+        message_id=last_message.message_id, chat_id=chat_id,
+    )
     first_message(update, context)
     return ConversationHandler.END

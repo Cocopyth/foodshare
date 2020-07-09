@@ -8,6 +8,7 @@ from foodshare.bdd.database_communication import (
     get_user_from_chat_id,
     process_meal_action,
 )
+from foodshare.handlers.start_conversation.first_message import first_message
 from foodshare.keyboards.meal_selection import (
     cancel_meal_keyboard,
     cancel_participation_keyboard,
@@ -21,6 +22,7 @@ from . import ConversationStage
 def ask_to_chose_action(update, context):
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
+    ud = context.user_data
     meals_as_cook = [
         meal_job.meal
         for meal_job in user.message_giver
@@ -46,12 +48,25 @@ def ask_to_chose_action(update, context):
             else cancel_participation_keyboard
         )
         message = create_meal_message(meal)
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        if 'last_message' not in ud:
+            last_message = bot.send_message(
+                chat_id=chat_id, text=message, reply_markup=keyboard
+            )
+            ud['last_message'] = last_message
+        else:
+            last_message = ud['last_message']
+            bot.edit_message_text(
+                message_id=last_message.message_id,
+                chat_id=chat_id,
+                text=message,
+                reply_markup=keyboard,
+            )
         return ConversationStage.CHOSING_MEAL
     else:
-        bot.send_message(
-            chat_id=chat_id,
-            text='No meals where you cook ' 'or you participate',
+        first_message(
+            update,
+            context,
+            prefix='*No meals where you cook ' 'or ' 'you participate* \n',
         )
         return ConversationHandler.END
 
@@ -67,6 +82,7 @@ def action_chosing_handler(update, context):
     ud['meal_being_processed'] = meal
     ud['cancel_meal'] = cancel_meal
     if want_back:
+        first_message(update, context)
         return ConversationHandler.END
     elif not action_is_selected:
         return ConversationStage.CHOSING_MEAL
@@ -93,10 +109,11 @@ def cancelling(update, context):
         optional = 'your participation at '
         nothing = ''
         message = (
-            f'Are you sure you want to cancel '
+            f'*Are you sure you want to cancel '
             f'{optional if not cancel_meal else nothing} '
-            f'this meal? {meal}'
+            f'this meal?* \n'
         )
+        message += create_meal_message(meal)
     keyboard = InlineKeyboardMarkup(
         [
             [IKB('Confirm', callback_data='confirm')],
@@ -111,15 +128,16 @@ def cancelling(update, context):
 
 def meal_action_end(update, context):
     chat_id = update.effective_chat.id
-    meal = context.user_data['meal_being_processed']
-    cancel_meal = context.user_data['cancel_meal']
-    too_late = context.user_data['too_late']
+    ud = context.user_data
+    meal = ud['meal_being_processed']
+    cancel_meal = ud['cancel_meal']
+    too_late = ud['too_late']
     optional = 'your participation at '
     nothing = ''
-    message = (
-        f'{optional if not cancel_meal else nothing} '
-        f'the meal {meal} has been cancelled'
+    prefix = (
+        f'*{optional if not cancel_meal else nothing} '
+        f'The meal {meal.what} on {meal.when} has been cancelled* \n'
     )
-    update.callback_query.edit_message_text(text=message)
     process_meal_action(chat_id, cancel_meal, meal, too_late)
+    first_message(update, context, prefix=prefix)
     return ConversationHandler.END

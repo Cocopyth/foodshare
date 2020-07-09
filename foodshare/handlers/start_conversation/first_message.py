@@ -1,13 +1,14 @@
 from telegram import InlineKeyboardButton as IKB
-from telegram import InlineKeyboardMarkup
+from telegram import InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 from foodshare.bdd.database_communication import get_user_from_chat_id
 
 
-def first_message(update, context):
+def first_message(update, context, prefix=''):
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
+    ud = context.user_data
     if user is None:
         message = (
             "Hello there! First time we meet isn't it? "
@@ -62,7 +63,7 @@ def first_message(update, context):
         )
         return ConversationHandler.END
     else:
-        message = "What do you want to do?"
+        message = prefix + "What do you want to do?"
         keyboard = InlineKeyboardMarkup(
             [
                 [
@@ -82,5 +83,20 @@ def first_message(update, context):
         )
         bot = context.bot
         chat_id = update.effective_chat.id
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        if 'last_message' not in ud:
+            context.user_data['last_message'] = bot.send_message(
+                chat_id=chat_id,
+                text=message,
+                reply_markup=keyboard,
+                parse_mode=ParseMode.MARKDOWN,
+            )
+        else:
+            last_message = ud['last_message']
+            bot.edit_message_text(
+                message_id=last_message.message_id,
+                chat_id=chat_id,
+                text=message,
+                reply_markup=keyboard,
+                parse_mode=ParseMode.MARKDOWN,
+            )
         return ConversationHandler.END

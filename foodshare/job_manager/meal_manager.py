@@ -1,37 +1,37 @@
 import os
 from datetime import datetime
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from telegram import Bot
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 
-from foodshare.bdd.tables_declaration import Base, Meal, Pending_meal_job
+from foodshare.bdd.database_communication import (
+    create_pending_meal_job,
+    get_meals,
+)
 from foodshare.utils import create_meal_message, datetime_format
-
-absolute_path = 'home/coco/db/foodshare_test.db'
-engine = create_engine('sqlite:////' + absolute_path, echo=False)
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
-
 
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 bot = Bot(token=bot_token)
 
 
 def handle_meals():
-    meals = session.query(Meal).filter_by(cancelled=False, is_done=False)
+    from foodshare.bdd.database_communication import session
+
+    meals = get_meals()
     finished = True
     for meal in meals:
         deadline = datetime.strptime(meal.deadline, datetime_format)
         meal_time = datetime.strptime(meal.when, datetime_format)
-        coming = [pj for pj in meal.pending_meal_jobs if pj.answer]
+        coming = [
+            pj
+            for pj in meal.pending_meal_jobs
+            if (pj.answer and not pj.job_done)
+        ]
         pending = [
             pj
             for pj in meal.pending_meal_jobs
-            if (pj.message_sent and not pj.has_answered)
+            if (pj.message_sent and not pj.has_answered and not pj.job_done)
         ]
         print('coming=', coming)
         print('pending=', pending)
@@ -53,12 +53,8 @@ def handle_meals():
                     None,
                 )
                 if user is not None:
-                    pending_meal_job = Pending_meal_job(type=0)  # type 0 for
-                    # normal asking
-                    pending_meal_job.to_whom = user
-                    pending_meal_job.from_whom = meal.who_cooks
-                    pending_meal_job.meal = meal
-                    message = create_meal_message(meal)
+                    suffix = 'Do you want to come?'
+                    message = create_meal_message(meal, suffix)
                     keyboard = InlineKeyboardMarkup(
                         [
                             [
@@ -72,19 +68,18 @@ def handle_meals():
                         text=message,
                         reply_markup=keyboard,
                     ).message_id
-                    pending_meal_job.message_id = message_id
-                    pending_meal_job.message_sent = True
-                    pending_meal_job.has_answered = False
-                    pending_meal_job.job_done = False
-                    session.add(pending_meal_job)
+                    create_pending_meal_job(
+                        user, meal.who_cooks, meal, message_id
+                    )
                 else:
                     finished = True
-        else:
+        else:  # after the deadline
             if not meal.confirmation_sent:
                 send_confirmation(meal)
                 meal.confirmation_sent = True
                 for pj in coming:
                     user = pj.to_whom
+
                     user.meal_balance -= 1
                     session.add(user)
                 who_cooks = meal.who_cooks
@@ -121,7 +116,9 @@ def send_meal_cancellation_notification(meal):
         for pj in meal.pending_meal_jobs
         if (pj.message_sent and not pj.has_answered)
     ]
-    message_coming = f'Sorry the meal {meal} was cancelled'  # adapt meal
+    message_coming = (
+        f'Sorry the meal the meal {meal.what} on {meal.when} ' f'was cancelled'
+    )  # adapt meal
     # representation
     for pj in coming:
         bot.send_message(chat_id=pj.to_whom.telegram_id, text=message_coming)
@@ -132,5 +129,11 @@ def send_meal_cancellation_notification(meal):
 
 
 def send_participation_cancellation_notification(chat_id, meal):
-    message = f'User {chat_id} cancelled'
+    from foodshare.bdd.database_communication import get_user_from_chat_id
+
+    canceller = get_user_from_chat_id(chat_id)
+    message = (
+        f'User {canceller.name} cancelled his participation to the '
+        f'meal {meal.what} on {meal.when}'
+    )
     bot.send_message(chat_id=meal.who_cooks.telegram_id, text=message)

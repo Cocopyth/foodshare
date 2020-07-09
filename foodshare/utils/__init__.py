@@ -10,7 +10,7 @@ def emojize_number(number):
     return ''.join(emojize(f':keycap_{digit}:') for digit in str(number))
 
 
-def create_meal_message(meal):
+def create_meal_message(meal, suffix=''):
     message = OrderedDict()
     who_cooks = meal.who_cooks.name
     message['meal_name'] = emojize(
@@ -40,4 +40,4 @@ def create_meal_message(meal):
             f'he added the following message : \n' f'*{message2others}*'
         )
 
-    return '\n'.join(message.values()) + '\n Do you want to come?'
+    return '\n'.join(message.values()) + '\n' + suffix

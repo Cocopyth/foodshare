@@ -28,7 +28,13 @@ def ask_for_reminder(update, context):
 
 
 def get_deadline(update, context):
+    from foodshare.handlers.cook_conversation.cost_selection import (
+        ask_for_cost,
+    )
+
     query_data = update.callback_query.data
+    if query_data == 'back':
+        return ask_for_cost(update, context)
     time_list = query_data.split(':')
     ud = context.user_data
     selected_datetime = datetime.combine(ud['date'], ud['time'])
