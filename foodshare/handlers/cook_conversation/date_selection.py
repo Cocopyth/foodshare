@@ -12,6 +12,8 @@ from .time_selection import ask_for_time
 
 
 def ask_for_date(update, context):
+    chat_id = update.effective_chat.id
+    bot = context.bot
     weekday_in_two_days = get_weekday(
         datetime.date.today() + datetime.timedelta(days=2)
     )
@@ -29,16 +31,13 @@ def ask_for_date(update, context):
         ]
     )
     message = get_message(context, epilog='When do you want to cook?')
-    if (
-        update.message is None
-    ):  # reply doesn't work if there is no message to reply to
-        update.callback_query.edit_message_text(
-            text=message, reply_markup=keyboard,
-        )
-    else:
-        update.message.reply_text(
-            text=message, reply_markup=keyboard,
-        )
+    last_message = context.user_data['last_message']
+    bot.edit_message_text(
+        message_id=last_message.message_id,
+        chat_id=chat_id,
+        text=message,
+        reply_markup=keyboard,
+    )
 
     return ConversationStage.SELECTING_WEEKDAY_OR_SHOW_CALENDAR
 

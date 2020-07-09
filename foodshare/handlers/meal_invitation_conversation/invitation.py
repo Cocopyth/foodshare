@@ -6,12 +6,12 @@ from foodshare.bdd.database_communication import update_meal
 def invitation_answer(update, context):
     message_id = update.callback_query.message.message_id
     query_data = update.callback_query.data
-    update_meal(message_id, query_data)
+    document_id = update_meal(message_id, query_data)
+    chat_id = update.effective_chat.id
     if 'last_message' in context.user_data:
         context.user_data.pop('last_message')
-    update.callback_query.edit_message_text(
-        text='Very well, type /meals to see all meals where you\'re going'
-    )
+    context.bot.delete_message(chat_id =chat_id, message_id = message_id)
+    context.bot.delete_message(chat_id=chat_id, message_id = document_id)
 
 
 invitation_handler = CallbackQueryHandler(

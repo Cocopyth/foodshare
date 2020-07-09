@@ -27,7 +27,7 @@ def get_user_from_chat_id(chat_id):
     return our_user
 
 
-def add_meal(who_cooks, ud):
+def add_meal(who_cooks, ud, gif_url = None):
     meal = Meal(what=ud['meal_name'])
     meal.who_cooks = who_cooks
     meal.community = who_cooks.community
@@ -41,6 +41,7 @@ def add_meal(who_cooks, ud):
     meal.additional_info = ud['message2others']
     meal.is_done = False
     meal.cancelled = False
+    meal.gir_url = gif_url
     meal.pending_meal_jobs = []
     session.add(meal)
     session.commit()
@@ -56,6 +57,7 @@ def update_meal(message_id, query_data):
     pending_meal_job.answer = True if query_data == 'secret_key_yes' else False
     session.add(pending_meal_job)
     session.commit()
+    return pending_meal_job.document_id
 
 
 def add_user(name, chat_id):
@@ -183,7 +185,8 @@ def get_meals():
     return session.query(Meal).filter_by(cancelled=False, is_done=False)
 
 
-def create_pending_meal_job(user, who_cooks, meal, message_id):
+def create_pending_meal_job(user, who_cooks, meal, message_id,
+                            document_id):
     pending_meal_job = Pending_meal_job(type=0)
     pending_meal_job.message_id = message_id
     pending_meal_job.message_sent = True
@@ -194,5 +197,6 @@ def create_pending_meal_job(user, who_cooks, meal, message_id):
     pending_meal_job.to_whom = user
     pending_meal_job.from_whom = who_cooks
     pending_meal_job.meal = meal
+    pending_meal_job.document_id = document_id
     session.add(pending_meal_job)
     session.commit()

@@ -5,7 +5,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.bdd.database_communication import get_user_from_chat_id
 from foodshare.utils import create_meal_message, datetime_format
-
+from foodshare.handlers.meals_conversation import get_all_meals
 basic_buttons = []
 
 basic_buttons.append(
@@ -42,22 +42,7 @@ def process_meal_selection(update, context):
     callback_data = update.callback_query.data
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
-    meals_as_cook = [
-        meal_job.meal
-        for meal_job in user.message_giver
-        if not meal_job.job_done
-    ]
-    meals_as_participant = [
-        meal_job.meal
-        for meal_job in user.message_receiver
-        if (meal_job.answer and not meal_job.job_done)
-    ]
-    # initialize some variables in `context.user_data` when the keyboard is
-    # first called
-    all_meals = meals_as_cook + meals_as_participant
-    all_meals.sort(
-        key=lambda meal0: datetime.strptime(meal0.when, datetime_format)
-    )
+    all_meals, meals_as_cook = get_all_meals(user)
     if '_page' not in ud:
         page = 0
         ud['_page'] = 0

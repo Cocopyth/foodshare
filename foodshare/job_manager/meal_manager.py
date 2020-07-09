@@ -10,7 +10,7 @@ from foodshare.bdd.database_communication import (
     get_meals,
 )
 from foodshare.utils import create_meal_message, datetime_format
-
+from foodshare.utils.gif_test import get_gif_url
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 bot = Bot(token=bot_token)
 
@@ -61,13 +61,21 @@ def handle_meals():
                             ],
                         ]
                     )
+                    gif_url = get_gif_url(meal.what)
+                    if gif_url is not None:
+                        document_id = bot.send_document(
+                            chat_id=user.telegram_id,
+                                          document=gif_url).message_id
+                    else:
+                        document_id = None
                     message_id = bot.send_message(
                         chat_id=user.telegram_id,
                         text=message,
                         reply_markup=keyboard,
                     ).message_id
                     create_pending_meal_job(
-                        user, meal.who_cooks, meal, message_id
+                        user, meal.who_cooks, meal, message_id,
+                        document_id
                     )
                 else:
                     finished = True
@@ -89,10 +97,12 @@ def handle_meals():
             for pj in coming:
                 pj.job_done = True
                 pj.to_whom.money_balance -= meal.how_much / (len(coming)+1)
-            for pj in meal.pending_meal_jobs:
+            for pj in pending:
                 pj.job_done = True
                 bot.delete_message(chat_id=pj.to_whom.telegram_id,
                                    message_id = pj.message_id)
+                bot.delete_message(chat_id=pj.to_whom.telegram_id,
+                                   message_id=pj.document_id)
                 session.add(pj)
             meal.who_cooks.money_balance += meal.how_much*(1-1/(len(
                 coming)+1))
@@ -128,6 +138,9 @@ def send_meal_cancellation_notification(meal):
     for pj in pending:
         bot.delete_message(
             chat_id=pj.to_whom.telegram_id, message_id=pj.message_id
+        )
+        bot.delete_message(
+            chat_id=pj.to_whom.telegram_id, message_id=pj.document_id
         )
 
 

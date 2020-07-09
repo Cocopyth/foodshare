@@ -65,7 +65,7 @@ class Pending_meal_job(Base):
     answer = Column(Integer)
     job_done = Column(Integer)
     message_id = Column(Integer)
-
+    document_id = Column(Integer)
     def __repr__(self):
         return (
             "<Pending_meal_job(type='%s', answer='%s',"
@@ -97,6 +97,7 @@ class Meal(Base):
     cancelled = Column(Integer)
     additional_info = Column(String)
     confirmation_sent = Column(Integer)
+    gir_url = Column(String)
 
     def __repr__(self):
         return "<Meal(What='%s', participants='%s',how many='%s')>" % (

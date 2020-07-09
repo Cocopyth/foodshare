@@ -16,29 +16,14 @@ from foodshare.keyboards.meal_selection import (
 )
 from foodshare.utils import create_meal_message, datetime_format
 
-from . import ConversationStage
+from . import ConversationStage, get_all_meals
 
 
 def ask_to_chose_action(update, context):
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
     ud = context.user_data
-    meals_as_cook = [
-        meal_job.meal
-        for meal_job in user.message_giver
-        if not meal_job.job_done
-    ]
-    meals_as_participant = [
-        meal_job.meal
-        for meal_job in user.message_receiver
-        if (meal_job.answer and not meal_job.job_done)
-    ]
-    # initialize some variables in `context.user_data` when the keyboard is
-    # first called
-    all_meals = meals_as_cook + meals_as_participant
-    all_meals.sort(
-        key=lambda meal: datetime.strptime(meal.when, datetime_format)
-    )
+    all_meals, meals_as_cook = get_all_meals(user)
     bot = context.bot
     if len(all_meals) > 0:
         meal = all_meals[0]
