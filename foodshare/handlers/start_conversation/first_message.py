@@ -18,7 +18,9 @@ def first_message(update, context):
         )
         bot = context.bot
         chat_id = update.effective_chat.id
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        context.user_data['last_message'] = bot.send_message(
+            chat_id=chat_id, text=message, reply_markup=keyboard
+        )
         return ConversationHandler.END
     elif user.community is None:
         message = "Before anything you need to join or create a community!"
@@ -34,7 +36,9 @@ def first_message(update, context):
         )
         bot = context.bot
         chat_id = update.effective_chat.id
-        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        context.user_data['last_message'] = bot.send_message(
+            chat_id=chat_id, text=message, reply_markup=keyboard
+        )
         return ConversationHandler.END
     elif len(user.community.members) < 2:
         message = (
