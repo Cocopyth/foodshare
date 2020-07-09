@@ -1,9 +1,13 @@
-from enum import Enum, auto
-from foodshare.utils import  datetime_format
 from datetime import datetime
+from enum import Enum, auto
+
+from foodshare.utils import datetime_format
+
+
 class ConversationStage(Enum):
     CHOSING_MEAL = auto()
     CANCELING = auto()
+
 
 def get_all_meals(user):
     meals_as_cook = [

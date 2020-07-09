@@ -27,7 +27,7 @@ def get_user_from_chat_id(chat_id):
     return our_user
 
 
-def add_meal(who_cooks, ud, gif_url = None):
+def add_meal(who_cooks, ud, gif_url=None):
     meal = Meal(what=ud['meal_name'])
     meal.who_cooks = who_cooks
     meal.community = who_cooks.community
@@ -101,7 +101,7 @@ def add_user_to_community(chat_id, token):
     community = token.community
     session.delete(token)
     user.community = community
-    user.admin = 1 #For now we will have all users admin, to be modified
+    user.admin = 1  # For now we will have all users admin, to be modified
     # later
     user.money_balance = 0
     user.meal_balance = 0
@@ -112,11 +112,10 @@ def add_user_to_community(chat_id, token):
 def remove_user_from_community(chat_id):
     user = get_user_from_chat_id(chat_id)
     community = user.community
-    other_members = [member for member in community.members if member !=
-                     user]
+    other_members = [member for member in community.members if member != user]
     money_to_split = user.money_balance
     for member in other_members:
-        member.money_balance += money_to_split/len(other_members)
+        member.money_balance += money_to_split / len(other_members)
         session.add(member)
     user.community = None
     user.admin = 0
@@ -185,8 +184,7 @@ def get_meals():
     return session.query(Meal).filter_by(cancelled=False, is_done=False)
 
 
-def create_pending_meal_job(user, who_cooks, meal, message_id,
-                            document_id):
+def create_pending_meal_job(user, who_cooks, meal, message_id, document_id):
     pending_meal_job = Pending_meal_job(type=0)
     pending_meal_job.message_id = message_id
     pending_meal_job.message_sent = True

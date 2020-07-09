@@ -10,8 +10,8 @@ def invitation_answer(update, context):
     chat_id = update.effective_chat.id
     if 'last_message' in context.user_data:
         context.user_data.pop('last_message')
-    context.bot.delete_message(chat_id =chat_id, message_id = message_id)
-    context.bot.delete_message(chat_id=chat_id, message_id = document_id)
+    context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+    context.bot.delete_message(chat_id=chat_id, message_id=document_id)
 
 
 invitation_handler = CallbackQueryHandler(

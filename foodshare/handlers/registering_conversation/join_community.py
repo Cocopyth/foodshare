@@ -1,7 +1,8 @@
+from emoji import emojize
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
-from emoji import emojize
+
 from foodshare.bdd.database_communication import (
     add_community,
     add_user,
@@ -20,7 +21,9 @@ def creating_joining(update, context):
     chat_id = update.effective_chat.id
     if 'name_user' in ud.keys():
         add_user(ud['name_user'], chat_id)
-    message = "Do you want to join an existing community or create your own?"
+    message = (
+        "Do you want to join an existing community " "or create your own?"
+    )
     keyboard = InlineKeyboardMarkup(
         [
             [IKB('Join existing community', callback_data='join')],
@@ -153,7 +156,8 @@ def verify_token(update, context):
     else:
         community = token.community
         message = emojize(
-            f'You\'re about to join the community \n :family: {community.name} '
+            f'You\'re about to join the community \n :family: '
+            f'{community.name} '
             f'\n:desert_island: whose description is:'
             f' {community.description}. \n'
             f'Do you confirm?'

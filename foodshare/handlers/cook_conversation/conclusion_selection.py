@@ -11,6 +11,7 @@ from foodshare.job_manager.meal_manager import handle_meals
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 from foodshare.utils.gif_test import get_gif_url
 
+
 def ask_for_conclusion(update, context, highlight=None):
     ud = context.user_data
     query = update.callback_query
@@ -72,8 +73,7 @@ def end(update, context):
     bot = context.bot
     chat_id = context.user_data['chat_id']
     ud = context.user_data
-    bot.deleteMessage(chat_id,
-                      ud['last_message'].message_id)
+    bot.deleteMessage(chat_id, ud['last_message'].message_id)
     who_cooks = get_user_from_chat_id(chat_id)
     gif_url = get_gif_url(ud['meal_name'])
     if gif_url is not None:

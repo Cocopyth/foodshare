@@ -66,6 +66,7 @@ class Pending_meal_job(Base):
     job_done = Column(Integer)
     message_id = Column(Integer)
     document_id = Column(Integer)
+
     def __repr__(self):
         return (
             "<Pending_meal_job(type='%s', answer='%s',"

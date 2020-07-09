@@ -7,8 +7,7 @@ from foodshare import datetime_format, get_weekday
 
 
 def emojize_number(number):
-    return ''.join(emojize(f':keycap_{digit}:') for digit in str(
-        int(number)))
+    return ''.join(emojize(f':keycap_{digit}:') for digit in str(int(number)))
 
 
 def create_meal_message(meal, suffix=''):

@@ -11,6 +11,7 @@ from foodshare.bdd.database_communication import (
 )
 from foodshare.utils import create_meal_message, datetime_format
 from foodshare.utils.gif_test import get_gif_url
+
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 bot = Bot(token=bot_token)
 
@@ -40,7 +41,7 @@ def handle_meals():
             pj.to_whom for pj in meal.pending_meal_jobs if pj.message_sent
         ]
         if datetime.now() <= deadline:
-            if len(coming) + len(pending) < meal.how_many-1:
+            if len(coming) + len(pending) < meal.how_many - 1:
                 finished = False
                 user = next(
                     (
@@ -64,8 +65,8 @@ def handle_meals():
                     gif_url = get_gif_url(meal.what)
                     if gif_url is not None:
                         document_id = bot.send_document(
-                            chat_id=user.telegram_id,
-                                          document=gif_url).message_id
+                            chat_id=user.telegram_id, document=gif_url
+                        ).message_id
                     else:
                         document_id = None
                     message_id = bot.send_message(
@@ -74,8 +75,7 @@ def handle_meals():
                         reply_markup=keyboard,
                     ).message_id
                     create_pending_meal_job(
-                        user, meal.who_cooks, meal, message_id,
-                        document_id
+                        user, meal.who_cooks, meal, message_id, document_id
                     )
                 else:
                     finished = True
@@ -96,16 +96,19 @@ def handle_meals():
             meal.is_done = True
             for pj in coming:
                 pj.job_done = True
-                pj.to_whom.money_balance -= meal.how_much / (len(coming)+1)
+                pj.to_whom.money_balance -= meal.how_much / (len(coming) + 1)
             for pj in pending:
                 pj.job_done = True
-                bot.delete_message(chat_id=pj.to_whom.telegram_id,
-                                   message_id = pj.message_id)
-                bot.delete_message(chat_id=pj.to_whom.telegram_id,
-                                   message_id=pj.document_id)
+                bot.delete_message(
+                    chat_id=pj.to_whom.telegram_id, message_id=pj.message_id
+                )
+                bot.delete_message(
+                    chat_id=pj.to_whom.telegram_id, message_id=pj.document_id
+                )
                 session.add(pj)
-            meal.who_cooks.money_balance += meal.how_much*(1-1/(len(
-                coming)+1))
+            meal.who_cooks.money_balance += meal.how_much * (
+                1 - 1 / (len(coming) + 1)
+            )
             session.add(meal.who_cooks)
     session.commit()
     return finished

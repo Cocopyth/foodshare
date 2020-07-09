@@ -1,7 +1,8 @@
+from emoji import emojize
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
-from emoji import emojize
+
 from foodshare.bdd.database_communication import (
     add_token,
     get_user_from_chat_id,
@@ -27,9 +28,7 @@ def community_action(update, context):
     ]
     if user.admin:
         buttons.append([IKB('Invite people', callback_data='invite')])
-    buttons.append(
-        [IKB('Back', callback_data='back')]
-    )
+    buttons.append([IKB('Back', callback_data='back')])
     keyboard = InlineKeyboardMarkup(buttons)
     bot = context.bot
     ud = context.user_data
@@ -47,9 +46,11 @@ def community_action(update, context):
         )
     return ConversationStage.ACTION
 
-def back_end(update,context):
+
+def back_end(update, context):
     first_message(update, context)
     return ConversationHandler.END
+
 
 def send_token(update, context):
     bot = context.bot
@@ -105,10 +106,12 @@ def quit(update, context):
     #     # to name another admin
     #     return ConversationHandler.END
     elif user.money_balance < 0:
-        prefix = '*To quit the community you need to ' \
-                 'have a money balance superior to zero.' \
-                 '\nAsk another user to make a ' \
-                 'transaction* \n'
+        prefix = (
+            '*To quit the community you need to '
+            'have a money balance superior to zero.'
+            '\nAsk another user to make a '
+            'transaction* \n'
+        )
         first_message(update, context, prefix)
         return ConversationHandler.END
     else:

@@ -2,7 +2,6 @@ from emoji import emojize
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 
 from foodshare.bdd.database_communication import get_user_from_chat_id
-from foodshare.utils import emojize_number
 
 from .digit_list import digit_buttons
 
@@ -38,7 +37,6 @@ confirm_buttons.append(
 )
 confirm_keyboard = InlineKeyboardMarkup(confirm_buttons)
 pos = [0, 5, 11, 17]
-
 
 
 def process_user_selection(update, context):
@@ -85,9 +83,7 @@ def process_user_selection(update, context):
     ud['_page'] = page
 
     if number == '':
-        message = (
-            'Please select a user to make the transaction with'
-        )
+        message = 'Please select a user to make the transaction with'
     else:
         user_chosed = members[int(number) - 1]
         message = (
@@ -96,7 +92,7 @@ def process_user_selection(update, context):
             f'confirm to continue. \n'
         )
     # choose keyboard with a confirm button if a valid number was selected
-    keyboard = construct_keyboard(user, money,number != '', page)
+    keyboard = construct_keyboard(user, money, number != '', page)
     update.callback_query.edit_message_text(
         text=message, reply_markup=keyboard, parse_mode=ParseMode.MARKDOWN,
     )
@@ -122,15 +118,9 @@ def construct_keyboard(user, money, confirm, page=0, number_per_page=5):
             if money
             else str(member.meal_balance) + ' meals'
         )
-        member_message=(f''
-                               f'{member.name}'
-                               f', balance :'
-                               f' {balance}')
+        member_message = f'' f'{member.name}' f', balance :' f' {balance}'
         buttons.append(
-            [
-                InlineKeyboardButton(member_message,
-                                     callback_data=str(i+j)),
-            ]
+            [InlineKeyboardButton(member_message, callback_data=str(i + j))]
         )
     buttons.append(
         [

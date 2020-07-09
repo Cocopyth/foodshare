@@ -2,8 +2,13 @@ from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
 from . import ConversationStage as CS
-from .community_action import community_action, quit, quit_end, \
-    send_token, back_end
+from .community_action import (
+    back_end,
+    community_action,
+    quit,
+    quit_end,
+    send_token,
+)
 
 community_handler = ConversationHandler(
     entry_points=[

@@ -16,14 +16,10 @@ def ask_for_meal_name(update, context):
     if 'last_message' in ud:
         last_message = ud['last_message']
         bot.edit_message_text(
-            message_id=last_message.message_id,
-            chat_id=chat_id,
-            text=message,
+            message_id=last_message.message_id, chat_id=chat_id, text=message,
         )
     else:
-        ud['last_message'] = bot.send_message(
-            chat_id=chat_id, text=message
-        )
+        ud['last_message'] = bot.send_message(chat_id=chat_id, text=message)
     return ConversationStage.TYPING_MEAL_NAME
 
 

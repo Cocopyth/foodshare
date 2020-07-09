@@ -1,11 +1,10 @@
-from datetime import datetime
-
 from emoji import emojize
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from foodshare.bdd.database_communication import get_user_from_chat_id
-from foodshare.utils import create_meal_message, datetime_format
 from foodshare.handlers.meals_conversation import get_all_meals
+from foodshare.utils import create_meal_message
+
 basic_buttons = []
 
 basic_buttons.append(
