@@ -1,7 +1,7 @@
 from telegram import InlineKeyboardButton as IKB
 from telegram import InlineKeyboardMarkup
 from telegram.ext import ConversationHandler
-
+from emoji import emojize
 from foodshare.bdd.database_communication import (
     add_token,
     get_user_from_chat_id,
@@ -16,9 +16,11 @@ def community_action(update, context):
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
     community = user.community
-    message = (
-        f'You\'re in the community {community.name} whose description '
-        f'is : \n {community.description} \n What do you want to do?'
+    message = emojize(
+        f'You\'re in the community \n :family: {community.name} \n '
+        f':desert_island: whose '
+        f'description '
+        f'is :  {community.description} \n What do you want to do?'
     )
     buttons = [
         [IKB('Quit community', callback_data='quit')],
@@ -97,17 +99,11 @@ def quit(update, context):
     #     # to name another admin
     #     return ConversationHandler.END
     elif user.money_balance < 0:
-        bot.edit_message_text(
-            message_id=last_message.message_id,
-            chat_id=chat_id,
-            text='To quit the community you need to '
-            'have a balance superior to zero.'
-            '\n Ask another user to make a '
-            'transaction to you using /transaction',
-        )
-        # U
-        # need
-        # balance >0 : show balances to reimburse someone
+        prefix = '*To quit the community you need to ' \
+                 'have a money balance superior to zero.' \
+                 '\nAsk another user to make a ' \
+                 'transaction* \n'
+        first_message(update, context, prefix)
         return ConversationHandler.END
     else:
         message = f'Are you sure you want to quit the community?'

@@ -109,6 +109,12 @@ def add_user_to_community(chat_id, token):
 def remove_user_from_community(chat_id):
     user = get_user_from_chat_id(chat_id)
     community = user.community
+    other_members = [member for member in community.members if member !=
+                     user]
+    money_to_split = user.money_balance
+    for member in other_members:
+        member.money_balance += money_to_split/other_members
+        session.add(member)
     user.community = None
     user.admin = 0
     user.money_balance = 0

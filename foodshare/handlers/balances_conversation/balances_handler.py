@@ -17,7 +17,7 @@ balances_handler = ConversationHandler(
         CQH(ask_money_or_meal, pattern='balances_asked0523'),
     ],
     states={
-        CS.MONEY_OR_MEAL: [CQH(ask_for_user, pattern='money|meal')],
+        CS.MONEY_OR_MEAL: [CQH(ask_for_user, pattern='money|meal|back')],
         CS.SELECTING_USER: [CQH(user_selection_handler)],
         CS.SELECTING_AMOUNT: [CQH(amount_selection_handler)],
         CS.CONFIRMING: [

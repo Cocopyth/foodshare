@@ -14,6 +14,7 @@ from foodshare.utils import emojize_number
 from foodshare.handlers.start_conversation.first_message import first_message
 from . import ConversationStage
 money_mouth_face = "\U0001f911"
+
 def ask_money_or_meal(update, context):
     chat_id = update.effective_chat.id
     ud = context.user_data
@@ -22,6 +23,7 @@ def ask_money_or_meal(update, context):
         [
             [IKB('Give money', callback_data='money')],
             [IKB('Give meal points', callback_data='meal')],
+            [IKB('Back', callback_data='back')]
         ]
     )
     message = 'What kind of transaction do you want to make?'
@@ -45,6 +47,9 @@ def ask_for_user(update, context):
     chat_id = update.effective_chat.id
     user = get_user_from_chat_id(chat_id)
     callback_data = update.callback_query.data
+    if callback_data == 'back':
+        first_message(update, context)
+        return ConversationHandler.END
     money = callback_data == 'money'
     context.user_data['money_or_meal'] = money
     keyboard = user_selection.construct_keyboard(user, money, False)

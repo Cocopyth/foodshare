@@ -8,10 +8,9 @@ from foodshare.bdd.database_communication import (
     add_user_to_community,
     get_token,
 )
-from foodshare.handlers.community_conversation import get_message
 from foodshare.handlers.start_conversation.first_message import first_message
 
-from . import ConversationStage
+from . import ConversationStage, get_message
 
 back_keyboard = InlineKeyboardMarkup([[IKB('Back', callback_data='back')]])
 
