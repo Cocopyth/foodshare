@@ -7,6 +7,8 @@ def invitation_answer(update, context):
     message_id = update.callback_query.message.message_id
     query_data = update.callback_query.data
     update_meal(message_id, query_data)
+    if 'last_message' in context.user_data:
+        context.user_data.pop('last_message')
     update.callback_query.edit_message_text(
         text='Very well, type /meals to see all meals where you\'re going'
     )

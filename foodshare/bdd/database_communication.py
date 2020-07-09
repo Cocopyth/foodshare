@@ -70,6 +70,8 @@ def add_community(name, description, chat_id):
     community = Community(name=name, description=description)
     creator.community = community
     creator.admin = 1
+    creator.money_balance = 0
+    creator.meal_balance = 0
     session.add_all([community, creator])
     session.commit()
 

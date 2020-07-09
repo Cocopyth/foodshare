@@ -40,7 +40,8 @@ def get_message(context, epilog='', highlight=None):
         )
     if 'cost' in ud:
         message['cost'] = emojize(
-            f':euro_banknote: For {emojize_number(ud["cost"])}€ in total'
+            f':euro_banknote: For {emojize_number(int(ud["cost"]))}€ in '
+            f'total'
         )
     if 'deadline' in ud:
         deadline = ud['deadline']
@@ -51,7 +52,8 @@ def get_message(context, epilog='', highlight=None):
     if 'message2others' in ud:
         message2others = ud['message2others']
         message['message2others'] = emojize(
-            f':calling: I will send the following message to people \n'
+            f':mobile_phone_with_arrow: I will send the following message '
+            f'to people \n'
             f'*{message2others}*'
         )
     if highlight in message.keys():

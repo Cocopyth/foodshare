@@ -33,8 +33,6 @@ def handle_meals():
             for pj in meal.pending_meal_jobs
             if (pj.message_sent and not pj.has_answered and not pj.job_done)
         ]
-        print('coming=', coming)
-        print('pending=', pending)
         community_users = meal.who_cooks.community.members
         # community_users.sort(
         #     key = lambda user : user.meal_balance)
@@ -42,7 +40,7 @@ def handle_meals():
             pj.to_whom for pj in meal.pending_meal_jobs if pj.message_sent
         ]
         if datetime.now() <= deadline:
-            if len(coming) + len(pending) < meal.how_many:
+            if len(coming) + len(pending) < meal.how_many-1:
                 finished = False
                 user = next(
                     (
@@ -89,12 +87,17 @@ def handle_meals():
         if datetime.now() > meal_time:
             meal.is_done = True
             for pj in coming:
-                pj.to_whom.money_balance -= meal.how_much / meal.how_many
+                pj.job_done = True
+                pj.to_whom.money_balance -= meal.how_much / (len(coming)+1)
             for pj in meal.pending_meal_jobs:
                 pj.job_done = True
+                bot.delete_message(chat_id=pj.to_whom.telegram_id,
+                                   message_id = pj.message_id)
                 session.add(pj)
+            meal.who_cooks.money_balance += meal.how_much*(1-1/(len(
+                coming)+1))
+            session.add(meal.who_cooks)
     session.commit()
-
     return finished
 
 
