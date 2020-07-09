@@ -36,6 +36,25 @@ def first_message(update, context):
         chat_id = update.effective_chat.id
         bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
         return ConversationHandler.END
+    elif len(user.community.members) < 2:
+        message = (
+            "Before anything you need to invite people to your "
+            "community or join one with already some people in it!"
+        )
+        keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    IKB(
+                        'Invite people or quit community',
+                        callback_data='invite_asked0523',
+                    )
+                ]
+            ]
+        )
+        bot = context.bot
+        chat_id = update.effective_chat.id
+        bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
+        return ConversationHandler.END
     else:
         message = "What do you want to do?"
         keyboard = InlineKeyboardMarkup(

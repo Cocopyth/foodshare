@@ -9,6 +9,7 @@ community_handler = ConversationHandler(
     entry_points=[
         CommandHandler('community', first_message),
         CQH(first_message, pattern='community_asked0523'),
+        CQH(first_message, pattern='invite_asked0523'),
     ],
     states={
         CS.ACTION: [
