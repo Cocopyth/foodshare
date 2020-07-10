@@ -12,7 +12,6 @@ from .first_message import (
 
 meals_handler = ConversationHandler(
     entry_points=[
-        CommandHandler('meals', ask_to_chose_action),
         CQH(ask_to_chose_action, pattern='meals_asked0523'),
     ],
     states={

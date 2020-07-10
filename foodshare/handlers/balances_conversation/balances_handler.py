@@ -15,7 +15,6 @@ from .balance_action import (
 
 balances_handler = ConversationHandler(
     entry_points=[
-        CommandHandler('balances', ask_money_or_meal),
         CQH(ask_money_or_meal, pattern='balances_asked0523'),
     ],
     states={

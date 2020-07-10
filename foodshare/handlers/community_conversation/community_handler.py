@@ -14,7 +14,6 @@ from .community_action import (
 
 community_handler = ConversationHandler(
     entry_points=[
-        CommandHandler('community', community_action),
         CQH(community_action, pattern='community_asked0523'),
         CQH(community_action, pattern='invite_asked0523'),
     ],
