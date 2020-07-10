@@ -58,10 +58,17 @@ def creating(update, context):
 def save_community_name(update, context):
     name = update.message.text
     ud = context.user_data
-    ud['community_name'] = name
     bot = context.bot
     chat_id = update.effective_chat.id
+    ud['community_name'] = name
     bot.delete_message(message_id=update.message.message_id, chat_id=chat_id)
+    return ask_community_description(update, context)
+
+
+def ask_community_description(update, context):
+    bot = context.bot
+    ud = context.user_data
+    chat_id = update.effective_chat.id
     last_message = ud['last_message']
     message = get_message(
         context, epilog='Give a short description of the ' 'community'

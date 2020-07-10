@@ -102,8 +102,8 @@ def first_message(update, context, prefix=''):
         return ConversationHandler.END
 
 
-def first_message_alternative(update,context):
+def first_message_alternative(update, context):
     ud = context.user_data
     if 'last_message' in ud:
         ud.pop('last_message')
-    return first_message(update,context)
+    return first_message(update, context)

@@ -25,7 +25,7 @@ from .date_selection import (
     get_date_from_calendar,
     get_date_from_weekday,
 )
-from .meal_name_choice import ask_for_meal_name, save_meal_name, end_cook
+from .meal_name_choice import ask_for_meal_name, end_cook, save_meal_name
 from .nb_of_person_selection import (
     ask_for_number_of_person,
     nb_of_person_selection_handler,
@@ -39,9 +39,10 @@ cook_handler = ConversationHandler(
         CQH(ask_for_meal_name, pattern='cook_asked0523'),
     ],
     states={
-        CS.TYPING_MEAL_NAME: [MessageHandler(Filters.text,
-                                             save_meal_name),
-                              CQH(end_cook,pattern='back')],
+        CS.TYPING_MEAL_NAME: [
+            MessageHandler(Filters.text, save_meal_name),
+            CQH(end_cook, pattern='back'),
+        ],
         CS.SELECTING_WEEKDAY_OR_SHOW_CALENDAR: [
             CQH(get_date_from_weekday, pattern='today|tmo|in_2_days'),
             CQH(get_date_from_calendar, pattern='show_calendar'),

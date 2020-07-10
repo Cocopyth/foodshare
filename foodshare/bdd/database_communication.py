@@ -1,6 +1,7 @@
 import datetime
-import uuid
 import os
+import uuid
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -15,8 +16,10 @@ from foodshare.bdd.tables_declaration import (
 )
 from foodshare.utils import datetime_format
 
-absolute_path = os.path.dirname(os.path.abspath(__file__))+\
-                '/../../../bdd/foodshare_test.db'
+absolute_path = (
+    os.path.dirname(os.path.abspath(__file__))
+    + '/../../../bdd/foodshare_test.db'
+)
 engine = create_engine('sqlite:////' + absolute_path, echo=True)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
@@ -181,7 +184,6 @@ def process_meal_action(chat_id, cancel_meal, meal, too_late):
         session.commit()
         if too_late:
             send_participation_cancellation_notification(chat_id, meal)
-
 
 
 def get_meals():

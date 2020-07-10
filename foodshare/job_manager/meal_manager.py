@@ -9,8 +9,11 @@ from foodshare.bdd.database_communication import (
     create_pending_meal_job,
     get_meals,
 )
-from foodshare.utils import create_meal_message, datetime_format, \
-    emojize_number
+from foodshare.utils import (
+    create_meal_message,
+    datetime_format,
+    emojize_number,
+)
 from foodshare.utils.gif_test import get_gif_url
 
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -123,11 +126,13 @@ def send_confirmation(meal):
         f'{len(coming)} people confirmed they will come to your meal:\n'
         f'{create_meal_message(meal)}\n'
         f'Here is the list of the people coming \n'
-
     )
-    message += '\n'.join([emojize_number(i+1)+pj.to_whom.name for (i,
-                                                                   pj) in
-                         enumerate(coming)])
+    message += '\n'.join(
+        [
+            emojize_number(i + 1) + pj.to_whom.name
+            for (i, pj) in enumerate(coming)
+        ]
+    )
     bot.send_message(chat_id=meal.who_cooks.telegram_id, text=message)
 
 
@@ -143,8 +148,7 @@ def send_meal_cancellation_notification(meal):
         f'was cancelled'
     )
     for pj in coming:
-        bot.send_message(chat_id=pj.to_whom.telegram_id,
-                         text=message_coming)
+        bot.send_message(chat_id=pj.to_whom.telegram_id, text=message_coming)
     for pj in pending:
         bot.delete_message(
             chat_id=pj.to_whom.telegram_id, message_id=pj.message_id

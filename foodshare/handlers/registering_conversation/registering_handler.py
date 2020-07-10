@@ -2,6 +2,7 @@ from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import ConversationHandler, Filters, MessageHandler
 
 from foodshare.handlers.registering_conversation.join_community import (
+    ask_community_description,
     creating,
     creating_end,
     creating_joining,
@@ -39,7 +40,7 @@ registering_handler = ConversationHandler(
             MessageHandler(Filters.text, save_community_description),
         ],
         CS.CONFIRMING: [
-            CQH(save_community_name, pattern='back'),
+            CQH(ask_community_description, pattern='back'),
             CQH(creating_end, pattern='confirm'),
         ],
         CS.JOINING: [

@@ -30,7 +30,15 @@ def ask_for_date(update, context):
             [IKB('Back', callback_data='back')],
         ]
     )
-    message = get_message(context, epilog='When do you want to cook?')
+    message = get_message(
+        context,
+        epilog='I advise you to hide your '
+        'keyboard now to better '
+        'see my messages! \n \n'
+        'When do '
+        'you '
+        'want to cook?',
+    )
     last_message = context.user_data['last_message']
     bot.edit_message_text(
         message_id=last_message.message_id,
