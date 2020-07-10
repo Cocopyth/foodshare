@@ -2,6 +2,7 @@ from collections import OrderedDict
 from datetime import datetime
 
 from emoji import emojize
+from telegram.ext import ConversationHandler
 
 from foodshare import datetime_format, get_weekday
 
@@ -41,3 +42,34 @@ def create_meal_message(meal, suffix=''):
         )
 
     return '\n'.join(message.values()) + '\n' + suffix
+
+
+def hard_break(update, context):
+    ud = context.user_data
+    bot = context.bot
+    chat_id = update.effective_chat.id
+    if 'last_message' in ud:
+        last_message = ud['last_message']
+        bot.delete_message(
+            message_id=last_message.message_id, chat_id=chat_id,
+        )
+    ud.clear()
+    return ConversationHandler.END
+
+
+def hard_restart(update, context):
+    from foodshare.handlers.start_conversation.first_message import (
+        first_message,
+    )
+
+    ud = context.user_data
+    bot = context.bot
+    chat_id = update.effective_chat.id
+    if 'last_message' in ud:
+        last_message = ud['last_message']
+        bot.delete_message(
+            message_id=last_message.message_id, chat_id=chat_id,
+        )
+    ud.clear()
+    first_message(update, context)
+    return ConversationHandler.END

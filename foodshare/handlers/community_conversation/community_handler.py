@@ -1,6 +1,8 @@
 from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
+from foodshare.utils import hard_break, hard_restart
+
 from . import ConversationStage as CS
 from .community_action import (
     back_end,
@@ -27,6 +29,9 @@ community_handler = ConversationHandler(
             CQH(quit_end, pattern='confirm'),
         ],
     },
-    fallbacks=[],  # Only for
+    fallbacks=[
+        CommandHandler('stop', hard_break),
+        CommandHandler('start', hard_restart),
+    ],
     # developpment to know sticker id
 )

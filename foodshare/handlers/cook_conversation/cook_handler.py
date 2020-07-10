@@ -14,6 +14,7 @@ from foodshare.keyboards.confirmation_keyboard import (
     when_date,
     when_time,
 )
+from foodshare.utils import hard_break, hard_restart
 
 from . import ConversationStage as CS
 from .conclusion_selection import (
@@ -72,6 +73,9 @@ cook_handler = ConversationHandler(
             CQH(ask_for_conclusion, pattern='back'),
         ],
     },
-    fallbacks=[CommandHandler('cook', ask_for_meal_name)],  # Only for
+    fallbacks=[
+        CommandHandler('stop', hard_break),
+        CommandHandler('start', hard_restart),
+    ],  # Only for
     # developpment to know sticker id
 )

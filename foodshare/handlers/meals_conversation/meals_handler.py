@@ -1,6 +1,8 @@
 from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
+from foodshare.utils import hard_break, hard_restart
+
 from . import ConversationStage as CS
 from .first_message import (
     action_chosing_handler,
@@ -20,5 +22,8 @@ meals_handler = ConversationHandler(
             CQH(meal_action_end, pattern='confirm'),
         ],
     },
-    fallbacks=[CommandHandler('meals', ask_to_chose_action)],
+    fallbacks=[
+        CommandHandler('stop', hard_break),
+        CommandHandler('start', hard_restart),
+    ],
 )

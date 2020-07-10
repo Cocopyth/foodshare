@@ -1,5 +1,10 @@
 from telegram.ext import CallbackQueryHandler as CQH
-from telegram.ext import ConversationHandler, Filters, MessageHandler
+from telegram.ext import (
+    CommandHandler,
+    ConversationHandler,
+    Filters,
+    MessageHandler,
+)
 
 from foodshare.handlers.registering_conversation.join_community import (
     ask_community_description,
@@ -12,6 +17,7 @@ from foodshare.handlers.registering_conversation.join_community import (
     save_community_name,
     verify_token,
 )
+from foodshare.utils import hard_break, hard_restart
 
 from . import ConversationStage as CS
 from .register_name import ask_for_name, save_name
@@ -52,5 +58,8 @@ registering_handler = ConversationHandler(
             CQH(joining_end, pattern='confirm'),
         ],
     },
-    fallbacks=[],
+    fallbacks=[
+        CommandHandler('stop', hard_break),
+        CommandHandler('start', hard_restart),
+    ],
 )

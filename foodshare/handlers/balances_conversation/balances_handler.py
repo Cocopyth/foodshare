@@ -1,6 +1,8 @@
 from telegram.ext import CallbackQueryHandler as CQH
 from telegram.ext import CommandHandler, ConversationHandler
 
+from foodshare.utils import hard_break, hard_restart
+
 from . import ConversationStage as CS
 from .balance_action import (
     amount_selection_handler,
@@ -25,6 +27,9 @@ balances_handler = ConversationHandler(
             CQH(transaction_end, pattern='confirm'),
         ],
     },
-    fallbacks=[CommandHandler('community', ask_money_or_meal)],  # Only for
+    fallbacks=[
+        CommandHandler('stop', hard_break),
+        CommandHandler('start', hard_restart),
+    ],  # Only for
     # developpment to know sticker id
 )
