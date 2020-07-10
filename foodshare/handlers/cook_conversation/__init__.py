@@ -53,8 +53,8 @@ def get_message(context, epilog='', highlight=None):
     if 'message2others' in ud:
         message2others = ud['message2others']
         message['message2others'] = emojize(
-            f':mobile_phone_with_arrow: I will send the following message '
-            f'to people \n'
+            f':mobile_phone_with_arrow: I will add the following note to '
+            f'the message \n'
             f'*{message2others}*'
         )
     if highlight in message.keys():

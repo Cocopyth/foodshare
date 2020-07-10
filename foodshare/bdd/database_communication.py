@@ -42,7 +42,9 @@ def add_meal(who_cooks, ud, gif_url=None):
     meal.how_much = ud['cost']
     meal.how_many = ud['nb_of_person']
     meal.deadline = ud['deadline']
-    meal.additional_info = ud['message2others']
+    meal.additional_info = (
+        ud['message2others'] if 'message2others' in ud.keys() else ''
+    )
     meal.is_done = False
     meal.cancelled = False
     meal.gir_url = gif_url

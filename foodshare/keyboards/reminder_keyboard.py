@@ -5,7 +5,7 @@ dic_time_deadline = {
     48: [0.5, 3, 6, 24],
     24: [0.5, 1, 3, 6],
     6: [0.5, 1, 2, 3],
-    3: [-1, 0.5, 1, 1.5],
+    3: [0.5, 1, 1.5],
     2: [0.5, 1],
     1: [0.5],
 }
@@ -17,7 +17,7 @@ def make_labels(time_left):
     for threshold in dict_key_ordered:
         if time_left > threshold:
             return dic_time_deadline[threshold]
-    return [-1, -1, -1, -1]
+    return []
 
 
 def make_button(float_hour):

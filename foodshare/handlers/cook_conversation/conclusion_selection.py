@@ -22,7 +22,6 @@ def ask_for_conclusion(update, context, highlight=None):
     ud = context.user_data
     query = update.callback_query
     ud['last_query'] = query
-    ud['message2others'] = ''
     epilog = (
         'Now I will send a message to people if you want'
         + ' to add a text message just send it to me. '
@@ -100,7 +99,6 @@ def modify_infos(update, context):
     ud = context.user_data
     query = update.callback_query
     ud['last_query'] = query
-    ud['message2others'] = ''
     epilog = 'Chose what information you want to modify!'
     context.user_data['confirmation_stage'] = True
     text = get_message(context, epilog=epilog)
