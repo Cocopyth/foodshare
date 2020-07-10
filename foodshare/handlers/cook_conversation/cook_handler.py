@@ -7,7 +7,6 @@ from telegram.ext import (
 )
 
 from foodshare.keyboards.confirmation_keyboard import (
-    confirm,
     howmany,
     howmuch,
     reminder,
@@ -17,7 +16,12 @@ from foodshare.keyboards.confirmation_keyboard import (
 )
 
 from . import ConversationStage as CS
-from .conclusion_selection import additional_message, end
+from .conclusion_selection import (
+    additional_message,
+    ask_for_conclusion,
+    end,
+    modify_infos,
+)
 from .cost_selection import ask_for_cost, cost_selection_handler
 from .date_selection import (
     ask_for_date,
@@ -55,13 +59,17 @@ cook_handler = ConversationHandler(
         CS.SELECTING_REMINDER: [CQH(get_deadline)],
         CS.CONFIRMATION: [
             MessageHandler(Filters.text, additional_message),
-            CQH(end, pattern=confirm),
+            CQH(end, pattern='confirm'),
+            CQH(modify_infos, pattern="modify"),
+        ],
+        CS.MODIFICATION: [
             CQH(ask_for_date, pattern=when_date),
             CQH(ask_for_number_of_person, pattern=howmany),
             CQH(ask_for_cost, pattern=howmuch),
             CQH(ask_for_reminder, pattern=reminder),
             CQH(ask_for_meal_name, pattern=what),
             CQH(ask_for_time, pattern=when_time),
+            CQH(ask_for_conclusion, pattern='back'),
         ],
     },
     fallbacks=[CommandHandler('cook', ask_for_meal_name)],  # Only for

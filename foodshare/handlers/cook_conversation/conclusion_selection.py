@@ -1,4 +1,4 @@
-from telegram import ParseMode
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 from foodshare.bdd.database_communication import (
@@ -10,6 +10,12 @@ from foodshare.handlers.start_conversation.first_message import first_message
 from foodshare.job_manager.meal_manager import handle_meals
 from foodshare.keyboards.confirmation_keyboard import confirmation_keyboard
 from foodshare.utils.gif_test import get_gif_url
+
+buttons = [
+    [InlineKeyboardButton(text='Confirm', callback_data='confirm')],
+    [InlineKeyboardButton(text='Modify some infos', callback_data='modify')],
+]
+last_keyboard = InlineKeyboardMarkup(buttons)
 
 
 def ask_for_conclusion(update, context, highlight=None):
@@ -24,18 +30,19 @@ def ask_for_conclusion(update, context, highlight=None):
     )
     context.user_data['confirmation_stage'] = True
     text = get_message(context, epilog=epilog, highlight=highlight)
+
     if (
         update.message is None
     ):  # reply doesn't work if there is no message to reply to
         update.callback_query.edit_message_text(
             text=text,
-            reply_markup=confirmation_keyboard,
+            reply_markup=last_keyboard,
             parse_mode=ParseMode.MARKDOWN,
         )
     else:
         update.message.reply_text(
             text=text,
-            reply_markup=confirmation_keyboard,
+            reply_markup=last_keyboard,
             parse_mode=ParseMode.MARKDOWN,
         )
 
@@ -59,7 +66,7 @@ def additional_message(update, context):
         text=text,
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
-        reply_markup=confirmation_keyboard,
+        reply_markup=last_keyboard,
         parse_mode=ParseMode.MARKDOWN,
     )
     return ConversationStage.CONFIRMATION
@@ -87,3 +94,29 @@ def end(update, context):
         pass
     first_message(update, context, prefix=prefix)
     return ConversationHandler.END
+
+
+def modify_infos(update, context):
+    ud = context.user_data
+    query = update.callback_query
+    ud['last_query'] = query
+    ud['message2others'] = ''
+    epilog = 'Chose what information you want to modify!'
+    context.user_data['confirmation_stage'] = True
+    text = get_message(context, epilog=epilog)
+
+    if (
+        update.message is None
+    ):  # reply doesn't work if there is no message to reply to
+        update.callback_query.edit_message_text(
+            text=text,
+            reply_markup=confirmation_keyboard,
+            parse_mode=ParseMode.MARKDOWN,
+        )
+    else:
+        update.message.reply_text(
+            text=text,
+            reply_markup=confirmation_keyboard,
+            parse_mode=ParseMode.MARKDOWN,
+        )
+    return ConversationStage.MODIFICATION

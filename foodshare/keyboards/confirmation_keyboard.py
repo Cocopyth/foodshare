@@ -12,31 +12,20 @@ confirm, what, when_date, when_time, howmany, howmuch, reminder = map(
 )
 
 buttons = [
-    [InlineKeyboardButton(text='Confirm', callback_data=confirm)],
     [
+        InlineKeyboardButton(text='Change name', callback_data=what),
+        InlineKeyboardButton(text='Change date', callback_data=when_date),
+    ],
+    [
+        InlineKeyboardButton(text='Change time', callback_data=when_time),
         InlineKeyboardButton(
-            text='Change name of the meal', callback_data=what
-        ),
-        InlineKeyboardButton(
-            text='Change date of the meal', callback_data=when_date
+            text='Change number of people', callback_data=howmany
         ),
     ],
     [
-        InlineKeyboardButton(
-            text='Change time of the meal', callback_data=when_time
-        ),
-        InlineKeyboardButton(
-            text='Change number of people involved', callback_data=howmany
-        ),
+        InlineKeyboardButton(text='Change cost', callback_data=howmuch),
+        InlineKeyboardButton(text='Change deadline', callback_data=reminder,),
     ],
-    [
-        InlineKeyboardButton(
-            text='Change cost of the meal', callback_data=howmuch
-        ),
-        InlineKeyboardButton(
-            text='Change deadline of confirmation for the participants',
-            callback_data=reminder,
-        ),
-    ],
+    [InlineKeyboardButton(text='Back', callback_data='back')],
 ]
 confirmation_keyboard = InlineKeyboardMarkup(buttons)

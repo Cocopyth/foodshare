@@ -16,6 +16,7 @@ class ConversationStage(Enum):
     SELECTING_COST = auto()
     SELECTING_REMINDER = auto()
     CONFIRMATION = auto()
+    MODIFICATION = auto()
 
 
 def get_message(context, epilog='', highlight=None):
