@@ -103,6 +103,8 @@ def handle_meals():
                 pj.to_whom.money_balance -= meal.how_much / (len(coming) + 1)
             for pj in pending:
                 pj.job_done = True
+                session.add(pj)
+                session.commit()
                 bot.delete_message(
                     chat_id=pj.to_whom.telegram_id, message_id=pj.message_id
                 )

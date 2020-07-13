@@ -11,7 +11,7 @@ from foodshare.bdd.database_communication import (
 from foodshare.handlers.start_conversation.first_message import first_message
 
 from . import ConversationStage
-
+from foodshare.handlers.meals_conversation import get_all_meals
 
 def community_action(update, context):
     chat_id = update.effective_chat.id
@@ -79,6 +79,7 @@ def quit(update, context):
     members = user.community.members
     ud = context.user_data
     last_message = ud['last_message']
+    all_meals = get_all_meals(user)
     # admins = [member for member in user.community.members if member.admin]
     if len(members) < 2:
         message = (
@@ -111,6 +112,14 @@ def quit(update, context):
             'have a money balance superior to zero.'
             '\nAsk another user to make a '
             'transaction* \n'
+        )
+        first_message(update, context, prefix)
+        return ConversationHandler.END
+    elif len(all_meals) ==0:
+        prefix = (
+            '*To quit the community you need to have no meal ongoing '
+            'please cancel your participation and the ones you organize '
+            'before leaving.'
         )
         first_message(update, context, prefix)
         return ConversationHandler.END
