@@ -118,7 +118,7 @@ def handle_meals():
             meal.is_done = True
             session.add(meal)
             session.add(meal.who_cooks)
-    session.commit()
+            session.commit()
     return finished
 
 
