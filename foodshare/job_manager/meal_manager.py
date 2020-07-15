@@ -96,6 +96,7 @@ def handle_meals():
                 who_cooks.meal_balance += len(coming)
                 session.add(who_cooks)
                 session.add(meal)
+                session.commit()
         if datetime.now() > meal_time:
             meal.is_done = True
             for pj in coming:
@@ -119,6 +120,7 @@ def handle_meals():
             session.add(meal)
             session.add(meal.who_cooks)
             session.commit()
+    session.commit()
     return finished
 
 
